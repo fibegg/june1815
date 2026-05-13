@@ -53,6 +53,7 @@
     "README.md"
   ],
   "scripts": {
+    "postinstall": "node scripts/fix-node-pty.mjs",
     "build": "npm run build:server && npm run build:ui",
     "build:server": "tsup",
     "build:ui": "npm --workspace @june15/ui run build",

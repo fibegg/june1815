@@ -14,7 +14,8 @@ export type TuiEvent =
   | { readonly type: 'usage'; readonly inputTokens: number; readonly outputTokens: number }
   | { readonly type: 'turn_complete' }
   | { readonly type: 'auth_required'; readonly url: string }
-  | { readonly type: 'permission_prompt'; readonly question: string };
+  | { readonly type: 'permission_prompt'; readonly question: string }
+  | { readonly type: 'trust_prompt' };
 
 /**
  * Patterns the parser uses to identify regions in the rendered TUI.
@@ -38,17 +39,37 @@ export interface TuiPatterns {
   readonly permissionPrompt: RegExp;
   /** Match an OAuth URL inline. Capture #1 = URL. */
   readonly oauthUrl: RegExp;
+  /** Match the workspace-trust dialog claude shows on first entry into a
+   *  directory it doesn't yet trust. */
+  readonly trustPrompt: RegExp;
+  /** Match the footer line that signals a turn is running and can be
+   *  interrupted with ESC (the "busy" footer in Claude Code v2+). */
+  readonly busyFooter: RegExp;
 }
 
+// Calibrated against Claude Code v2.1.128 TUI output captured on macOS
+// arm64. Update when Anthropic ships a new UI revision; the parser logic
+// itself doesn't change.
 export const DEFAULT_PATTERNS: TuiPatterns = Object.freeze({
-  readyMarker: /^\s*[│┃║]\s*>\s/u,
-  assistantBlockStart: /^\s*●\s+/u,
-  reasoningBlockStart: /^\s*✻\s+(Thinking|Pondering|Reasoning)/iu,
+  // The ready state is signalled by the footer hint line, NOT by the
+  // input chevron — that line also appears mid-turn. The footer
+  // says `? for shortcuts ● <effort> · /effort` when idle. Spaces
+  // between words are collapsed by xterm rendering at narrow cells so
+  // we tolerate `for ?shortcuts`/`forshortcuts` alike.
+  readyMarker: /\?\s*for\s*shortcuts/iu,
+  // Assistant text and tool calls both use the `⏺` (U+23FA, BLACK
+  // CIRCLE FOR RECORD) marker at the start of the rendered line.
+  // We disambiguate at the parser level: a `Name(args)` immediately
+  // after the marker is a tool call; bare text is assistant content.
+  assistantBlockStart: /^\s*⏺\s+/u,
+  reasoningBlockStart: /^\s*✻\s+(Thinking|Pondering|Reasoning|Cogitat|Shenanigan)/iu,
   blockEnd: /^\s*[─━═]{3,}|^\s*[│┃║]\s*>\s|^\s*Usage:/u,
   toolCallLine: /^\s*⏺\s+([A-Za-z][A-Za-z0-9_]*)\(([^)]*)\)/u,
   usageLine: /Usage:\s*(\d+)\s*in\s*\/\s*(\d+)\s*out/iu,
   permissionPrompt: /(allow|approve|run|continue|confirm).+[?](.|\s)*$/iu,
   oauthUrl: /(https?:\/\/[^\s]*claude\.ai[^\s]*)/iu,
+  trustPrompt: /Quick\s*safety\s*check|trust\s*this\s*folder/iu,
+  busyFooter: /esc\s*to\s*interrupt/iu,
 });
 
 interface ParserState {
@@ -59,6 +80,7 @@ interface ParserState {
   emittedPermission: Set<string>;
   emittedAuthUrl: Set<string>;
   readyEmitted: boolean;
+  trustPromptEmitted: boolean;
   inTurn: boolean;
   turnHadActivity: boolean;
 }
@@ -72,6 +94,7 @@ function initialState(): ParserState {
     emittedPermission: new Set(),
     emittedAuthUrl: new Set(),
     readyEmitted: false,
+    trustPromptEmitted: false,
     inTurn: false,
     turnHadActivity: false,
   };
@@ -108,9 +131,22 @@ export class TuiParser {
     const events: TuiEvent[] = [];
     const lines = stripAnsiLines(snap.lines);
 
+    // -- Trust dialog detection (precedes ready on first entry to a cwd) --
+    const trustVisible = lines.some((l) => this.patterns.trustPrompt.test(l));
+    if (trustVisible && !this.state.trustPromptEmitted) {
+      events.push({ type: 'trust_prompt' });
+      this.state.trustPromptEmitted = true;
+    }
+    // If the dialog is gone but we'd previously seen it, reset so a future
+    // dialog (different cwd) is re-emitted.
+    if (!trustVisible && this.state.trustPromptEmitted) {
+      this.state.trustPromptEmitted = false;
+    }
+
     // -- Ready detection ----------------------------------------------------
     const readyVisible = lines.some((l) => this.patterns.readyMarker.test(l));
-    if (readyVisible && !this.state.readyEmitted) {
+    const busyVisible = lines.some((l) => this.patterns.busyFooter.test(l));
+    if (readyVisible && !busyVisible && !trustVisible && !this.state.readyEmitted) {
       events.push({ type: 'ready' });
       this.state.readyEmitted = true;
     }
@@ -201,7 +237,10 @@ export class TuiParser {
     }
 
     // -- Turn complete ----------------------------------------------------
-    if (this.state.inTurn && readyVisible && this.state.turnHadActivity) {
+    // The footer flips from `esc to interrupt` back to `? for shortcuts`
+    // when claude finishes the turn. We also require some recorded
+    // activity so we don't emit on the initial ready-state appearance.
+    if (this.state.inTurn && readyVisible && !busyVisible && this.state.turnHadActivity) {
       events.push({ type: 'turn_complete' });
       this.state.inTurn = false;
       this.state.turnHadActivity = false;
@@ -224,14 +263,36 @@ function collectBlock(
   // The starter line itself often contains the first chunk of content after
   // the marker. Keep that content.
   const firstContent = start.replace(/^\s*[●✻⏺]\s*/u, '').replace(/^\s*Thinking\.*\s*/iu, '');
-  const out: string[] = [firstContent];
+  const out: string[] = [trimTrailingWs(firstContent)];
   for (let i = startIdx + 1; i < lines.length; i += 1) {
     const line = lines[i] ?? '';
     if (blockEnd.test(line)) break;
     if (nextBlockStart.test(line)) break;
-    out.push(line);
+    // Skip the spinner / status decoration line that claude renders below
+    // the assistant content while a turn is in flight.
+    if (isSpinnerOrFooter(line)) continue;
+    out.push(trimTrailingWs(line));
   }
   return trimTrailingEmpty(out);
+}
+
+function trimTrailingWs(s: string): string {
+  return s.replace(/[ \t]+$/u, '');
+}
+
+// Spinner glyphs claude rotates through (✢ ✳ ✶ ✻ ✽ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏) plus
+// the inline status line shape `<glyph> <verb>… (Ns · ↓ N tokens)` and the
+// footer hint lines. Excluded from the assistant block so they don't leak
+// into text_delta payloads.
+const SPINNER_OR_FOOTER_RE =
+  /^\s*[✢✳✶✻✽⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]\s+\S/u;
+const FOOTER_HINT_RE =
+  /^\s*(?:\?\s*for\s*shortcuts|esc\s*to\s*interrupt|\d+\s*MCP\s*servers)/iu;
+
+function isSpinnerOrFooter(line: string): boolean {
+  if (SPINNER_OR_FOOTER_RE.test(line)) return true;
+  if (FOOTER_HINT_RE.test(line)) return true;
+  return false;
 }
 
 /** Return the new tail of `current` that wasn't present in `prev`. Falls

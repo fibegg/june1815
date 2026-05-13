@@ -35,14 +35,14 @@ describe('computeDelta', () => {
 describe('TuiParser ready', () => {
   it('emits a `ready` event the first time the prompt is visible', () => {
     const p = new TuiParser();
-    const evs = p.parse(snapFromLines(['│ > ']));
+    const evs = p.parse(snapFromLines(['? for shortcuts']));
     expect(evs.find((e) => e.type === 'ready')).toBeDefined();
   });
 
   it('does not re-emit ready on subsequent snapshots', () => {
     const p = new TuiParser();
-    p.parse(snapFromLines(['│ > ']));
-    const evs2 = p.parse(snapFromLines(['│ > ']));
+    p.parse(snapFromLines(['? for shortcuts']));
+    const evs2 = p.parse(snapFromLines(['? for shortcuts']));
     expect(evs2.find((e) => e.type === 'ready')).toBeUndefined();
   });
 });
@@ -51,7 +51,7 @@ describe('TuiParser text deltas', () => {
   it('emits a text_delta for new assistant text', () => {
     const p = new TuiParser();
     p.markTurnStarted();
-    const evs = p.parse(snapFromLines(['● Hello']));
+    const evs = p.parse(snapFromLines(['⏺ Hello']));
     const td = evs.find((e): e is Extract<TuiEvent, { type: 'text_delta' }> => e.type === 'text_delta');
     expect(td?.text).toBe('Hello');
   });
@@ -59,8 +59,8 @@ describe('TuiParser text deltas', () => {
   it('emits an incremental delta as text grows across snapshots', () => {
     const p = new TuiParser();
     p.markTurnStarted();
-    p.parse(snapFromLines(['● Hello']));
-    const evs2 = p.parse(snapFromLines(['● Hello world']));
+    p.parse(snapFromLines(['⏺ Hello']));
+    const evs2 = p.parse(snapFromLines(['⏺ Hello world']));
     const td = evs2.find((e): e is Extract<TuiEvent, { type: 'text_delta' }> => e.type === 'text_delta');
     expect(td?.text).toBe(' world');
   });
@@ -68,8 +68,8 @@ describe('TuiParser text deltas', () => {
   it('emits the whole new block when the assistant region was re-rendered', () => {
     const p = new TuiParser();
     p.markTurnStarted();
-    p.parse(snapFromLines(['● First answer']));
-    const evs = p.parse(snapFromLines(['● Different answer']));
+    p.parse(snapFromLines(['⏺ First answer']));
+    const evs = p.parse(snapFromLines(['⏺ Different answer']));
     const td = evs.find((e): e is Extract<TuiEvent, { type: 'text_delta' }> => e.type === 'text_delta');
     expect(td?.text).toBe('Different answer');
   });
@@ -78,7 +78,7 @@ describe('TuiParser text deltas', () => {
     const p = new TuiParser();
     p.markTurnStarted();
     const evs = p.parse(
-      snapFromLines(['● Real answer', 'next paragraph', '───────────', 'Usage: 1 in / 2 out']),
+      snapFromLines(['⏺ Real answer', 'next paragraph', '───────────', 'Usage: 1 in / 2 out']),
     );
     const td = evs.find((e): e is Extract<TuiEvent, { type: 'text_delta' }> => e.type === 'text_delta');
     expect(td?.text).toContain('Real answer');
@@ -149,9 +149,36 @@ describe('TuiParser turn_complete', () => {
   it('emits turn_complete when ready reappears after activity', () => {
     const p = new TuiParser();
     p.markTurnStarted();
-    p.parse(snapFromLines(['● Hello'])); // activity, no ready
-    const evs = p.parse(snapFromLines(['● Hello', '│ > '])); // ready visible
+    // mid-turn: footer is `esc to interrupt`, with assistant content visible
+    p.parse(snapFromLines(['⏺ Hello', 'esc to interrupt ● high']));
+    // turn ends: footer flips back to `? for shortcuts`
+    const evs = p.parse(snapFromLines(['⏺ Hello', '? for shortcuts ● high']));
     expect(evs.find((e) => e.type === 'turn_complete')).toBeDefined();
+  });
+});
+
+describe('TuiParser trust_prompt', () => {
+  it('emits trust_prompt when the workspace-trust dialog appears', () => {
+    const p = new TuiParser();
+    const evs = p.parse(
+      snapFromLines([
+        'Accessing workspace:',
+        '/private/tmp',
+        'Quick safety check: Is this a project you created or one you trust?',
+        '❯ 1. Yes, I trust this folder',
+        '  2. No, exit',
+      ]),
+    );
+    expect(evs.find((e) => e.type === 'trust_prompt')).toBeDefined();
+  });
+
+  it('suppresses ready while the trust dialog is visible', () => {
+    const p = new TuiParser();
+    const evs = p.parse(
+      snapFromLines(['Quick safety check', '❯ 1. Yes, I trust this folder', '? for shortcuts']),
+    );
+    expect(evs.find((e) => e.type === 'ready')).toBeUndefined();
+    expect(evs.find((e) => e.type === 'trust_prompt')).toBeDefined();
   });
 });
 
@@ -170,10 +197,14 @@ describe('TuiParser auth_required', () => {
 
 describe('DEFAULT_PATTERNS', () => {
   it('matches the documented landmarks (sanity check on regex objects)', () => {
-    expect(DEFAULT_PATTERNS.readyMarker.test('│ > ')).toBe(true);
-    expect(DEFAULT_PATTERNS.assistantBlockStart.test('● hi')).toBe(true);
+    expect(DEFAULT_PATTERNS.readyMarker.test('? for shortcuts ● high · /effort')).toBe(true);
+    expect(DEFAULT_PATTERNS.busyFooter.test('esc to interrupt ● high')).toBe(true);
+    expect(DEFAULT_PATTERNS.assistantBlockStart.test('⏺ hi')).toBe(true);
     expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Thinking')).toBe(true);
+    expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Cogitating')).toBe(true);
     expect(DEFAULT_PATTERNS.toolCallLine.test('⏺ Bash(ls)')).toBe(true);
     expect(DEFAULT_PATTERNS.usageLine.test('Usage: 10 in / 20 out')).toBe(true);
+    expect(DEFAULT_PATTERNS.trustPrompt.test('Quick safety check')).toBe(true);
+    expect(DEFAULT_PATTERNS.trustPrompt.test('❯ 1. Yes, I trust this folder')).toBe(true);
   });
 });

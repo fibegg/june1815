@@ -219,6 +219,14 @@ export class Conversation {
   }
 
   private handleParserEvent(e: TuiEvent): void {
+    if (e.type === 'trust_prompt') {
+      // The conversation was created with an explicit cwd, which is the
+      // user's affirmative trust statement. Auto-accept by sending Enter
+      // (the "Yes, I trust this folder" option is pre-selected) and
+      // suppress the event from the public stream.
+      this.driver.raw('\r');
+      return;
+    }
     if (e.type === 'ready' && this._state === 'starting') {
       this.setState('ready');
       for (const resolve of this.readyResolvers) resolve();

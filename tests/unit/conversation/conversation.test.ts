@@ -91,7 +91,7 @@ describe('Conversation lifecycle', () => {
 
   it('transitions to `ready` when the parser emits ready', async () => {
     const { emitData, conv, events } = setupConversation();
-    emitData('│ > \r\n');
+    emitData('? for shortcuts\r\n');
     await conv.snapshotNow();
     expect(conv.state).toBe('ready');
     expect(events.find((e) => e.type === 'ready')).toBeDefined();
@@ -109,7 +109,7 @@ describe('Conversation lifecycle', () => {
   it('drains the queue once ready is reached', async () => {
     const { emitData, conv, ptyWrites } = setupConversation();
     conv.send('hello there');
-    emitData('│ > \r\n');
+    emitData('? for shortcuts\r\n');
     await conv.snapshotNow();
     expect(conv.state).toBe('busy');
     const drvWrites = ptyWrites.filter((w) => w.startsWith('drv:'));
@@ -120,12 +120,12 @@ describe('Conversation lifecycle', () => {
     const { emitData, conv, events } = setupConversation();
     conv.send('one');
     conv.send('two');
-    emitData('│ > \r\n');
+    emitData('? for shortcuts\r\n');
     await conv.snapshotNow();
     // First turn started
     expect(conv.state).toBe('busy');
     // Simulate the assistant output and then ready reappearing
-    emitData('● done\r\n│ > \r\n');
+    emitData('⏺ done\r\n? for shortcuts\r\n');
     await conv.snapshotNow();
     // Turn complete should have been emitted
     expect(events.find((e) => e.type === 'turn_complete')).toBeDefined();
@@ -144,7 +144,7 @@ describe('Conversation lifecycle', () => {
   it('interrupt while busy sends Ctrl-C and clears in-flight', async () => {
     const { emitData, conv, ptyWrites } = setupConversation();
     conv.send('hi');
-    emitData('│ > \r\n');
+    emitData('? for shortcuts\r\n');
     await conv.snapshotNow();
     conv.interrupt();
     expect(ptyWrites.some((w) => w === 'drv:\x03')).toBe(true);
@@ -171,7 +171,7 @@ describe('Conversation lifecycle', () => {
   it('waitForReady resolves when ready is reached', async () => {
     const { emitData, conv } = setupConversation();
     const p = conv.waitForReady(1000);
-    emitData('│ > \r\n');
+    emitData('? for shortcuts\r\n');
     await conv.snapshotNow();
     await expect(p).resolves.toBeUndefined();
   });
