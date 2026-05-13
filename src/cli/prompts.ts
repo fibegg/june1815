@@ -10,7 +10,7 @@ export const clackConfirmPrompt: ConfirmPrompt = {
   async confirm(message: string): Promise<boolean> {
     const result = await clack.confirm({ message, initialValue: true });
     if (clack.isCancel(result)) return false;
-    return result === true;
+    return result;
   },
 };
 

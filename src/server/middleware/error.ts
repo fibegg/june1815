@@ -26,7 +26,7 @@ const STATUS_FOR_CODE: Record<June15ErrorCode, number> = {
 export function errorHandler(log?: { error(err: unknown, msg: string): void }): ErrorHandler {
   return (err, c) => {
     if (isJune15Error(err)) {
-      const status = STATUS_FOR_CODE[err.code] ?? 500;
+      const status = STATUS_FOR_CODE[err.code];
       return c.json(
         { code: err.code, message: err.message, details: err.details },
         status as 400 | 401 | 404 | 409 | 410 | 429 | 500 | 503,

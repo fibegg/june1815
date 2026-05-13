@@ -4,14 +4,14 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { Command } from 'commander';
 import { applyCommonOptions, commonOptionsToConfig, type CommonOptionValues } from '../cli-options.js';
-import type { CliIo, CommandRegistrar } from '../cli.js';
+import type { CommandRegistrar } from '../cli.js';
 import { loadConfig } from '../../config/loader.js';
 import type { Config } from '../../config/schema.js';
 
 const SECRET_PATHS: ReadonlySet<string> = new Set(['server.auth.bearerToken']);
 
 function redact(config: Config): Record<string, unknown> {
-  return walk(config as Record<string, unknown>, '');
+  return walk(config, '');
 }
 
 function walk(obj: Record<string, unknown>, prefix: string): Record<string, unknown> {
@@ -34,8 +34,8 @@ export const registerConfig: CommandRegistrar = (program, io) => {
 
   const show = new Command('show')
     .description('print the resolved config tree (secrets redacted)')
-    .action(async (_opts: CommonOptionValues, command) => {
-      const common = command.parent?.parent?.opts<CommonOptionValues>() ?? {};
+    .action((_opts: CommonOptionValues, command: Command) => {
+      const common = (command.parent?.parent?.opts() ?? {});
       const cliPartial = commonOptionsToConfig(common);
       const config = loadConfig({ cliOverrides: cliPartial, env: process.env, homeDir: homedir() });
       io.stdout(`${JSON.stringify(redact(config), null, 2)}\n`);

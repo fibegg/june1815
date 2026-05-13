@@ -37,7 +37,7 @@ describe('loggerOptionsFromConfig', () => {
 
 describe('createLogger', () => {
   it('returns a logger with the standard pino API in non-pretty mode', () => {
-    const log = createLogger({ level: 'silent', pretty: false });
+    const log = createLogger({ level: 'fatal', pretty: false });
     expect(typeof log.info).toBe('function');
     expect(typeof log.error).toBe('function');
     expect(typeof log.child).toBe('function');

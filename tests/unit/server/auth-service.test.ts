@@ -68,7 +68,7 @@ describe('AuthService.setToken / clear', () => {
 
   it('clear is a no-op when no file exists', () => {
     const svc = new AuthService({ dataDir: '/d', homeDir: '/h', env: {}, fs: inMemoryFs() });
-    expect(() => svc.clear()).not.toThrow();
+    expect(() => { svc.clear(); }).not.toThrow();
   });
 
   it('after setToken, status reports june15_token_file', () => {

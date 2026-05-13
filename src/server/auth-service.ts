@@ -14,8 +14,8 @@ export interface TokenStoreFs {
 const realFs: TokenStoreFs = {
   existsSync,
   readFileSync: (p, e) => readFileSync(p, e),
-  writeFileSync: (p, d, o) => writeFileSync(p, d, o),
-  rmSync: (p, o) => rmSync(p, o),
+  writeFileSync: (p, d, o) => { writeFileSync(p, d, o); },
+  rmSync: (p, o) => { rmSync(p, o); },
   mkdirSync: (p, o) => {
     mkdirSync(p, o);
   },

@@ -38,14 +38,19 @@ export function registerConversationRoutes(
   });
 
   app.post('/v1/conversations', async (c) => {
-    const body = await c.req.json().catch(() => {
+    const body: unknown = await c.req.json().catch(() => {
       throw new June15Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = CreateBodySchema.safeParse(body);
     if (!parsed.success) {
       throw new June15Error('http_bad_request', parsed.error.issues.map((i) => i.message).join('; '));
     }
-    const conv = await deps.conversations.create(parsed.data);
+    const args: Parameters<typeof deps.conversations.create>[0] = { cwd: parsed.data.cwd };
+    if (parsed.data.id !== undefined) args.id = parsed.data.id;
+    if (parsed.data.model !== undefined) args.model = parsed.data.model;
+    if (parsed.data.effort !== undefined) args.effort = parsed.data.effort;
+    if (parsed.data.systemPromptAppend !== undefined) args.systemPromptAppend = parsed.data.systemPromptAppend;
+    const conv = await deps.conversations.create(args);
     return c.json(
       summarize({
         id: conv.id,

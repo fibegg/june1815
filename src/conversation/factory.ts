@@ -57,7 +57,7 @@ export class ProductionConversationFactory implements ConversationFactory {
 
     const terminal = new TerminalAdapter({ cols: this.deps.cols, rows: this.deps.rows });
     const parser = new TuiParser();
-    const driver = new InputDriver({ write: (d) => pty.write(d) });
+    const driver = new InputDriver({ write: (d) => { pty.write(d); } });
 
     const conv = new Conversation({
       id: opts.id,

@@ -62,7 +62,7 @@ export async function runCli(argv: readonly string[], opts: RunCliOptions): Prom
   for (const registrar of opts.registrars) registrar(program, io);
 
   try {
-    await program.parseAsync(argv as string[]);
+    await program.parseAsync(argv);
   } catch (err) {
     if (isJune15Error(err)) {
       const code = EXIT_CODE_FOR_ERROR[err.code] ?? ExitCode.Error;
@@ -70,7 +70,8 @@ export async function runCli(argv: readonly string[], opts: RunCliOptions): Prom
       io.exit(code);
       return;
     }
-    io.stderr(`error: ${(err as Error).message ?? String(err)}\n`);
+    const message = err instanceof Error ? err.message : String(err);
+    io.stderr(`error: ${message}\n`);
     io.exit(ExitCode.Error);
   }
 }

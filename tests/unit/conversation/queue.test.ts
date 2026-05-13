@@ -60,7 +60,7 @@ describe('MessageQueue', () => {
 
   it('steer with no in-flight throws', () => {
     const q = new MessageQueue();
-    expect(() => q.steer(msg('s'))).toThrow();
+    expect(() => { q.steer(msg('s')); }).toThrow();
   });
 
   it('interrupt clears in-flight, queue intact', () => {
@@ -76,7 +76,7 @@ describe('MessageQueue', () => {
   it('rejects duplicate message ids', () => {
     const q = new MessageQueue();
     q.enqueue(msg('x'));
-    expect(() => q.enqueue(msg('x'))).toThrow(/duplicate/);
+    expect(() => { q.enqueue(msg('x')); }).toThrow(/duplicate/);
   });
 
   it('size counts both pending and in-flight', () => {

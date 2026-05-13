@@ -5,19 +5,6 @@ import { ExitCode } from '../../../src/cli/exit-codes.js';
 import { June15Error } from '../../../src/errors.js';
 import { applyCommonOptions, commonOptionsToConfig } from '../../../src/cli/cli-options.js';
 
-function recordingIo(): CliIo & { stdout: string[]; stderr: string[]; exit: number[] } {
-  const stdout: string[] = [];
-  const stderr: string[] = [];
-  const exit: number[] = [];
-  return {
-    stdout: ((s: string) => stdout.push(s)) as unknown as CliIo['stdout'],
-    stderr: ((s: string) => stderr.push(s)) as unknown as CliIo['stderr'],
-    exit: ((code: number) => exit.push(code)) as unknown as CliIo['exit'],
-    // expose recorders via the same names; this dual-purpose makes the
-    // assertions terse below
-  } as unknown as CliIo & { stdout: string[]; stderr: string[]; exit: number[] };
-}
-
 function ioForTesting() {
   const stdout: string[] = [];
   const stderr: string[] = [];

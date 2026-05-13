@@ -56,7 +56,7 @@ export class TerminalAdapter {
 
   write(data: string | Uint8Array): Promise<void> {
     return new Promise<void>((resolve) => {
-      this.term.write(data as string, () => resolve());
+      this.term.write(data, () => { resolve(); });
     });
   }
 

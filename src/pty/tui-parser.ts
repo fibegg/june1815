@@ -1,5 +1,4 @@
 import {
-  extractBlock,
   findLastLineIndex,
   findLineIndex,
   stripAnsiLines,
@@ -119,7 +118,7 @@ export class TuiParser {
     // -- OAuth URL (auth_required) ----------------------------------------
     for (const line of lines) {
       const m = this.patterns.oauthUrl.exec(line);
-      if (m && m[1] && !this.state.emittedAuthUrl.has(m[1])) {
+      if (m?.[1] && !this.state.emittedAuthUrl.has(m[1])) {
         this.state.emittedAuthUrl.add(m[1]);
         events.push({ type: 'auth_required', url: m[1] });
       }

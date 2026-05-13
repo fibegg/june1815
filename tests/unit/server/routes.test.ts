@@ -24,7 +24,7 @@ function fakeConversation(overrides: Partial<Conversation> = {}): Conversation {
     kill: () => {},
     waitForReady: () => Promise.resolve(),
     snapshotNow: () => Promise.resolve(),
-    ...(overrides as Partial<Conversation>),
+    ...(overrides),
   } as unknown as Conversation;
 }
 
@@ -63,7 +63,7 @@ describe('GET /v1/conversations', () => {
     const mgr = fakeManager([fakeConversation({ id: 'a' }), fakeConversation({ id: 'b' })]);
     const res = await appWith(mgr).fetch(new Request('http://t/v1/conversations'));
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { conversations: Array<{ id: string }> };
+    const body = (await res.json()) as { conversations: { id: string }[] };
     expect(body.conversations.map((c) => c.id).sort()).toEqual(['a', 'b']);
   });
 });
@@ -154,7 +154,7 @@ describe('streamConversationUntilDone', () => {
         return () => undefined;
       },
     });
-    const written: Array<{ event: string; data: string }> = [];
+    const written: { event: string; data: string }[] = [];
     let closed = false;
     const stream = {
       writeSSE: (p: { event: string; data: string }) => {
@@ -185,7 +185,7 @@ describe('streamConversationUntilDone', () => {
         return () => undefined;
       },
     });
-    const written: Array<{ event: string }> = [];
+    const written: { event: string }[] = [];
     let closed = false;
     const stream = {
       writeSSE: (p: { event: string; data: string }) => {

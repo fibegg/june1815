@@ -1,3 +1,4 @@
+import type * as NodePtyModule from 'node-pty';
 import { June15Error } from '../errors.js';
 
 /** Information emitted when the PTY child process exits. */
@@ -42,7 +43,7 @@ export interface PtySpawner {
 export class NodePtySpawner implements PtySpawner {
   spawn(opts: PtySpawnOptions): PtyHandle {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pty = require('node-pty') as typeof import('node-pty');
+    const pty = require('node-pty') as typeof NodePtyModule;
     const child = pty.spawn(opts.command, [...(opts.args ?? [])], {
       cwd: opts.cwd,
       env: { ...(opts.env as Record<string, string>) },
@@ -54,17 +55,17 @@ export class NodePtySpawner implements PtySpawner {
       pid: child.pid,
       onData: (l) => {
         const d = child.onData(l);
-        return () => d.dispose();
+        return () => { d.dispose(); };
       },
       onExit: (l) => {
         const d = child.onExit(({ exitCode, signal }) =>
-          l({ exitCode, signal: typeof signal === 'number' ? signal : null }),
+          { l({ exitCode, signal: typeof signal === 'number' ? signal : null }); },
         );
-        return () => d.dispose();
+        return () => { d.dispose(); };
       },
-      write: (data) => child.write(data),
-      resize: (c, r) => child.resize(c, r),
-      kill: (sig) => child.kill(sig),
+      write: (data) => { child.write(data); },
+      resize: (c, r) => { child.resize(c, r); },
+      kill: (sig) => { child.kill(sig); },
     };
   }
 }
@@ -97,7 +98,7 @@ export class ClaudePty {
       pty._state = 'exited';
       pty.emitExit(info);
     });
-    handle.onData((d) => pty.emitData(d));
+    handle.onData((d) => { pty.emitData(d); });
     return pty;
   }
 

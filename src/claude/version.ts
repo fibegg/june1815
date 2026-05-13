@@ -22,7 +22,7 @@ function stripAnsi(s: string): string {
 export function parseClaudeVersion(stdout: string): VersionInfo {
   const cleaned = stripAnsi(stdout).trim();
   const m = SEMVER_RE.exec(cleaned);
-  if (!m || !m[1] || !m[2] || !m[3]) {
+  if (!m?.[1] || !m[2] || !m[3]) {
     return { raw: cleaned, semver: null, parts: null };
   }
   const major = Number(m[1]);
@@ -49,14 +49,14 @@ const realSpawn: VersionSpawnFacade = {
       const child = spawn(cmd, args as string[], { stdio: ['ignore', 'pipe', 'pipe'] });
       let stdout = '';
       let stderr = '';
-      child.stdout?.on('data', (c: Buffer | string) => {
+      child.stdout.on('data', (c: Buffer | string) => {
         stdout += c.toString();
       });
-      child.stderr?.on('data', (c: Buffer | string) => {
+      child.stderr.on('data', (c: Buffer | string) => {
         stderr += c.toString();
       });
-      child.on('close', (code) => resolve({ code: code ?? 1, stdout, stderr }));
-      child.on('error', (err) => resolve({ code: -1, stdout, stderr: err.message }));
+      child.on('close', (code) => { resolve({ code: code ?? 1, stdout, stderr }); });
+      child.on('error', (err) => { resolve({ code: -1, stdout, stderr: err.message }); });
     }),
 };
 

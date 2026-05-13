@@ -1,7 +1,7 @@
 import { homedir, platform } from 'node:os';
 import { Command } from 'commander';
 import { applyCommonOptions, commonOptionsToConfig, type CommonOptionValues } from '../cli-options.js';
-import type { CliIo, CommandRegistrar } from '../cli.js';
+import type { CommandRegistrar } from '../cli.js';
 import { loadConfig } from '../../config/loader.js';
 import { detectAuth } from '../../claude/auth-detector.js';
 import { locateClaude } from '../../claude/locator.js';
@@ -9,7 +9,7 @@ import { getClaudeVersion } from '../../claude/version.js';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-interface DoctorOptions extends CommonOptionValues {}
+type DoctorOptions = CommonOptionValues;
 
 type Status = 'ok' | 'warn' | 'error';
 
@@ -37,14 +37,14 @@ function format(checks: readonly Check[]): string {
 
 export const registerDoctor: CommandRegistrar = (program, io) => {
   const cmd = new Command('doctor').description('diagnose june15\'s runtime prerequisites').action(
-    async (raw: DoctorOptions, command) => {
-      const common = command.parent?.opts<CommonOptionValues>() ?? {};
+    async (raw: DoctorOptions, command: Command) => {
+      const common = (command.parent?.opts() ?? {});
       const cliPartial = commonOptionsToConfig({ ...common, ...raw });
       const config = loadConfig({ cliOverrides: cliPartial, env: process.env, homeDir: homedir() });
 
       const checks: Check[] = [];
 
-      const pathVar = process.env['PATH'];
+      const pathVar = process.env.PATH;
       const locatorInput: Parameters<typeof locateClaude>[0] = { pathVar, home: homedir(), platform: platform() };
       if (config.claude.path) locatorInput.overridePath = config.claude.path;
       const loc = locateClaude(locatorInput);

@@ -38,7 +38,7 @@ export interface ConversationTimers {
 
 const realTimers: ConversationTimers = {
   setTimeout: (fn, ms) => setTimeout(fn, ms),
-  clearTimeout: (h) => clearTimeout(h as NodeJS.Timeout),
+  clearTimeout: (h) => { clearTimeout(h); },
 };
 
 /**
@@ -66,8 +66,8 @@ export class Conversation {
   private burstTimer: NodeJS.Timeout | number | null = null;
   private lastWrite: Promise<void> = Promise.resolve();
 
-  private readyResolvers: Array<() => void> = [];
-  private readyRejecters: Array<(e: Error) => void> = [];
+  private readyResolvers: (() => void)[] = [];
+  private readyRejecters: ((e: Error) => void)[] = [];
 
   constructor(deps: ConversationDeps) {
     this.id = deps.id;
@@ -81,8 +81,8 @@ export class Conversation {
     this.maxBurstMs = deps.maxBurstMs ?? Math.max(deps.idleQuietMs * 20, 200);
     this.timers = deps.timers ?? realTimers;
 
-    this.pty.onData((d) => this.onPtyData(d));
-    this.pty.onExit((info) => this.onPtyExit(info));
+    this.pty.onData((d) => { this.onPtyData(d); });
+    this.pty.onExit((info) => { this.onPtyExit(info); });
   }
 
   get state(): ConversationState {
@@ -154,6 +154,7 @@ export class Conversation {
   kill(signal?: string): void {
     if (this._state === 'killed') return;
     this.cancelTimers();
+    this.setState('killed');
     this.pty.kill(signal);
   }
 
@@ -187,11 +188,9 @@ export class Conversation {
     this.dataTimer = this.timers.setTimeout(() => {
       void this.snapshotInternal();
     }, this.idleQuietMs);
-    if (this.burstTimer === null) {
-      this.burstTimer = this.timers.setTimeout(() => {
-        void this.snapshotInternal();
-      }, this.maxBurstMs);
-    }
+    this.burstTimer ??= this.timers.setTimeout(() => {
+      void this.snapshotInternal();
+    }, this.maxBurstMs);
   }
 
   private async snapshotInternal(): Promise<void> {

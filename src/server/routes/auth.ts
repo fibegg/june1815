@@ -24,7 +24,7 @@ export function registerAuthRoutes(
   });
 
   app.post('/v1/auth/token', async (c) => {
-    const body = await c.req.json().catch(() => {
+    const body: unknown = await c.req.json().catch(() => {
       throw new June15Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = TokenBodySchema.safeParse(body);

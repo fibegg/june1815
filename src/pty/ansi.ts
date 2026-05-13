@@ -1,5 +1,11 @@
-// ANSI regex adapted from sindresorhus/ansi-regex (MIT). Covers CSI, OSC,
-// DCS, single-char escapes, and the common closing terminators (BEL, ST).
+// OSC sequences: ESC ] ... ST  (ST = BEL, ESC \, or 0x9c). Allow any
+// non-terminator characters in the body, including spaces (real terminals
+// embed spaces in window titles). Matched first so the more restrictive
+// CSI regex doesn't eat the leading ESC.
+// eslint-disable-next-line no-control-regex
+const OSC_RE = /\x1b\][\s\S]*?(?:\x07|\x1b\\|\x9c)/g;
+
+// CSI / DCS / single-char escapes — adapted from sindresorhus/ansi-regex (MIT).
 const ANSI_PATTERN = [
   '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[\\-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[\\-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?(?:\\u0007|\\u001B\\u005C|\\u009C))',
   '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))',
@@ -8,7 +14,7 @@ const ANSI_RE = new RegExp(ANSI_PATTERN, 'g');
 
 /** Remove every ANSI escape sequence from a string. */
 export function stripAnsi(s: string): string {
-  return s.replace(ANSI_RE, '');
+  return s.replace(OSC_RE, '').replace(ANSI_RE, '');
 }
 
 /** Strip ANSI from each line in an array (non-mutating). */

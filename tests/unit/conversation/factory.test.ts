@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { ProductionConversationFactory } from '../../../src/conversation/factory.js';
 import type { PtyHandle, PtySpawner, PtySpawnOptions } from '../../../src/pty/claude-pty.js';
 
@@ -15,10 +15,10 @@ function fakeHandle(): PtyHandle {
 
 describe('ProductionConversationFactory', () => {
   it('forwards model / effort / append-system-prompt / resume / add-dir as CLI args', async () => {
-    let captured: PtySpawnOptions | null = null;
+    const captured: { value?: PtySpawnOptions } = {};
     const spawner: PtySpawner = {
       spawn: (opts) => {
-        captured = opts;
+        captured.value = opts;
         return fakeHandle();
       },
     };
@@ -38,10 +38,10 @@ describe('ProductionConversationFactory', () => {
       systemPromptAppend: 'be brief',
       resumeSessionId: 'sess-42',
     });
-    expect(captured).not.toBeNull();
-    expect(captured?.command).toBe('/usr/local/bin/claude');
-    expect(captured?.cwd).toBe('/work');
-    const args = captured?.args ?? [];
+    expect(captured.value).toBeDefined();
+    expect(captured.value?.command).toBe('/usr/local/bin/claude');
+    expect(captured.value?.cwd).toBe('/work');
+    const args = captured.value?.args ?? [];
     expect(args).toContain('--model');
     expect(args).toContain('opus-4-7');
     expect(args).toContain('--effort');
@@ -55,10 +55,10 @@ describe('ProductionConversationFactory', () => {
   });
 
   it('omits optional flags when not supplied', async () => {
-    let captured: PtySpawnOptions | null = null;
+    const captured: { value?: PtySpawnOptions } = {};
     const spawner: PtySpawner = {
       spawn: (opts) => {
-        captured = opts;
+        captured.value = opts;
         return fakeHandle();
       },
     };
@@ -71,7 +71,7 @@ describe('ProductionConversationFactory', () => {
       spawner,
     });
     await factory.create({ id: 'c-1', cwd: '/x' });
-    const args = captured?.args ?? [];
+    const args = captured.value?.args ?? [];
     expect(args).not.toContain('--model');
     expect(args).not.toContain('--effort');
     expect(args).not.toContain('--resume');

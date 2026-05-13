@@ -13,7 +13,6 @@ const SendBodySchema = z.object({
 const SteerBodySchema = z.object({
   text: z.string().min(1),
 });
-const InterruptBodySchema = z.object({}).optional();
 
 /**
  * Map an internal `ConversationEvent` to the externally-visible `SseEvent`.
@@ -58,7 +57,7 @@ export function registerMessageRoutes(
     const id = c.req.param('id');
     const conv = deps.conversations.get(id);
     if (!conv) throw new June15Error('conversation_not_found', id);
-    const body = await c.req.json().catch(() => {
+    const body: unknown = await c.req.json().catch(() => {
       throw new June15Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = SendBodySchema.safeParse(body);
@@ -75,8 +74,6 @@ export function registerMessageRoutes(
     const conv = deps.conversations.get(id);
     if (!conv) throw new June15Error('conversation_not_found', id);
     await c.req.json().catch(() => undefined);
-    const _check = InterruptBodySchema.parse(undefined);
-    void _check;
     conv.interrupt();
     return c.json({ interrupted: true });
   });
@@ -85,7 +82,7 @@ export function registerMessageRoutes(
     const id = c.req.param('id');
     const conv = deps.conversations.get(id);
     if (!conv) throw new June15Error('conversation_not_found', id);
-    const body = await c.req.json().catch(() => {
+    const body: unknown = await c.req.json().catch(() => {
       throw new June15Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = SendBodySchema.safeParse(body);
@@ -98,7 +95,7 @@ export function registerMessageRoutes(
     const id = c.req.param('id');
     const conv = deps.conversations.get(id);
     if (!conv) throw new June15Error('conversation_not_found', id);
-    const body = await c.req.json().catch(() => {
+    const body: unknown = await c.req.json().catch(() => {
       throw new June15Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = SteerBodySchema.safeParse(body);
@@ -132,7 +129,7 @@ export async function streamConversationUntilDone(
   });
 
   try {
-    while (true) {
+    for (;;) {
       if (queued.length === 0) {
         await new Promise<void>((resolve) => {
           resolveWaiter = resolve;

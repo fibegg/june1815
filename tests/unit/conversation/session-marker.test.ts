@@ -60,6 +60,6 @@ describe('SessionMarkerStore', () => {
 
   it('delete is a no-op when no marker exists', () => {
     const store = new SessionMarkerStore('/d', inMemoryFs());
-    expect(() => store.delete('nope')).not.toThrow();
+    expect(() => { store.delete('nope'); }).not.toThrow();
   });
 });

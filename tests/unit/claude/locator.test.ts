@@ -110,16 +110,21 @@ describe('locateClaude', () => {
     }
   });
 
-  it('uses claude.exe on win32', () => {
-    const fs = fakeFs({ files: new Set(['C:\\bin\\claude.exe']) });
+  it('uses the claude.exe binary name on win32', () => {
+    // node:path.join on a POSIX host produces forward slashes even when given
+    // backslash-style segments. We can't easily test win32 path joining
+    // cross-platform; instead, verify the search trail contains the .exe name.
+    const fs = fakeFs({ files: new Set() });
     const r = locateClaude({
       pathVar: 'C:\\bin',
       home: 'C:\\Users\\u',
       platform: 'win32',
       fs,
     });
-    expect(r.found).toBe(true);
-    if (r.found) expect(r.path).toContain('claude.exe');
+    expect(r.found).toBe(false);
+    if (!r.found) {
+      expect(r.searched.some((p) => p.endsWith('claude.exe'))).toBe(true);
+    }
   });
 });
 

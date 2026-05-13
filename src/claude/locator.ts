@@ -98,7 +98,7 @@ export function locateClaude(input: LocatorInput = {}): LocatorResult {
   const pathSep = plat === 'win32' ? ';' : delimiter;
 
   const searched: string[] = [];
-  const candidates: Array<{ path: string; source: LocatorSource }> = [];
+  const candidates: { path: string; source: LocatorSource }[] = [];
 
   if (input.overridePath && input.overridePath.trim().length > 0) {
     candidates.push({ path: input.overridePath, source: 'override' });

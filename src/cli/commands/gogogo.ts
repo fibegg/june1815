@@ -5,7 +5,7 @@ import { Command, type Command as CommanderCommand } from 'commander';
 import { type Logger } from 'pino';
 import { serve } from '@hono/node-server';
 import { applyCommonOptions, commonOptionsToConfig, type CommonOptionValues } from '../cli-options.js';
-import type { CliIo, CommandRegistrar } from '../cli.js';
+import type { CommandRegistrar } from '../cli.js';
 import { loadConfig } from '../../config/loader.js';
 import type { Config, Mode } from '../../config/schema.js';
 import { createLogger, loggerOptionsFromConfig } from '../../logger.js';
@@ -77,7 +77,7 @@ export async function composeGogogo(opts: {
     opts.log ?? createLogger(loggerOptionsFromConfig(config, opts.isTty));
 
   // 1. Locate or install claude.
-  const pathVar = opts.env['PATH'];
+  const pathVar = opts.env.PATH;
   const locatorInput: Parameters<typeof locateClaude>[0] = {
     pathVar,
     home: opts.home,
@@ -86,13 +86,13 @@ export async function composeGogogo(opts: {
   let resolved = locateClaude(locatorInput);
   if (!resolved.found) {
     log.warn('claude not found on PATH; attempting install per config');
-    await installOrThrow({
+    const installInput: Parameters<typeof installOrThrow>[0] = {
       mode,
       autoInstall: config.claude.autoInstall,
-      prompt: mode === 'interactive' ? clackConfirmPrompt : undefined,
-      spawnFacade: undefined,
-      log: { info: (m) => log.info(m), warn: (m) => log.warn(m) },
-    });
+      log: { info: (m) => { log.info(m); }, warn: (m) => { log.warn(m); } },
+    };
+    if (mode === 'interactive') installInput.prompt = clackConfirmPrompt;
+    await installOrThrow(installInput);
     resolved = locateClaude(locatorInput);
     if (!resolved.found) {
       throw new June15Error(
@@ -167,7 +167,7 @@ export const registerGogogo: CommandRegistrar = (program, io) => {
     .option('--model <name>', 'default model for new conversations')
     .option('--effort <level>', 'reasoning effort: low|medium|high|xhigh|max')
     .action(async (raw: GogogoOptions, command: CommanderCommand) => {
-      const common = command.parent?.opts<CommonOptionValues>() ?? {};
+      const common = (command.parent?.opts() ?? {});
       const cliPartial = commonOptionsToConfig({ ...common, ...raw });
       if (raw.host) (cliPartial.server ??= {}).host = raw.host;
       if (raw.port) (cliPartial.server ??= {}).port = raw.port;
@@ -175,7 +175,8 @@ export const registerGogogo: CommandRegistrar = (program, io) => {
 
       const composition = await composeGogogo({
         cliPartial,
-        isTty: Boolean(process.stdout.isTTY),
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+        isTty: process.stdout.isTTY === true,
         env: process.env,
         home: homedir(),
       });

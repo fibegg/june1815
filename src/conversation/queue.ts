@@ -16,7 +16,7 @@ export class MessageQueue {
   private _inFlight: QueuedMessage | null = null;
 
   enqueue(msg: QueuedMessage): void {
-    if (this._inFlight && this._inFlight.id === msg.id) {
+    if (this._inFlight?.id === msg.id) {
       throw new Error('message already in flight');
     }
     if (this.pending.some((p) => p.id === msg.id)) {

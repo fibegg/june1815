@@ -35,11 +35,11 @@ const realSpawn: SpawnFacade = {
     new Promise((resolve) => {
       const child = spawn(cmd, args as string[], { stdio: ['ignore', 'inherit', 'pipe'] });
       let stderr = '';
-      child.stderr?.on('data', (chunk: Buffer | string) => {
+      child.stderr.on('data', (chunk: Buffer | string) => {
         stderr += chunk.toString();
       });
-      child.on('close', (code) => resolve({ code: code ?? 1, stderr }));
-      child.on('error', (err) => resolve({ code: -1, stderr: err.message }));
+      child.on('close', (code) => { resolve({ code: code ?? 1, stderr }); });
+      child.on('error', (err) => { resolve({ code: -1, stderr: err.message }); });
     }),
 };
 

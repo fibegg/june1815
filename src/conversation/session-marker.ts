@@ -12,11 +12,11 @@ export interface SessionMarkerFs {
 const realFs: SessionMarkerFs = {
   existsSync,
   readFileSync: (p, e) => readFileSync(p, e),
-  writeFileSync: (p, d) => writeFileSync(p, d),
+  writeFileSync: (p, d) => { writeFileSync(p, d); },
   mkdirSync: (p, o) => {
     mkdirSync(p, o);
   },
-  rmSync: (p, o) => rmSync(p, o),
+  rmSync: (p, o) => { rmSync(p, o); },
 };
 
 const MARKER_FILE = 'session.txt';

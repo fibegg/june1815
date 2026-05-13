@@ -12,8 +12,8 @@ import { TuiParser } from '../../../src/pty/tui-parser.js';
  * push of bytes / exit signal.
  */
 function makeFakePty(): { pty: ClaudePty; emitData: (d: string) => void; emitExit: (i: PtyExit) => void; writes: string[]; killed: boolean } {
-  let dataListeners: Array<(d: string) => void> = [];
-  let exitListeners: Array<(i: PtyExit) => void> = [];
+  let dataListeners: ((d: string) => void)[] = [];
+  let exitListeners: ((i: PtyExit) => void)[] = [];
   const writes: string[] = [];
   let killed = false;
   const pty: ClaudePty = {
@@ -23,19 +23,19 @@ function makeFakePty(): { pty: ClaudePty; emitData: (d: string) => void; emitExi
     get state() {
       return killed ? 'exited' : 'alive';
     },
-    onData: (l) => {
+    onData: (l: (d: string) => void) => {
       dataListeners.push(l);
       return () => {
         dataListeners = dataListeners.filter((x) => x !== l);
       };
     },
-    onExit: (l) => {
+    onExit: (l: (i: PtyExit) => void) => {
       exitListeners.push(l);
       return () => {
         exitListeners = exitListeners.filter((x) => x !== l);
       };
     },
-    write: (d) => writes.push(d),
+    write: (d: string) => writes.push(d),
     resize: () => {},
     kill: () => {
       killed = true;
@@ -43,8 +43,8 @@ function makeFakePty(): { pty: ClaudePty; emitData: (d: string) => void; emitExi
   } as unknown as ClaudePty;
   return {
     pty,
-    emitData: (d) => dataListeners.forEach((l) => l(d)),
-    emitExit: (i) => exitListeners.forEach((l) => l(i)),
+    emitData: (d: string) => { dataListeners.forEach((l) => { l(d); }); },
+    emitExit: (i) => { exitListeners.forEach((l) => { l(i); }); },
     writes,
     get killed() {
       return killed;

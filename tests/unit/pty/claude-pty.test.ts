@@ -8,13 +8,13 @@ function fakeHandle(): {
   emitExit(info: PtyExit): void;
   writes: string[];
   killed: string[];
-  resizes: Array<[number, number]>;
+  resizes: [number, number][];
 } {
-  let dataListeners: Array<(d: string) => void> = [];
-  let exitListeners: Array<(i: PtyExit) => void> = [];
+  let dataListeners: ((d: string) => void)[] = [];
+  let exitListeners: ((i: PtyExit) => void)[] = [];
   const writes: string[] = [];
   const killed: string[] = [];
-  const resizes: Array<[number, number]> = [];
+  const resizes: [number, number][] = [];
   const handle: PtyHandle = {
     pid: 4242,
     onData: (l) => {
@@ -35,8 +35,8 @@ function fakeHandle(): {
   };
   return {
     handle,
-    emitData: (d) => dataListeners.forEach((l) => l(d)),
-    emitExit: (i) => exitListeners.forEach((l) => l(i)),
+    emitData: (d) => { dataListeners.forEach((l) => { l(d); }); },
+    emitExit: (i) => { exitListeners.forEach((l) => { l(i); }); },
     writes,
     killed,
     resizes,
@@ -136,7 +136,7 @@ describe('ClaudePty', () => {
       fakeSpawner(f.handle),
     );
     f.emitExit({ exitCode: 0, signal: null });
-    expect(() => pty.kill()).not.toThrow();
+    expect(() => { pty.kill(); }).not.toThrow();
     expect(f.killed).toEqual([]);
   });
 

@@ -83,9 +83,10 @@ function coerce(raw: string, type: EnvKeyDef['type']): unknown {
 
 function setDeep(target: PlainObject, dotPath: string, value: unknown): void {
   const parts = dotPath.split('.');
+  if (parts.length === 0) return;
   let cursor: PlainObject = target;
   for (let i = 0; i < parts.length - 1; i += 1) {
-    const key = parts[i]!;
+    const key = parts[i] ?? '';
     const next = cursor[key];
     if (isPlainObject(next)) {
       cursor = next;
@@ -95,7 +96,8 @@ function setDeep(target: PlainObject, dotPath: string, value: unknown): void {
       cursor = fresh;
     }
   }
-  cursor[parts[parts.length - 1]!] = value;
+  const lastKey = parts[parts.length - 1] ?? '';
+  cursor[lastKey] = value;
 }
 
 export function envToPartial(env: NodeJS.ProcessEnv): PlainObject {

@@ -29,7 +29,7 @@ export function bearerAuthMiddleware(opts: BearerAuthOptions): MiddlewareHandler
     }
     const header = c.req.header('authorization') ?? '';
     const m = /^Bearer\s+(.+)$/i.exec(header);
-    if (!m || !m[1] || !constantTimeEqual(m[1], opts.token)) {
+    if (!m?.[1] || !constantTimeEqual(m[1], opts.token)) {
       return c.json(
         { code: 'http_unauthorized', message: 'missing or invalid bearer token' },
         401,
