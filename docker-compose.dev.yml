@@ -1,0 +1,32 @@
+services:
+  june15-dev:
+    image: node:22-slim
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    ports:
+      - "${JUNE15_PORT:-7150}:7150"
+    environment:
+      NODE_ENV: development
+      JUNE15_HOST: 0.0.0.0
+      JUNE15_PORT: 7150
+      JUNE15_MODE: headless
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+    volumes:
+      - .:/app
+      - june15-dev-node-modules:/app/node_modules
+      - june15-dev-data:/var/lib/june15
+    command: >
+      bash -c "npm install &&
+               npm install -g @anthropic-ai/claude-code &&
+               npm run dev"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:7150/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  june15-dev-node-modules:
+  june15-dev-data:

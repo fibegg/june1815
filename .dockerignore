@@ -1,0 +1,40 @@
+# Whitelist strategy: deny everything, then explicitly allow what the
+# Dockerfile consumes. Add new files here when the build needs them.
+
+*
+
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.build.json
+!tsup.config.ts
+!eslint.config.mjs
+!.prettierrc
+!.prettierignore
+!.editorconfig
+!.nvmrc
+!.npmrc
+!june15.example.yml
+!LICENSE
+!README.md
+
+!src/**
+
+# Re-blacklist within allowed dirs
+**/node_modules
+**/dist
+**/coverage
+**/.vitest-cache
+**/*.test.ts
+tests/**
+docs/**
+examples/**
+scripts/**
+.github/**
+.git/**
+.idea/**
+.vscode/**
+*.log
+.DS_Store
+data/
+playground/

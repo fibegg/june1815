@@ -1,0 +1,28 @@
+services:
+  june15:
+    image: ghcr.io/fibegg/june15:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${JUNE15_PORT:-7150}:7150"
+    environment:
+      JUNE15_HOST: 0.0.0.0
+      JUNE15_PORT: 7150
+      JUNE15_MODE: headless
+      JUNE15_BEARER_TOKEN: ${JUNE15_BEARER_TOKEN:-}
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - june15-data:/var/lib/june15
+      - ./playground:/home/june15/playground
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:7150/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  june15-data:
