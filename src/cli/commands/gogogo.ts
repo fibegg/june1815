@@ -14,6 +14,7 @@ import { installOrThrow } from '../../claude/installer.js';
 import { ProductionConversationFactory } from '../../conversation/factory.js';
 import { ConversationManager } from '../../conversation/manager.js';
 import { SessionMarkerStore } from '../../conversation/session-marker.js';
+import { UploadStore } from '../../conversation/upload-store.js';
 import { AuthService } from '../../server/auth-service.js';
 import { createServer } from '../../server/server.js';
 import { registerAuthRoutes } from '../../server/routes/auth.js';
@@ -58,6 +59,7 @@ export interface GogogoComposition {
   bearerToken: string;
   factory: ProductionConversationFactory;
   claudePath: string;
+  uploadStoreFor: (conversationId: string) => UploadStore;
 }
 
 export async function composeGogogo(opts: {
@@ -119,12 +121,14 @@ export async function composeGogogo(opts: {
     ...opts.env,
     PATH: enrichedPath({ pathVar, home: opts.home }),
   };
+  const uploadsRoot = join(dataDir, 'uploads');
   const factory = new ProductionConversationFactory({
     claudePath: resolved.path,
     env: childEnv,
     cols: config.pty.cols,
     rows: config.pty.rows,
     idleQuietMs: config.pty.idleQuietMs,
+    uploadsRoot,
   });
   const markers = new SessionMarkerStore(dataDir);
   const conversations = new ConversationManager({
@@ -132,6 +136,8 @@ export async function composeGogogo(opts: {
     markers,
     maxConversations: config.limits.maxConversations,
   });
+  const uploadStoreFor = (conversationId: string): UploadStore =>
+    new UploadStore(join(uploadsRoot, conversationId));
 
   return {
     config,
@@ -142,6 +148,7 @@ export async function composeGogogo(opts: {
     bearerToken: buildBearerToken(config),
     factory,
     claudePath: resolved.path,
+    uploadStoreFor,
   };
 }
 
@@ -154,7 +161,10 @@ export function buildServerApp(composition: GogogoComposition, version: string):
   registerHealthRoute(app, { version, startedAt: new Date().toISOString() });
   registerAuthRoutes(app, { auth: composition.auth });
   registerConversationRoutes(app, { conversations: composition.conversations });
-  registerMessageRoutes(app, { conversations: composition.conversations });
+  registerMessageRoutes(app, {
+    conversations: composition.conversations,
+    uploadStoreFor: composition.uploadStoreFor,
+  });
   return app;
 }
 

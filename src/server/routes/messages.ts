@@ -1,18 +1,72 @@
+import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import type { Hono } from 'hono';
+import type { Context, Hono } from 'hono';
 import { streamSSE } from 'hono/streaming';
 import type { ConversationManager } from '../../conversation/manager.js';
 import type { Conversation, ConversationEvent } from '../../conversation/conversation.js';
+import type {
+  AttachmentInput,
+  SavedAttachment,
+  UploadStore,
+} from '../../conversation/upload-store.js';
 import { June15Error } from '../../errors.js';
 import type { SseEvent } from '../events.js';
 import type { AppEnv } from '../server.js';
 
+const AttachmentSchema = z.object({
+  kind: z.enum(['image', 'file']),
+  dataUrl: z.string().min(8).max(20 * 1024 * 1024),
+  contentType: z.string().min(1).max(256).optional(),
+  name: z.string().min(1).max(256).optional(),
+});
+
 const SendBodySchema = z.object({
   text: z.string().min(1),
+  attachments: z.array(AttachmentSchema).max(16).optional(),
 });
 const SteerBodySchema = z.object({
   text: z.string().min(1),
 });
+
+/** Normalize a zod-parsed attachment into the `AttachmentInput` shape the
+ *  UploadStore expects (drop `undefined` optionals so exactOptionalPropertyTypes
+ *  doesn't complain). */
+function toAttachmentInput(
+  a: z.infer<typeof AttachmentSchema>,
+): AttachmentInput {
+  const out: AttachmentInput = { kind: a.kind, dataUrl: a.dataUrl };
+  if (a.contentType !== undefined) (out as { contentType?: string }).contentType = a.contentType;
+  if (a.name !== undefined) (out as { name?: string }).name = a.name;
+  return out;
+}
+
+/** Saves each attachment under the conversation's upload directory and
+ *  returns the resulting `SavedAttachment` records for the Conversation to
+ *  splice into the outgoing text. Throws `June15Error('http_bad_request')`
+ *  on malformed data URLs. */
+function saveAttachments(
+  store: UploadStore,
+  attachments: readonly z.infer<typeof AttachmentSchema>[],
+): { messageId: string; saved: readonly SavedAttachment[] } {
+  const messageId = randomUUID();
+  const saved = attachments.map((a, i) => {
+    try {
+      return store.save(messageId, toAttachmentInput(a), i);
+    } catch (err) {
+      throw new June15Error(
+        'http_bad_request',
+        `attachment[${i}]: ${(err as Error).message}`,
+      );
+    }
+  });
+  return { messageId, saved };
+}
+
+export interface MessageRouteDeps {
+  readonly conversations: ConversationManager;
+  /** Optional. When supplied, the messages route accepts attachments. */
+  readonly uploadStoreFor?: (conversationId: string) => UploadStore | undefined;
+}
 
 /**
  * Map an internal `ConversationEvent` to the externally-visible `SseEvent`.
@@ -49,12 +103,13 @@ function bridge(e: ConversationEvent, messageId: string): SseEvent | null {
   }
 }
 
-export function registerMessageRoutes(
-  app: Hono<AppEnv>,
-  deps: { conversations: ConversationManager },
-): void {
-  app.post('/v1/conversations/:id/messages', async (c) => {
-    const id = c.req.param('id');
+export function registerMessageRoutes(app: Hono<AppEnv>, deps: MessageRouteDeps): void {
+  const dispatchSend = async (
+    c: Context<AppEnv>,
+    intent: 'stream' | 'queue',
+  ): Promise<Response> => {
+    const id = c.req.param('id') ?? '';
+    if (id.length === 0) throw new June15Error('http_bad_request', 'missing conversation id');
     const conv = deps.conversations.get(id);
     if (!conv) throw new June15Error('conversation_not_found', id);
     const body: unknown = await c.req.json().catch(() => {
@@ -63,11 +118,32 @@ export function registerMessageRoutes(
     const parsed = SendBodySchema.safeParse(body);
     if (!parsed.success) throw new June15Error('http_bad_request', 'text required');
 
-    const messageId = conv.send(parsed.data.text);
+    const attachments = parsed.data.attachments ?? [];
+    let messageId: string;
+    if (attachments.length > 0) {
+      const store = deps.uploadStoreFor?.(id);
+      if (!store) {
+        throw new June15Error(
+          'http_bad_request',
+          'attachments not supported on this server (uploadStoreFor not configured)',
+        );
+      }
+      const { saved } = saveAttachments(store, attachments);
+      messageId = conv.sendWithAttachments({ text: parsed.data.text, attachments: saved });
+    } else {
+      messageId = conv.send(parsed.data.text);
+    }
+
+    if (intent === 'queue') {
+      return c.json({ messageId, queued: true });
+    }
     return streamSSE(c, async (stream) => {
       await streamConversationUntilDone(stream, conv, messageId);
     });
-  });
+  };
+
+  app.post('/v1/conversations/:id/messages', (c) => dispatchSend(c, 'stream'));
+  app.post('/v1/conversations/:id/queue', (c) => dispatchSend(c, 'queue'));
 
   app.post('/v1/conversations/:id/interrupt', async (c) => {
     const id = c.req.param('id');
@@ -76,19 +152,6 @@ export function registerMessageRoutes(
     await c.req.json().catch(() => undefined);
     conv.interrupt();
     return c.json({ interrupted: true });
-  });
-
-  app.post('/v1/conversations/:id/queue', async (c) => {
-    const id = c.req.param('id');
-    const conv = deps.conversations.get(id);
-    if (!conv) throw new June15Error('conversation_not_found', id);
-    const body: unknown = await c.req.json().catch(() => {
-      throw new June15Error('http_bad_request', 'invalid JSON body');
-    });
-    const parsed = SendBodySchema.safeParse(body);
-    if (!parsed.success) throw new June15Error('http_bad_request', 'text required');
-    const messageId = conv.send(parsed.data.text);
-    return c.json({ messageId, queued: true });
   });
 
   app.post('/v1/conversations/:id/steer', async (c) => {

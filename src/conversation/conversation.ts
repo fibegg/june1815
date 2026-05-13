@@ -5,6 +5,7 @@ import type { InputDriver } from '../pty/input-driver.js';
 import type { TerminalAdapter } from '../pty/terminal.js';
 import type { TuiEvent, TuiParser } from '../pty/tui-parser.js';
 import { MessageQueue, type QueuedMessage } from './queue.js';
+import { composeMessageWithAttachments, type SavedAttachment } from './upload-store.js';
 
 export type ConversationState = 'starting' | 'ready' | 'busy' | 'killed';
 
@@ -130,6 +131,21 @@ export class Conversation {
     this.queue.enqueue(msg);
     this.drain();
     return msg.id;
+  }
+
+  /**
+   * Send a message with attachments. Each `SavedAttachment` was already
+   * written to disk by an `UploadStore`; this method only composes the
+   * outgoing text (prepending `@<path>` references per file) and forwards
+   * to `send()`. The returned id is the same as if `send()` were called
+   * with the composed text.
+   */
+  sendWithAttachments(input: {
+    readonly text: string;
+    readonly attachments: readonly SavedAttachment[];
+  }): string {
+    const composed = composeMessageWithAttachments(input.text, input.attachments);
+    return this.send(composed);
   }
 
   interrupt(): void {

@@ -144,6 +144,67 @@ describe('POST /v1/conversations/:id/queue', () => {
   });
 });
 
+describe('attachments handling', () => {
+  it('rejects attachments when no upload store factory is wired', async () => {
+    const mgr = fakeManager([fakeConversation({ id: 'a' })]);
+    const res = await appWith(mgr).fetch(
+      new Request('http://t/v1/conversations/a/messages', {
+        method: 'POST',
+        body: JSON.stringify({
+          text: 'see this',
+          attachments: [{ kind: 'image', dataUrl: 'data:image/png;base64,QUJD' }],
+        }),
+      }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it('routes attachments through sendWithAttachments when the factory is wired', async () => {
+    const sent: Array<{ text: string; attachments: readonly unknown[] }> = [];
+    const conv = fakeConversation({
+      id: 'a',
+      sendWithAttachments: ((input: { text: string; attachments: readonly unknown[] }) => {
+        sent.push(input);
+        return 'm-att';
+      }) as unknown as Conversation['sendWithAttachments'],
+    });
+    const mgr = fakeManager([conv]);
+    const savedSentinel = {
+      kind: 'image' as const,
+      path: '/tmp/up/m/img-1.png',
+      bytes: 3,
+      contentType: 'image/png',
+      name: 'img-1.png',
+    };
+    const fakeStore = {
+      baseDir: '/tmp/up',
+      save: () => savedSentinel,
+    } as unknown as import('../../../src/conversation/upload-store.js').UploadStore;
+
+    const app = new Hono<AppEnv>();
+    registerConversationRoutes(app, { conversations: mgr });
+    registerMessageRoutes(app, {
+      conversations: mgr,
+      uploadStoreFor: () => fakeStore,
+    });
+    app.onError(errorHandler());
+
+    const res = await app.fetch(
+      new Request('http://t/v1/conversations/a/queue', {
+        method: 'POST',
+        body: JSON.stringify({
+          text: 'check this out',
+          attachments: [{ kind: 'image', dataUrl: 'data:image/png;base64,QUJD' }],
+        }),
+      }),
+    );
+    expect(res.status).toBe(200);
+    expect(sent).toHaveLength(1);
+    expect(sent[0]?.text).toBe('check this out');
+    expect(sent[0]?.attachments).toEqual([savedSentinel]);
+  });
+});
+
 describe('streamConversationUntilDone', () => {
   it('writes mapped SSE events and closes on message_completed', async () => {
     let onEventCb: (e: ConversationEvent) => void = () => {};

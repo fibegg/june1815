@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { Conversation } from './conversation.js';
 import { ClaudePty, NodePtySpawner, type PtySpawner } from '../pty/claude-pty.js';
 import { InputDriver } from '../pty/input-driver.js';
@@ -16,6 +17,10 @@ export interface ProductionFactoryDeps {
   readonly rows: number;
   /** Idle quiet period for the parser snapshot timer. */
   readonly idleQuietMs: number;
+  /** Root directory under which per-conversation upload folders live. The
+   *  factory passes `<uploadsRoot>/<conversationId>` to claude as an
+   *  additional `--add-dir` so claude can read attachments. */
+  readonly uploadsRoot?: string;
   /** Pluggable PTY spawner (tests). Production uses node-pty. */
   readonly spawner?: PtySpawner;
 }
@@ -42,6 +47,10 @@ export class ProductionConversationFactory implements ConversationFactory {
     if (opts.systemPromptAppend) args.push('--append-system-prompt', opts.systemPromptAppend);
     if (opts.resumeSessionId) args.push('--resume', opts.resumeSessionId);
     args.push('--add-dir', opts.cwd);
+    if (this.deps.uploadsRoot) {
+      const uploadsDir = join(this.deps.uploadsRoot, opts.id);
+      args.push('--add-dir', uploadsDir);
+    }
 
     const pty = ClaudePty.start(
       {
