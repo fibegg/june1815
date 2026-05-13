@@ -1,0 +1,55 @@
+# june15.example.yml — annotated reference configuration.
+#
+# Copy this file to `june15.yml` in your project root (or to
+# `~/.config/june15/june15.yml` for user-wide defaults) and uncomment the
+# keys you want to override. Every key below can also be set via the
+# corresponding JUNE15_* env var — see `.env.example`.
+#
+# Precedence (high to low):
+#   CLI args  >  process.env  >  ./june15.yml  >  ~/.config/june15/june15.yml  >  defaults
+
+# UX mode: interactive (TTY prompts) or headless (no prompts).
+# Defaults to interactive when stdout is a TTY, headless otherwise.
+# mode: interactive
+
+# Conversation state and session markers live here.
+# Defaults to ~/.local/share/june15.
+# dataDir: ~/.local/share/june15
+
+server:
+  # HTTP bind address. Use 0.0.0.0 to expose beyond localhost.
+  # host: 127.0.0.1
+  # HTTP listen port.
+  # port: 7150
+  auth:
+    # Bearer token required on all /v1/* write endpoints.
+    # Auto-generated at first boot if unset; the value is printed once.
+    # bearerToken: replace-me-with-a-random-32-char-string
+
+claude:
+  # When true and `claude` is not on PATH, `june15 gogogo` runs
+  # `npm i -g @anthropic-ai/claude-code` without asking. Headless mode
+  # requires this OR --auto-install OR JUNE15_AUTO_INSTALL=1 to install.
+  # autoInstall: false
+  # Explicit path to the `claude` executable. Overrides PATH lookup.
+  # path: /usr/local/bin/claude
+
+pty:
+  # PTY geometry handed to node-pty. Wider PTY reduces line-wrap noise
+  # in the TUI parser. Tall enough to hold reasoning + tool blocks.
+  # cols: 200
+  # rows: 50
+  # Quiet period (ms) before the TUI parser snapshots the screen and
+  # emits diffs. Smaller = more reactive, more CPU.
+  # idleQuietMs: 10
+
+logger:
+  # pino level: fatal | error | warn | info | debug | trace.
+  # level: info
+  # Force human-readable output. Defaults to true in interactive mode.
+  # pretty: true
+
+limits:
+  # Cap on simultaneous conversations. Each runs its own claude child,
+  # so RAM usage grows linearly. Raise carefully.
+  # maxConversations: 8
