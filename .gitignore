@@ -40,3 +40,4 @@ june15.yml
 
 # Generated docs artifacts
 docs/alloy/.alloy-cache/
+ui/node_modules

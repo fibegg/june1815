@@ -25,6 +25,7 @@
     "url": "https://github.com/fibegg/june15/issues"
   },
   "type": "module",
+  "workspaces": ["ui"],
   "engines": {
     "node": ">=22.0.0"
   },
@@ -52,9 +53,12 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "npm run build:server && npm run build:ui",
+    "build:server": "tsup",
+    "build:ui": "npm --workspace @june15/ui run build",
     "clean": "rm -rf dist coverage .vitest-cache",
     "dev": "tsup --watch",
+    "dev:ui": "npm --workspace @june15/ui run dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -63,6 +67,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "alloy": "scripts/run-alloy.sh",
     "gen:env-example": "tsx scripts/gen-env-example.ts",
     "verify": "scripts/verify-package.sh",

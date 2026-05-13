@@ -12,6 +12,7 @@ export default tseslint.config(
       '*.config.{js,mjs,cjs,ts}',
       'scripts/**',
       'examples/**',
+      'ui/**',
     ],
   },
   eslint.configs.recommended,

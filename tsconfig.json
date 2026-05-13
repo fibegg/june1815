@@ -39,5 +39,5 @@
     "sourceMap": true
   },
   "include": ["src/**/*", "tests/**/*", "scripts/**/*", "vitest.config.ts", "tsup.config.ts"],
-  "exclude": ["dist", "coverage", "node_modules"]
+  "exclude": ["dist", "coverage", "node_modules", "ui"]
 }
