@@ -12,14 +12,26 @@ export function registerAuthRoutes(
   app: Hono<AppEnv>,
   deps: { auth: AuthService },
 ): void {
-  app.get('/v1/auth/status', (c) => {
-    const info = deps.auth.status();
-    const base: { authenticated: boolean; source: string; envKey?: string; path?: string } = {
+  app.get('/v1/auth/status', async (c) => {
+    const info = await deps.auth.status();
+    const base: {
+      authenticated: boolean;
+      source: string;
+      envKey?: string;
+      path?: string;
+      identity?: {
+        email?: string;
+        orgName?: string;
+        subscriptionType?: string;
+        authMethod?: string;
+      };
+    } = {
       authenticated: info.authenticated,
       source: info.source,
     };
     if (info.envKey !== undefined) base.envKey = info.envKey;
     if (info.path !== undefined) base.path = info.path;
+    if (info.identity !== undefined) base.identity = info.identity;
     return c.json(base);
   });
 

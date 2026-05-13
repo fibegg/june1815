@@ -109,11 +109,17 @@ export async function composeGogogo(opts: {
 
   // 2. Auth service + check.
   const dataDir = config.dataDir ?? defaultDataDir(opts.home);
-  const auth = new AuthService({ dataDir, homeDir: opts.home, env: opts.env });
-  const authInfo = auth.status();
+  const auth = new AuthService({
+    dataDir,
+    homeDir: opts.home,
+    env: opts.env,
+    claudePath: resolved.path,
+  });
+  const authInfo = await auth.status();
   if (!authInfo.authenticated) {
     log.warn(
-      'no authentication source detected (env vars, token file, ~/.claude/.credentials.json). Server will start, but new conversations will fail until you authenticate.',
+      'no claude authentication detected (env vars, token file, ~/.claude/.credentials.json, ' +
+        'or `claude auth status`). New conversations will fail until you authenticate.',
     );
   } else {
     log.info({ source: authInfo.source }, 'auth source resolved');

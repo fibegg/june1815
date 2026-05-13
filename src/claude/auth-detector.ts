@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
@@ -8,6 +9,7 @@ export type AuthSource =
   | 'env_claude_key'
   | 'june15_token_file'
   | 'claude_credentials'
+  | 'claude_cli_session'
   | 'none';
 
 export interface AuthInfo {
@@ -17,6 +19,13 @@ export interface AuthInfo {
   readonly envKey?: string;
   /** When source is a file, the path of the file. */
   readonly path?: string;
+  /** Optional metadata surfaced when `source === 'claude_cli_session'`. */
+  readonly identity?: {
+    readonly email?: string;
+    readonly orgName?: string;
+    readonly subscriptionType?: string;
+    readonly authMethod?: string;
+  };
 }
 
 export interface AuthDetectorFs {
@@ -102,4 +111,99 @@ export function detectAuth(input: AuthDetectorInput = {}): AuthInfo {
   }
 
   return { authenticated: false, source: 'none' };
+}
+
+/** Spawn facade for the `claude auth status` probe (tests pass a fake). */
+export interface AuthProbeSpawnFacade {
+  run(
+    command: string,
+    args: readonly string[],
+    timeoutMs: number,
+  ): Promise<{ readonly code: number; readonly stdout: string; readonly stderr: string }>;
+}
+
+// eslint-disable-next-line no-control-regex
+const ANSI_RE = /\x1b(?:\[[0-9;?]*[ -/]*[@-~]|\][^\x07]*\x07|[78=>]|\([AB012])/g;
+
+const realProbeSpawn: AuthProbeSpawnFacade = {
+  run: (cmd, args, timeoutMs) =>
+    new Promise((resolve) => {
+      const child = spawn(cmd, args as string[], { stdio: ['ignore', 'pipe', 'pipe'] });
+      let stdout = '';
+      let stderr = '';
+      const timer = setTimeout(() => {
+        child.kill('SIGKILL');
+      }, timeoutMs);
+      timer.unref?.();
+      child.stdout.on('data', (c: Buffer | string) => {
+        stdout += c.toString();
+      });
+      child.stderr.on('data', (c: Buffer | string) => {
+        stderr += c.toString();
+      });
+      child.on('close', (code) => {
+        clearTimeout(timer);
+        resolve({ code: code ?? 1, stdout, stderr });
+      });
+      child.on('error', (err) => {
+        clearTimeout(timer);
+        resolve({ code: -1, stdout, stderr: err.message });
+      });
+    }),
+};
+
+export interface ProbeResult {
+  readonly loggedIn: boolean;
+  readonly authMethod?: string;
+  readonly email?: string;
+  readonly orgName?: string;
+  readonly subscriptionType?: string;
+}
+
+/** Parse `claude auth status` stdout (ANSI-tolerant) into a structured
+ *  result. Recent Claude CLI versions emit a JSON blob with at least a
+ *  `loggedIn` boolean and an `authMethod` string. */
+export function parseClaudeAuthStatus(stdout: string): ProbeResult {
+  const cleaned = stdout.replace(ANSI_RE, '').replace(/\r/g, '');
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start < 0 || end < 0 || end <= start) return { loggedIn: false };
+  try {
+    const parsed = JSON.parse(cleaned.slice(start, end + 1)) as {
+      loggedIn?: unknown;
+      authMethod?: unknown;
+      email?: unknown;
+      orgName?: unknown;
+      subscriptionType?: unknown;
+    };
+    const loggedIn = parsed.loggedIn === true;
+    const out: ProbeResult = { loggedIn };
+    if (typeof parsed.authMethod === 'string') (out as { authMethod?: string }).authMethod = parsed.authMethod;
+    if (typeof parsed.email === 'string') (out as { email?: string }).email = parsed.email;
+    if (typeof parsed.orgName === 'string') (out as { orgName?: string }).orgName = parsed.orgName;
+    if (typeof parsed.subscriptionType === 'string')
+      (out as { subscriptionType?: string }).subscriptionType = parsed.subscriptionType;
+    return out;
+  } catch {
+    return { loggedIn: false };
+  }
+}
+
+/**
+ * Run `<claudePath> auth status` and parse the JSON result. This is the
+ * authoritative source on macOS where claude stores its OAuth credentials
+ * in the Keychain rather than on disk — `detectAuth` can't see those.
+ *
+ * Timeouts default to 5s. Failures (non-zero exit, bad JSON, no `claude`
+ * on PATH) collapse to `{ loggedIn: false }` so the caller can use this
+ * as one signal among several.
+ */
+export async function probeClaudeAuthStatus(
+  claudePath: string,
+  spawnFacade: AuthProbeSpawnFacade = realProbeSpawn,
+  timeoutMs = 5_000,
+): Promise<ProbeResult> {
+  const r = await spawnFacade.run(claudePath, ['auth', 'status'], timeoutMs);
+  if (r.code !== 0) return { loggedIn: false };
+  return parseClaudeAuthStatus(r.stdout);
 }

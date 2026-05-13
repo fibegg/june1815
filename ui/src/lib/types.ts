@@ -45,4 +45,10 @@ export interface AuthStatus {
   source: string;
   envKey?: string;
   path?: string;
+  identity?: {
+    email?: string;
+    orgName?: string;
+    subscriptionType?: string;
+    authMethod?: string;
+  };
 }

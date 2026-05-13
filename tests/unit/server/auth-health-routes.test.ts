@@ -9,7 +9,8 @@ import type { AuthInfo } from '../../../src/claude/auth-detector.js';
 
 function fakeAuth(info: AuthInfo): AuthService {
   return {
-    status: () => info,
+    status: () => Promise.resolve(info),
+    statusLocal: () => info,
     setToken: vi.fn(),
     clear: vi.fn(),
   } as unknown as AuthService;
@@ -60,7 +61,7 @@ describe('POST /v1/auth/token', () => {
   it('stores a valid token', async () => {
     const setToken = vi.fn();
     const auth = {
-      status: () => ({ authenticated: false, source: 'none' as const }),
+      status: () => Promise.resolve({ authenticated: false, source: 'none' as const }),
       setToken,
       clear: vi.fn(),
     } as unknown as AuthService;
@@ -89,7 +90,7 @@ describe('DELETE /v1/auth', () => {
   it('clears and returns 204', async () => {
     const clear = vi.fn();
     const auth = {
-      status: () => ({ authenticated: false, source: 'none' as const }),
+      status: () => Promise.resolve({ authenticated: false, source: 'none' as const }),
       setToken: vi.fn(),
       clear,
     } as unknown as AuthService;

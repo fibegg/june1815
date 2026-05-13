@@ -25,21 +25,120 @@ function inMemoryFs(initial: Record<string, string> = {}): TokenStoreFs & AuthDe
 }
 
 describe('AuthService.status', () => {
-  it('reports `none` when no source is present', () => {
+  it('reports `none` when no source is present', async () => {
     const svc = new AuthService({ dataDir: '/d', homeDir: '/h', env: {}, fs: inMemoryFs() });
-    const s = svc.status();
+    const s = await svc.status();
     expect(s.authenticated).toBe(false);
     expect(s.source).toBe('none');
   });
 
-  it('reports the env oauth source', () => {
+  it('reports the env oauth source (local, no probe needed)', async () => {
     const svc = new AuthService({
       dataDir: '/d',
       homeDir: '/h',
       env: { CLAUDE_CODE_OAUTH_TOKEN: 'tok' },
       fs: inMemoryFs(),
     });
-    expect(svc.status().source).toBe('env_oauth');
+    const s = await svc.status();
+    expect(s.source).toBe('env_oauth');
+  });
+
+  it('statusLocal is synchronous and skips the probe', () => {
+    const svc = new AuthService({
+      dataDir: '/d',
+      homeDir: '/h',
+      env: { CLAUDE_CODE_OAUTH_TOKEN: 'tok' },
+      fs: inMemoryFs(),
+    });
+    expect(svc.statusLocal().source).toBe('env_oauth');
+  });
+
+  it('falls back to `claude auth status` when no local source resolves', async () => {
+    const svc = new AuthService({
+      dataDir: '/d',
+      homeDir: '/h',
+      env: {},
+      fs: inMemoryFs(),
+      claudePath: '/usr/local/bin/claude',
+      probeSpawn: {
+        run: () =>
+          Promise.resolve({
+            code: 0,
+            stdout: JSON.stringify({
+              loggedIn: true,
+              authMethod: 'claude.ai',
+              email: 'you@example.com',
+              subscriptionType: 'max',
+            }),
+            stderr: '',
+          }),
+      },
+    });
+    const s = await svc.status();
+    expect(s.authenticated).toBe(true);
+    expect(s.source).toBe('claude_cli_session');
+    expect(s.identity?.email).toBe('you@example.com');
+    expect(s.identity?.subscriptionType).toBe('max');
+  });
+
+  it('falls back gracefully when probe says not logged in', async () => {
+    const svc = new AuthService({
+      dataDir: '/d',
+      homeDir: '/h',
+      env: {},
+      fs: inMemoryFs(),
+      claudePath: '/usr/local/bin/claude',
+      probeSpawn: {
+        run: () =>
+          Promise.resolve({
+            code: 0,
+            stdout: JSON.stringify({ loggedIn: false }),
+            stderr: '',
+          }),
+      },
+    });
+    const s = await svc.status();
+    expect(s.authenticated).toBe(false);
+    expect(s.source).toBe('none');
+  });
+
+  it('falls back gracefully when probe spawn fails', async () => {
+    const svc = new AuthService({
+      dataDir: '/d',
+      homeDir: '/h',
+      env: {},
+      fs: inMemoryFs(),
+      claudePath: '/usr/local/bin/claude',
+      probeSpawn: {
+        run: () => Promise.resolve({ code: 127, stdout: '', stderr: 'not found' }),
+      },
+    });
+    const s = await svc.status();
+    expect(s.authenticated).toBe(false);
+  });
+
+  it('caches probe results across consecutive calls', async () => {
+    let calls = 0;
+    const svc = new AuthService({
+      dataDir: '/d',
+      homeDir: '/h',
+      env: {},
+      fs: inMemoryFs(),
+      claudePath: '/usr/local/bin/claude',
+      probeSpawn: {
+        run: () => {
+          calls += 1;
+          return Promise.resolve({
+            code: 0,
+            stdout: JSON.stringify({ loggedIn: true, authMethod: 'claude.ai' }),
+            stderr: '',
+          });
+        },
+      },
+    });
+    await svc.status();
+    await svc.status();
+    expect(calls).toBe(1);
   });
 });
 
@@ -71,10 +170,11 @@ describe('AuthService.setToken / clear', () => {
     expect(() => { svc.clear(); }).not.toThrow();
   });
 
-  it('after setToken, status reports june15_token_file', () => {
+  it('after setToken, status reports june15_token_file', async () => {
     const fs = inMemoryFs();
     const svc = new AuthService({ dataDir: '/d', homeDir: '/h', env: {}, fs });
     svc.setToken('my-token');
-    expect(svc.status().source).toBe('june15_token_file');
+    const s = await svc.status();
+    expect(s.source).toBe('june15_token_file');
   });
 });
