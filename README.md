@@ -158,6 +158,130 @@ JUNE15_UI_ENABLED=1 june15 gogogo &   # in one terminal
 npm run dev:ui                         # in another → http://localhost:5173
 ```
 
+## Running from source (no npm install of `june15`)
+
+Use this when you're hacking on the package or want to try the UI before
+the first npm publish.
+
+### One-time setup
+
+```sh
+git clone https://github.com/fibegg/june15.git
+cd june15
+nvm use            # respects .nvmrc (Node 22)
+npm install        # installs both root and the `ui` workspace
+```
+
+That single `npm install` resolves the workspace at `ui/`, so you don't
+need to run `cd ui && npm install` separately.
+
+### Test the UI with hot reload (Vite dev server)
+
+This is the fastest loop for UI changes — Vite serves the React app on
+:5173 with HMR, and proxies `/v1/*` and `/healthz` to a real `june15`
+server you start separately. You don't need `JUNE15_UI_ENABLED` here
+because the API server isn't the one serving the UI.
+
+```sh
+# terminal 1 — build the server once, then run it
+npm run build:server
+node dist/cli/bin.js gogogo --headless --port 7150
+# stdout prints a single line:  {"url":"http://127.0.0.1:7150","token":"<bearer>"}
+```
+
+```sh
+# terminal 2 — Vite dev server, proxying API calls
+npm run dev:ui
+#  ➜  Local:   http://localhost:5173/
+```
+
+Open `http://localhost:5173/?token=<bearer>` (paste the token from
+terminal 1). The TokenGate captures it once; reloads keep you logged in
+via sessionStorage. Edit any `ui/src/**` file and the browser updates in
+under a second.
+
+### Test the UI exactly as users will see it (bundled flow)
+
+This runs the built UI from the same Node process serving the API —
+the same code path a freshly-installed npm copy would execute.
+
+```sh
+npm run build                         # builds server + UI into dist/
+JUNE15_UI_ENABLED=1 \
+  node dist/cli/bin.js gogogo         # interactive: opens with a clack TUI
+# or
+JUNE15_UI_ENABLED=1 \
+  node dist/cli/bin.js gogogo --headless --port 7150
+```
+
+In interactive mode the boot output prints the URL and bearer; in
+headless mode it prints one JSON line. Open the URL with `?token=...`
+appended.
+
+### Skip the build step (faster inner loop on the CLI/server side)
+
+For server-only changes, run the TypeScript entry directly through `tsx`
+— no build, no `dist/`:
+
+```sh
+npm install --no-save tsx              # if not already there transitively
+npx tsx src/cli/bin.ts gogogo --headless --port 7150
+```
+
+This still requires `JUNE15_UI_ENABLED=1` plus an existing `dist/ui/` if
+you want the UI; pure API/server hacking doesn't need either.
+
+### Use june15 as a library in another project (before publish)
+
+Two paths.
+
+**`npm link`** — global symlink, no rebuild on every change:
+
+```sh
+# in june15
+npm run build
+npm link
+
+# in your consumer project
+npm link june15
+node -e "import('june15').then((m) => console.log(Object.keys(m)))"
+```
+
+Re-run `npm run build` in `june15` whenever you change source files;
+the symlink picks up the new `dist/` immediately.
+
+**`npm pack`** — a real local tarball for the closest-to-published
+behavior:
+
+```sh
+# in june15
+npm run build
+npm pack               # writes june15-0.0.0.tgz
+
+# in your consumer
+npm install /absolute/path/to/june15-0.0.0.tgz
+```
+
+### Run the e2e suite locally
+
+```sh
+# requires: `claude` on PATH and an authenticated source
+# (CLAUDE_CODE_OAUTH_TOKEN, ANTHROPIC_API_KEY, or `claude auth login`)
+npm run build:server
+npm run test:e2e
+```
+
+Without claude or a token the suite skips with a clear stderr line
+(`[e2e] skipping suite: ...`) and exits 0 — no need to fake anything.
+
+### Reset state
+
+```sh
+npm run clean             # deletes dist/, coverage/, .vitest-cache/
+rm -rf ~/.local/share/june15        # purges saved bearer + session markers
+rm -rf /tmp/june15-e2e-*            # any orphaned e2e temp dirs
+```
+
 ## Configuration
 
 CLI flags > `process.env` (`JUNE15_*`) > `./june15.yml` >
