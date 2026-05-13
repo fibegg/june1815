@@ -14,6 +14,9 @@ between general advice and the specific code patterns that implement it.
 | [zod-to-env-example.md](./zod-to-env-example.md) | Single-source-of-truth config; codegen for `.env.example` |
 | [alloy-as-living-spec.md](./alloy-as-living-spec.md) | Using Alloy 6 to verify state machines |
 | [multi-arch-docker-with-cache.md](./multi-arch-docker-with-cache.md) | BUILDPLATFORM, --link, cache mounts, buildx |
+| [bearer-on-static-assets.md](./bearer-on-static-assets.md) | Bearer that works for both API and a static-served browser UI |
+| [image-attachments-via-data-url.md](./image-attachments-via-data-url.md) | Base64 data URLs in JSON, sanitized on the way to disk |
+| [e2e-spawn-the-cli.md](./e2e-spawn-the-cli.md) | Vitest suites that spawn the built CLI and skip cleanly without claude |
 
 If you adopt one of these practices in another project, copy the file. Each
 entry is intentionally narrow so it's portable.

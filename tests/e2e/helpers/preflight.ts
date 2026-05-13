@@ -28,12 +28,12 @@ export type Preflight = PreflightOk | PreflightSkip;
  * present).
  */
 export function checkPreflight(env: NodeJS.ProcessEnv = process.env): Preflight {
-  const overridePath = env['JUNE15_CLAUDE_PATH'];
+  const overridePath = env.JUNE15_CLAUDE_PATH;
   const locatorInput: Parameters<typeof locateClaude>[0] = {
     home: homedir(),
     platform: process.platform,
   };
-  if (typeof env['PATH'] === 'string') locatorInput.pathVar = env['PATH'];
+  if (typeof env.PATH === 'string') locatorInput.pathVar = env.PATH;
   if (overridePath) locatorInput.overridePath = overridePath;
   const located = locateClaude(locatorInput);
   if (!located.found) {

@@ -57,7 +57,7 @@ export async function spawnGogogo(opts: SpawnOptions = {}): Promise<SpawnedServe
     ...(opts.env ?? process.env),
     JUNE15_MODE: 'headless',
     // Quieten the child's logs unless the test explicitly turns them up.
-    JUNE15_LOG_LEVEL: process.env['JUNE15_E2E_LOG_LEVEL'] ?? 'warn',
+    JUNE15_LOG_LEVEL: process.env.JUNE15_E2E_LOG_LEVEL ?? 'warn',
   };
 
   const child = spawn(process.execPath, args, {
@@ -87,8 +87,8 @@ export async function spawnGogogo(opts: SpawnOptions = {}): Promise<SpawnedServe
         }
       }
     };
-    child.stdout?.on('data', onStdout);
-    child.stderr?.on('data', (chunk: Buffer | string) => {
+    child.stdout!.on('data', onStdout);
+    child.stderr!.on('data', (chunk: Buffer | string) => {
       stderrBuf += chunk.toString();
     });
     child.on('exit', (code, signal) => {

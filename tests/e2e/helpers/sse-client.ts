@@ -13,7 +13,7 @@ export async function* readSse(res: Response): AsyncGenerator<SseFrame> {
   for (;;) {
     const { value, done } = await reader.read();
     if (done) return;
-    buf += decoder.decode(value, { stream: true });
+    buf += decoder.decode(value as Uint8Array, { stream: true });
     let sep: number;
     while ((sep = buf.indexOf('\n\n')) !== -1) {
       const raw = buf.slice(0, sep);

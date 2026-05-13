@@ -83,7 +83,14 @@ june15 config example           # print the annotated example yml
 june15 --version
 ```
 
-## HTTP API (Bearer auth on /v1/\*)
+## HTTP API (Bearer auth everywhere except `/healthz`)
+
+The bearer token accepted by the server may be carried as
+`Authorization: Bearer <token>` (preferred for programmatic clients),
+`?token=<token>` (for typing into a browser address bar), or as the
+`june15_token` cookie planted by the server after a successful header
+or query auth (so static assets can fetch without an explicit header).
+See [ADR-0010](./docs/adr/0010-bearer-everywhere-with-cookie.md).
 
 | Method | Path | Description |
 | --- | --- | --- |
@@ -95,15 +102,61 @@ june15 --version
 | `POST` | `/v1/conversations` | `{cwd, id?, model?, effort?, systemPromptAppend?}` → 201 |
 | `GET` | `/v1/conversations/:id` | summary |
 | `DELETE` | `/v1/conversations/:id` | 204 |
-| `POST` | `/v1/conversations/:id/messages` | `{text}` → **SSE stream** until `done` |
+| `POST` | `/v1/conversations/:id/messages` | `{text, attachments?}` → **SSE stream** until `done` |
 | `POST` | `/v1/conversations/:id/interrupt` | abort in-flight turn |
-| `POST` | `/v1/conversations/:id/queue` | `{text}` — enqueue without streaming |
+| `POST` | `/v1/conversations/:id/queue` | `{text, attachments?}` — enqueue without streaming |
 | `POST` | `/v1/conversations/:id/steer` | `{text}` — steer the in-flight turn |
 
 SSE event types: `text_delta`, `reasoning_delta`, `tool_use`, `usage`,
 `interrupted`, `done`, `error`, `auth_required`, `permission_prompt`,
 `ping`. Schemas live in `src/server/events.ts` and re-export as the
 `june15/events` subpath.
+
+### Attaching images and files
+
+Both `/messages` and `/queue` accept an optional `attachments` array.
+Each entry is `{ kind: 'image' | 'file', dataUrl, name?, contentType? }`
+where `dataUrl` is the standard `data:<mime>;base64,<bytes>` form. Files
+are sanitized, written to
+`<dataDir>/uploads/<conversationId>/<messageId>/<name>`, and referenced
+as `@<absolute-path>` lines prepended to the user text — the convention
+`claude` uses to attach a local file to a turn.
+
+```sh
+curl -N -H "Authorization: Bearer $TOKEN" \
+     -H 'Content-Type: application/json' \
+     -X POST $URL/v1/conversations/$CID/messages \
+     -d "$(jq -n --arg img "$(base64 < photo.png)" '{
+            text: "what is in this image?",
+            attachments: [{ kind: "image", dataUrl: ("data:image/png;base64," + $img), name: "photo.png" }]
+          }')"
+```
+
+## Chat UI (optional)
+
+A React + Tailwind + shadcn-style chat lives at `/` when the server is
+started with `JUNE15_UI_ENABLED=1` (or `ui.enabled: true` in
+`june15.yml`). The UI is bundled with the npm package; nothing extra to
+install or run.
+
+```sh
+JUNE15_UI_ENABLED=1 june15 gogogo
+# open the URL with `?token=<bearer>` once; the SPA captures the token,
+# strips it from the address bar, and the bearer-set cookie carries
+# auth across asset fetches.
+```
+
+The UI supports: creating and switching between conversations, streaming
+SSE events (text + reasoning + tool calls + usage), Enter-to-send,
+Shift+Enter for newline, Enter-while-busy to steer, drag-drop / paste /
+file-picker image attachments, and a one-click interrupt.
+
+UI dev mode (proxies API calls to a running server on 7150):
+
+```sh
+JUNE15_UI_ENABLED=1 june15 gogogo &   # in one terminal
+npm run dev:ui                         # in another → http://localhost:5173
+```
 
 ## Configuration
 
@@ -130,6 +183,12 @@ CLI flags > `process.env` (`JUNE15_*`) > `./june15.yml` >
 `npm ci && npm run ci` to run the full check loop. Tests use Vitest;
 lint with ESLint flat config; formatting via Prettier. Alloy specs run
 with `scripts/run-alloy.sh` (Alloy 6.2.0 + OpenJDK 21).
+
+End-to-end tests (`npm run test:e2e`) spawn the built CLI as a child
+process and drive the full API surface — including streaming,
+queueing, steering, interrupt, and image attachments. They skip
+cleanly when `claude` is not on PATH or no authentication source is
+present, so first-time contributors aren't blocked.
 
 See [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md).
 

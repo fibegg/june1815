@@ -18,3 +18,6 @@ and follow the same Context → Decision → Consequences → Alternatives shape
 | [0007](./0007-tsup-bundler.md) | tsup (esbuild) as the bundler | Accepted |
 | [0008](./0008-hono-http-framework.md) | Hono as the HTTP framework | Accepted |
 | [0009](./0009-clack-prompts-ux.md) | `@clack/prompts` for interactive CLI UX | Accepted |
+| [0010](./0010-bearer-everywhere-with-cookie.md) | Bearer on every route; cookie carry-over for asset fetches | Accepted |
+| [0011](./0011-ui-as-npm-workspace.md) | UI as an opt-in npm workspace under `ui/` | Accepted |
+| [0012](./0012-attachments-as-data-urls.md) | Attachments delivered as base64 data URLs in the message body | Accepted |

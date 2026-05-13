@@ -13,7 +13,7 @@ const TINY_PNG_DATA_URL = `data:image/png;base64,${TINY_PNG_BASE64}`;
 
 interface TestCtx {
   server: SpawnedServer;
-  authHeaders: HeadersInit;
+  authHeaders: Record<string, string>;
 }
 
 // Vitest's `describe.skipIf` runs the whole block conditionally without
@@ -21,7 +21,6 @@ interface TestCtx {
 // `npm run test:e2e` and not silent.
 const skip = !preflight.ok;
 if (skip) {
-  // eslint-disable-next-line no-console
   console.warn(`[e2e] skipping suite: ${(preflight as { ok: false; reason: string }).reason}`);
 }
 
@@ -37,7 +36,10 @@ describe.skipIf(skip)('june15 e2e — full API coverage', () => {
   });
 
   afterAll(async () => {
-    await ctx.server?.stop();
+    // ctx.server is undefined when beforeAll threw; the `as TestCtx` cast
+    // hides that from the type-checker.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (ctx.server) await ctx.server.stop();
   });
 
   it('GET /healthz works without bearer (public)', async () => {

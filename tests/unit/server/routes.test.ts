@@ -7,6 +7,7 @@ import {
 } from '../../../src/server/routes/messages.js';
 import type { Conversation, ConversationEvent } from '../../../src/conversation/conversation.js';
 import type { ConversationManager } from '../../../src/conversation/manager.js';
+import type { UploadStore } from '../../../src/conversation/upload-store.js';
 import { errorHandler } from '../../../src/server/middleware/error.js';
 import type { AppEnv } from '../../../src/server/server.js';
 import { June15Error } from '../../../src/errors.js';
@@ -179,7 +180,7 @@ describe('attachments handling', () => {
     const fakeStore = {
       baseDir: '/tmp/up',
       save: () => savedSentinel,
-    } as unknown as import('../../../src/conversation/upload-store.js').UploadStore;
+    } as unknown as UploadStore;
 
     const app = new Hono<AppEnv>();
     registerConversationRoutes(app, { conversations: mgr });
