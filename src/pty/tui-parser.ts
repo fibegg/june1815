@@ -161,19 +161,21 @@ export class TuiParser {
     }
 
     // -- Assistant text -----------------------------------------------------
+    // The Claude TUI lays each turn out as:
+    //     ❯ <user message>          (echoed user)
+    //     ⏺ <assistant response>    (one or more lines)
+    //     ✻ <verb> for Ns           (turn summary)
+    // Extract the LAST `⏺` block and its content. Tool-call lines also
+    // start with `⏺ Name(args)`; we strip those from the text-delta
+    // because they're emitted as `tool_use` events separately.
     const assistantIdx = findLastLineIndex(lines, (l) =>
-      this.patterns.assistantBlockStart.test(l),
+      this.patterns.assistantBlockStart.test(l) && !this.patterns.toolCallLine.test(l),
     );
     if (assistantIdx >= 0) {
-      const block = collectBlock(
-        lines,
-        assistantIdx,
-        this.patterns.blockEnd,
-        this.patterns.assistantBlockStart,
-      );
+      const block = collectAssistantBlock(lines, assistantIdx, snap.cursorY);
       const text = block.join('\n').trim();
       const delta = computeDelta(this.state.emittedAssistantText, text);
-      if (delta.length > 0) {
+      if (delta.length > 0 && text.length > 0) {
         events.push({ type: 'text_delta', text: delta });
         this.state.emittedAssistantText = text;
         this.state.turnHadActivity = true;
@@ -278,6 +280,64 @@ function collectBlock(
 
 function trimTrailingWs(s: string): string {
   return s.replace(/[ \t]+$/u, '');
+}
+
+/** Hard stops that end an assistant block. Any line whose trimmed prefix
+ *  matches one of these means "we've left the response region": next
+ *  user turn, reasoning summary, subordinate/help content, divider,
+ *  footer hints, usage totals. */
+const ASSISTANT_STOP_PREFIXES: readonly RegExp[] = Object.freeze([
+  /^❯\s/u,
+  /^⏺\s/u,           // another assistant block (different turn / steer)
+  /^✻\s/u,           // turn-summary marker (`✻ Brewed for 2s`)
+  /^⎿/u,             // subordinate/help/result line (tool output, /permissions tips, ...)
+  /^[─━═]{3,}/u,
+  /^Tip:/iu,
+  /^Usage:/iu,
+  /\?\s*for\s*shortcuts/iu,
+  /esc\s*to\s*interrupt/iu,
+  /^\d+\s*MCP\s*servers/iu,
+]);
+
+const ASSISTANT_SKIP_PREFIXES: readonly RegExp[] = Object.freeze([
+  // Spinner glyphs claude rotates (✢✳✶✻✽ + braille + middle-dot)
+  /^[✢✳✶✻✽⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏·]\s/u,
+]);
+
+/** Extract the assistant response that begins at `lines[startIdx]`
+ *  (a line matching `⏺ <text>`). Reads forward until hitting any
+ *  ASSISTANT_STOP_PREFIXES line or `cursorY` (the upper bound — the
+ *  response cannot extend past where claude is currently writing).
+ *  Spinner/decoration lines are skipped (they're not response content).
+ *  Trailing blank lines are trimmed.
+ */
+function collectAssistantBlock(
+  lines: readonly string[],
+  startIdx: number,
+  cursorY: number,
+): string[] {
+  const start = lines[startIdx] ?? '';
+  const firstContent = trimTrailingWs(start.replace(/^\s*⏺\s*/u, ''));
+  const out: string[] = [];
+  if (firstContent.length > 0) out.push(firstContent);
+
+  const upperBound = Math.max(cursorY + 1, startIdx + 1);
+  const stop = (line: string): boolean => {
+    const t = line.trim();
+    return t.length > 0 && ASSISTANT_STOP_PREFIXES.some((re) => re.test(t));
+  };
+  const skip = (line: string): boolean =>
+    ASSISTANT_SKIP_PREFIXES.some((re) => re.test(line.trim()));
+
+  for (let i = startIdx + 1; i < lines.length && i < upperBound + 100; i += 1) {
+    const line = lines[i] ?? '';
+    if (stop(line)) break;
+    if (skip(line)) continue;
+    out.push(trimTrailingWs(line));
+  }
+
+  while (out.length > 0 && (out[out.length - 1] ?? '').trim().length === 0) out.pop();
+  return out;
 }
 
 // Spinner glyphs claude rotates through (✢ ✳ ✶ ✻ ✽ ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏) plus
