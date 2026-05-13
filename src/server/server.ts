@@ -24,22 +24,39 @@ export interface AppEnv {
 export interface AppDependencies {
   /** Logger; receives access logs, errors, etc. */
   readonly log: Logger;
-  /** The bearer token enforced on /v1/* routes. */
+  /** The bearer token enforced on every route except `publicPaths`. */
   readonly bearerToken: string;
   /** Conversation manager used by message/conversation routes (wired in
    *  subsequent commits). */
   readonly conversations: ConversationManager;
+  /** Paths that bypass the bearer check entirely. Defaults to ['/healthz']. */
+  readonly publicPaths?: readonly string[];
+  /** When true (default), the auth cookie omits the Secure flag so it
+   *  works over plain HTTP on localhost. Set false behind TLS. */
+  readonly cookieInsecure?: boolean;
 }
 
+const DEFAULT_PUBLIC_PATHS: readonly string[] = Object.freeze(['/healthz']);
+
 /**
- * Construct the Hono app with the standard middleware stack. Routes are
- * registered by later commits via the `registerXRoutes(app, deps)` helpers
- * exported alongside this factory.
+ * Construct the Hono app with the standard middleware stack. Bearer auth
+ * is applied globally (covers both the API and any future static UI),
+ * with `publicPaths` carving out unauthenticated routes like `/healthz`.
+ *
+ * Routes are registered by later commits via the `registerXRoutes(app,
+ * deps)` helpers exported alongside this factory.
  */
 export function createServer(deps: AppDependencies): ServerApp {
   const app = new Hono<AppEnv>();
   app.use('*', requestIdMiddleware());
-  app.use('/v1/*', bearerAuthMiddleware({ token: deps.bearerToken }));
+  app.use(
+    '*',
+    bearerAuthMiddleware({
+      token: deps.bearerToken,
+      publicPaths: deps.publicPaths ?? DEFAULT_PUBLIC_PATHS,
+      cookieInsecure: deps.cookieInsecure ?? true,
+    }),
+  );
   app.onError(errorHandler(deps.log));
   return { app, bearerToken: deps.bearerToken };
 }

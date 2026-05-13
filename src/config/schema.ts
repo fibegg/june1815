@@ -48,6 +48,20 @@ export const LimitsConfigSchema = z
   })
   .default({});
 
+export const UiConfigSchema = z
+  .object({
+    /** When true, june15 serves the bundled chat UI from `dist/ui/`. */
+    enabled: z.boolean().default(false),
+    /** Override the path to the built UI directory. Default is the
+     *  package-relative `dist/ui` which the published tarball ships. */
+    distDir: z.string().optional(),
+    /** When true, the cookie planted by the bearer middleware omits the
+     *  `Secure` flag so it works over plain HTTP. Default true (june15 is
+     *  typically bound to 127.0.0.1). Set false behind TLS. */
+    cookieInsecure: z.boolean().default(true),
+  })
+  .default({});
+
 export const ModeSchema = z.enum(['interactive', 'headless']);
 
 export const ConfigSchema = z
@@ -59,6 +73,7 @@ export const ConfigSchema = z
     pty: PtyConfigSchema,
     logger: LoggerConfigSchema,
     limits: LimitsConfigSchema,
+    ui: UiConfigSchema,
   })
   .strict();
 
@@ -68,4 +83,5 @@ export type ClaudeConfig = z.infer<typeof ClaudeConfigSchema>;
 export type PtyConfig = z.infer<typeof PtyConfigSchema>;
 export type LoggerConfig = z.infer<typeof LoggerConfigSchema>;
 export type LimitsConfig = z.infer<typeof LimitsConfigSchema>;
+export type UiConfig = z.infer<typeof UiConfigSchema>;
 export type Mode = z.infer<typeof ModeSchema>;

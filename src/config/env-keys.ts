@@ -118,6 +118,27 @@ export const ENV_KEYS: readonly EnvKeyDef[] = Object.freeze([
     description: 'Maximum concurrent conversations (each runs its own `claude` child).',
     example: '8',
   },
+  {
+    env: 'JUNE15_UI_ENABLED',
+    yaml: 'ui.enabled',
+    type: 'boolean',
+    description: 'Serve the bundled chat UI at `/`. Disabled by default.',
+    example: 'false',
+  },
+  {
+    env: 'JUNE15_UI_DIST_DIR',
+    yaml: 'ui.distDir',
+    type: 'string',
+    description: 'Override path to the built UI directory. Defaults to dist/ui inside the package.',
+    example: '/opt/june15/dist/ui',
+  },
+  {
+    env: 'JUNE15_UI_COOKIE_INSECURE',
+    yaml: 'ui.cookieInsecure',
+    type: 'boolean',
+    description: 'Omit Secure flag on the auth cookie so it works over plain HTTP. Set false behind TLS.',
+    example: 'true',
+  },
 ] as const satisfies readonly EnvKeyDef[]);
 
 /**

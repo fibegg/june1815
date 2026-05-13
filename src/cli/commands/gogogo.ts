@@ -1,6 +1,8 @@
 import { randomBytes } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Command, type Command as CommanderCommand } from 'commander';
 import { type Logger } from 'pino';
 import { serve } from '@hono/node-server';
@@ -21,6 +23,7 @@ import { registerAuthRoutes } from '../../server/routes/auth.js';
 import { registerConversationRoutes } from '../../server/routes/conversations.js';
 import { registerHealthRoute } from '../../server/routes/health.js';
 import { registerMessageRoutes } from '../../server/routes/messages.js';
+import { registerUiRoutes } from '../../server/routes/ui.js';
 import { clackConfirmPrompt, intro, note, outro } from '../prompts.js';
 import { June15Error } from '../../errors.js';
 
@@ -152,11 +155,20 @@ export async function composeGogogo(opts: {
   };
 }
 
+function resolveUiDistDir(config: Config): string {
+  if (config.ui.distDir) return config.ui.distDir;
+  // Default: dist/ui sibling of the running JS file. Works in both
+  // src/ (during tests) and dist/ (after build) layouts.
+  const here = dirname(fileURLToPath(import.meta.url));
+  return join(here, '..', '..', 'ui');
+}
+
 export function buildServerApp(composition: GogogoComposition, version: string): ReturnType<typeof createServer>['app'] {
   const { app } = createServer({
     log: composition.log,
     bearerToken: composition.bearerToken,
     conversations: composition.conversations,
+    cookieInsecure: composition.config.ui.cookieInsecure,
   });
   registerHealthRoute(app, { version, startedAt: new Date().toISOString() });
   registerAuthRoutes(app, { auth: composition.auth });
@@ -165,6 +177,15 @@ export function buildServerApp(composition: GogogoComposition, version: string):
     conversations: composition.conversations,
     uploadStoreFor: composition.uploadStoreFor,
   });
+  if (composition.config.ui.enabled) {
+    const distDir = resolveUiDistDir(composition.config);
+    if (!existsSync(distDir)) {
+      composition.log.warn(
+        `ui.enabled=true but ${distDir} does not exist. Run \`npm run build:ui\` or set ui.distDir.`,
+      );
+    }
+    registerUiRoutes(app, { distDir });
+  }
   return app;
 }
 
