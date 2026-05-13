@@ -1,4 +1,14 @@
-import { Terminal } from '@xterm/headless';
+// @xterm/headless ships CJS at runtime; Node's ESM loader can't pull a
+// named `Terminal` out of it. Import the namespace object and destructure
+// so this works whether the package upgrades to dual ESM/CJS or not.
+import * as XtermHeadless from '@xterm/headless';
+import type { Terminal as TerminalType } from '@xterm/headless';
+const XtermCtor =
+  (XtermHeadless as { Terminal?: typeof TerminalType }).Terminal ??
+  ((XtermHeadless as unknown as { default?: { Terminal: typeof TerminalType } }).default
+    ?.Terminal);
+if (!XtermCtor) throw new Error('@xterm/headless: Terminal export not found');
+const Terminal = XtermCtor;
 
 /**
  * A point-in-time view of the virtual terminal's buffer. Plain-text only;
@@ -35,7 +45,7 @@ export interface TerminalAdapterOptions {
  * reflected in the buffer until the parse completes.
  */
 export class TerminalAdapter {
-  private readonly term: Terminal;
+  private readonly term: TerminalType;
 
   constructor(opts: TerminalAdapterOptions) {
     this.term = new Terminal({
