@@ -58,6 +58,88 @@ describe('bearerAuthMiddleware', () => {
     );
     expect(res.status).toBe(200);
   });
+
+  it('accepts the token from a ?token=... query parameter', async () => {
+    const res = await makeApp({ token: 'secret' }).fetch(
+      new Request('http://t/v1/x?token=secret'),
+    );
+    expect(res.status).toBe(200);
+  });
+
+  it('rejects a wrong ?token= value', async () => {
+    const res = await makeApp({ token: 'secret' }).fetch(
+      new Request('http://t/v1/x?token=wrong'),
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it('accepts the token from the configured cookie', async () => {
+    const res = await makeApp({ token: 'secret' }).fetch(
+      new Request('http://t/v1/x', { headers: { cookie: 'june15_token=secret' } }),
+    );
+    expect(res.status).toBe(200);
+  });
+
+  it('decodes percent-encoded cookie values', async () => {
+    const res = await makeApp({ token: 'a/b%c' }).fetch(
+      new Request('http://t/v1/x', {
+        headers: { cookie: `june15_token=${encodeURIComponent('a/b%c')}` },
+      }),
+    );
+    expect(res.status).toBe(200);
+  });
+
+  it('plants a Set-Cookie after a successful GET header-auth', async () => {
+    const res = await makeApp({ token: 'secret' }).fetch(
+      new Request('http://t/v1/x', { headers: { authorization: 'Bearer secret' } }),
+    );
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie');
+    expect(setCookie).toBeTruthy();
+    expect(setCookie).toMatch(/june15_token=secret/);
+    expect(setCookie).toMatch(/HttpOnly/);
+    expect(setCookie).toMatch(/SameSite=Strict/);
+  });
+
+  it('plants a Set-Cookie after a successful GET query-auth', async () => {
+    const res = await makeApp({ token: 'secret' }).fetch(
+      new Request('http://t/v1/x?token=secret'),
+    );
+    expect(res.status).toBe(200);
+    expect(res.headers.get('set-cookie')).toMatch(/june15_token=secret/);
+  });
+
+  it('does NOT plant a Set-Cookie when auth came from the cookie itself', async () => {
+    const res = await makeApp({ token: 'secret' }).fetch(
+      new Request('http://t/v1/x', { headers: { cookie: 'june15_token=secret' } }),
+    );
+    expect(res.status).toBe(200);
+    expect(res.headers.get('set-cookie')).toBeNull();
+  });
+
+  it('does NOT plant a Set-Cookie on non-GET requests', async () => {
+    const app = new Hono();
+    app.use('*', bearerAuthMiddleware({ token: 'secret' }));
+    app.post('/v1/x', (c) => c.json({ ok: true }));
+    const res = await app.fetch(
+      new Request('http://t/v1/x', {
+        method: 'POST',
+        headers: { authorization: 'Bearer secret' },
+      }),
+    );
+    expect(res.status).toBe(200);
+    expect(res.headers.get('set-cookie')).toBeNull();
+  });
+
+  it('omits the Secure flag when cookieInsecure is true', async () => {
+    const app = new Hono();
+    app.use('*', bearerAuthMiddleware({ token: 'secret', cookieInsecure: true }));
+    app.get('/x', (c) => c.text('ok'));
+    const res = await app.fetch(
+      new Request('http://t/x', { headers: { authorization: 'Bearer secret' } }),
+    );
+    expect(res.headers.get('set-cookie')).not.toMatch(/Secure/);
+  });
 });
 
 describe('errorHandler', () => {
