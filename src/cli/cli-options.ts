@@ -1,6 +1,9 @@
 import { Option, type Command } from 'commander';
-import type { DeepPartial } from 'utility-types';
 import type { Config } from '../config/schema.js';
+
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
 
 /** Apply the set of common flags that every command honors. */
 export function applyCommonOptions(cmd: Command): Command {
