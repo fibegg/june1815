@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  id-token: write
+  packages: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.read-version.outputs.version }}
+      url: ${{ steps.publish.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm run test:coverage
+      - name: Build
+        run: npm run build
+      - name: Read package version
+        id: read-version
+        run: |
+          version=$(node -e "console.log(require('./package.json').version)")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Verify tag matches package.json
+        run: |
+          tag="${GITHUB_REF##refs/tags/v}"
+          pkg="${{ steps.read-version.outputs.version }}"
+          if [ "$tag" != "$pkg" ]; then
+            echo "tag v$tag does not match package.json version $pkg" >&2
+            exit 1
+          fi
+      - name: Publish
+        id: publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --provenance --access public
+          echo "url=https://www.npmjs.com/package/june15/v/${{ steps.read-version.outputs.version }}" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ steps.read-version.outputs.version }}" \
+            --title "v${{ steps.read-version.outputs.version }}" \
+            --generate-notes
+
+  notify-slack:
+    name: Notify Slack
+    needs: [publish]
+    if: ${{ always() }}
+    uses: ./.github/workflows/slack-notify.yml
+    with:
+      status: ${{ needs.publish.result == 'success' && 'success' || 'failure' }}
+      title: ${{ needs.publish.result == 'success' && format('june15 v{0} published', needs.publish.outputs.version) || 'june15 release failed' }}
+      body: ${{ needs.publish.result == 'success' && format('npm: {0}', needs.publish.outputs.url) || 'Release workflow failed — check the logs.' }}
+      url: ${{ needs.publish.outputs.url }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

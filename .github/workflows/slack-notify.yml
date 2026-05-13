@@ -1,0 +1,82 @@
+name: Slack notify (reusable)
+
+# Reusable composite for posting to a Slack webhook. Designed to be a no-op
+# when SLACK_WEBHOOK_URL is unset so forks don't fail loudly.
+
+on:
+  workflow_call:
+    inputs:
+      status:
+        type: string
+        required: true
+        description: 'one of: success | failure | warning'
+      title:
+        type: string
+        required: true
+      body:
+        type: string
+        required: false
+        default: ''
+      url:
+        type: string
+        required: false
+        default: ''
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+    steps:
+      - name: Build payload
+        id: payload
+        run: |
+          case "${{ inputs.status }}" in
+            success) emoji=":white_check_mark:"; color="#2eb886" ;;
+            failure) emoji=":x:";                 color="#cc0000" ;;
+            warning) emoji=":warning:";           color="#daa520" ;;
+            *)       emoji=":information_source:"; color="#3aa3e3" ;;
+          esac
+          cat > /tmp/payload.json <<JSON
+          {
+            "attachments": [
+              {
+                "color": "${color}",
+                "blocks": [
+                  {
+                    "type": "header",
+                    "text": { "type": "plain_text", "text": "${emoji} ${{ inputs.title }}" }
+                  },
+                  {
+                    "type": "section",
+                    "fields": [
+                      { "type": "mrkdwn", "text": "*Repo*\n${{ github.repository }}" },
+                      { "type": "mrkdwn", "text": "*Ref*\n${{ github.ref }}" },
+                      { "type": "mrkdwn", "text": "*SHA*\n\`${{ github.sha }}\`" },
+                      { "type": "mrkdwn", "text": "*Workflow*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>" }
+                    ]
+                  },
+                  {
+                    "type": "section",
+                    "text": { "type": "mrkdwn", "text": ${BODY_JSON:-\"\"} }
+                  }
+                ]
+              }
+            ]
+          }
+          JSON
+          if [ -n "${{ inputs.url }}" ]; then
+            jq --arg url "${{ inputs.url }}" '.attachments[0].blocks += [{"type":"section","text":{"type":"mrkdwn","text":"*Link*\n<\($url)>"}}]' /tmp/payload.json > /tmp/payload.with-url.json && mv /tmp/payload.with-url.json /tmp/payload.json
+          fi
+        env:
+          BODY_JSON: ${{ toJSON(inputs.body) }}
+      - name: POST to Slack
+        run: |
+          curl -sS -X POST -H 'Content-Type: application/json' \
+            -d @/tmp/payload.json \
+            "${{ secrets.SLACK_WEBHOOK_URL }}"
