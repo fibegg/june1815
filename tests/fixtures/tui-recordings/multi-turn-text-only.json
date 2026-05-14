@@ -1,0 +1,473 @@
+{
+  "events": [
+    {
+      "t": 1778717398739,
+      "bytes": "\u001b7\u001b[r\u001b8\u001b[?25h"
+    },
+    {
+      "t": 1778717398748,
+      "bytes": "\u001b[?25l"
+    },
+    {
+      "t": 1778717398748,
+      "bytes": "\u001b[?2004h\u001b[?1004h\u001b[?2031h"
+    },
+    {
+      "t": 1778717398756,
+      "bytes": "\u001b[>0q\u001b[c"
+    },
+    {
+      "t": 1778717399123,
+      "bytes": "\u001b]0;✳ Claude Code\u0007"
+    },
+    {
+      "t": 1778717399135,
+      "bytes": "\u001b[38;5;174m ▐\u001b[48;5;16m▛███▜\u001b[49m▌\u001b[3C\u001b[39m\u001b[1mClaude\u001b[1CCode\u001b[1C\u001b[22m\u001b[38;5;246mv2.1.128\u001b[39m\r\r\n\u001b[38;5;174m▝▜\u001b[48;5;16m█████\u001b[49m▛▘\u001b[2C\u001b[38;5;246mOpus\u001b[1C4.7\u001b[1C(1M\u001b[1Ccontext)\u001b[1Cwith\u001b[1Chigh\u001b[1Ceffort\u001b[1C·\u001b[1CClaude\u001b[1CMax\u001b[39m\r\r\n\u001b[38;5;174m \u001b[1C▘▘\u001b[1C▝▝\u001b[4C\u001b[38;5;246m~/play\u001b[39m\r\r\n\r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n❯ \u001b[7mT\u001b[27m\u001b[2mry\u001b[1C\"how\u001b[1Cdo\u001b[1CI\u001b[1Clog\u001b[1Can\u001b[1Cerror?\"\u001b[22m\r\r\n\u001b[3"
+    },
+    {
+      "t": 1778717399135,
+      "bytes": "8;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[135C●\u001b[1Chigh\u001b[1C·\u001b[1C/effort\u001b[39m\r\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717401766,
+      "marker": "== boot done =="
+    },
+    {
+      "t": 1778717401796,
+      "bytes": "\u001b]0;⠂ Claude Code\u0007"
+    },
+    {
+      "t": 1778717401800,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[4A\u001b[48;5;237m\u001b[38;5;239m❯ \u001b[38;5;231mhi\u001b[39m                                                                                                                                                                                                    \r\u001b[1B\u001b[49m                              \r\u001b[1B\u001b[38;5;174m✢\u001b[39m \u001b[38;5;174mChoreog\u001b[38;5;216mrap\u001b[38;5;174mhing… \u001b[39m                                                                                                                                                                                      \r\u001b[2C\u001b[1B                                             \u001b[135C                \r\r\n\u001b[38;5;244m──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────"
+    },
+    {
+      "t": 1778717401800,
+      "bytes": "──────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[38;5;246m❯ \u001b[39m\u001b[7m \u001b[27m\r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[1C·\u001b[1Cesc\u001b[1Cto\u001b[1Cinterrupt\u001b[116C●\u001b[1Chigh\u001b["
+    },
+    {
+      "t": 1778717401800,
+      "bytes": "1C·\u001b[1C/effort\u001b[39m\r\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717401852,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[9C\u001b[6A\u001b[38;5;174mr\u001b[2C\u001b[38;5;216mh\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717401906,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m·\u001b[9Ca\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717401962,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[11C\u001b[6A\u001b[38;5;174mp\u001b[2C\u001b[38;5;216mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402023,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[12C\u001b[6A\u001b[38;5;174mhi\u001b[1C\u001b[38;5;216mg…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402079,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[14C\u001b[6A\u001b[38;5;174mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402132,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✢\u001b[14Cg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402192,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[16C\u001b[6A\u001b[38;5;174m…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402249,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402373,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402484,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✻\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402598,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✽\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402757,
+      "bytes": "\u001b]0;⠐ Claude Code\u0007"
+    },
+    {
+      "t": 1778717402885,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✻\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717402993,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403114,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✳\u001b[1C\u001b[38;5;216mC\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403170,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[3C\u001b[6A\u001b[38;5;216mho\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403228,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✢\u001b[1CC\u001b[2C\u001b[38;5;216mr\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403287,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[3C\u001b[6A\u001b[38;5;174mh\u001b[2C\u001b[38;5;216me\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403341,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m·\u001b[3Co\u001b[2C\u001b[38;5;216mo\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403394,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[5C\u001b[6A\u001b[38;5;174mr\u001b[2C\u001b[38;5;216mg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403451,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6C\u001b[6A\u001b[38;5;174me\u001b[2C\u001b[38;5;216mr\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403508,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7C\u001b[6A\u001b[38;5;174mo\u001b[2C\u001b[38;5;216ma\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403559,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✢\u001b[7Cg\u001b[2C\u001b[38;5;216mp\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403620,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[9C\u001b[6A\u001b[38;5;174mra\u001b[1C\u001b[38;5;216mhi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403681,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✳\u001b[10Cp\u001b[2C\u001b[38;5;216mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403721,
+      "bytes": "\u001b]0;⠂ Claude Code\u0007"
+    },
+    {
+      "t": 1778717403737,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[12C\u001b[6A\u001b[38;5;174mh\u001b[2C\u001b[38;5;216mg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403795,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[13C\u001b[6A\u001b[38;5;174mi\u001b[2C\u001b[38;5;216m…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403850,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✶\u001b[13Cn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403907,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[15C\u001b[6A\u001b[38;5;174mg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717403959,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✻\u001b[15C…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404075,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✽\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404308,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✻\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404427,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404537,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404646,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✢\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404661,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[18C\u001b[6A\u001b[38;5;246m(2s · ↓\u001b[1C1 tokens)\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404680,
+      "bytes": "\u001b]0;⠐ Claude Code\u0007"
+    },
+    {
+      "t": 1778717404814,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m·\u001b[18C\u001b[38;5;246m3\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404851,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[26C\u001b[6A\u001b[38;5;246m2\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404868,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;231m⏺\u001b[1C\u001b[39mHi! What would you like\u001b[1Cto work on?\r\u001b[2B\u001b[38;5;174m·\u001b[39m \u001b[38;5;174mChoreographing… \u001b[38;5;246m(3s · ↓\u001b[39m \u001b[38;5;246m3 tokens)\u001b[39m                                                                                                                                                                     \r\u001b[1B   \r\u001b[2B\u001b[38;5;246m❯ \u001b[39m\u001b[7m \u001b[27m                                                               \u001b[116C                \r\r\n\u001b[38;5;244m───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────"
+    },
+    {
+      "t": 1778717404868,
+      "bytes": "─────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[1C·\u001b[1Cesc\u001b[1Cto\u001b[1Cinterrupt\u001b[116C●\u001b[1Chigh\u001b[1C·\u001b[1C/effort\u001b[39m\r\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404914,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[26C\u001b[6A\u001b[38;5;246m4\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717404925,
+      "bytes": "\u001b]0;✳ Claude Code\u0007"
+    },
+    {
+      "t": 1778717404930,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;246m✻\u001b[1CWorked for 3s\u001b[39m          \u001b[1C         \r\u001b[3B❯ \r\u001b[47C\u001b[2B                   \r\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717409130,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[171C\u001b[1A\u001b[38;5;211m3 MCP servers failed\u001b[38;5;246m · /mcp\u001b[39m\r\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717409767,
+      "marker": "== after turn1 hi =="
+    },
+    {
+      "t": 1778717409788,
+      "bytes": "\u001b]0;⠐ Claude Code\u0007"
+    },
+    {
+      "t": 1778717409790,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[4A\u001b[48;5;237m\u001b[38;5;239m❯ \u001b[38;5;231mrespond with exactly: An app icon\u001b[39m                                                                                                                                                                     \r\u001b[1B\u001b[49m   \r\u001b[1B\u001b[38;5;174m✻\u001b[39m \u001b[38;5;174mDeli\u001b[38;5;216mber\u001b[38;5;174mating… \u001b[39m                                                                                                                                                                                        \r\u001b[1B\u001b[38;5;246m  ⎿  Tip: Share Claude Code and earn \u001b[38;5;174m€10\u001b[1C\u001b[38;5;246mof extra usage · \u001b[38;5;174m/passes\u001b[106C\u001b[39m                           \r\r\n\r\r\n\u001b[38;5;244m─────────────────────────────────────────────────────────────────────────────────────────────────────────"
+    },
+    {
+      "t": 1778717409790,
+      "bytes": "───────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[38;5;246m❯ \u001b[39m\u001b[7m \u001b[27m\r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto"
+    },
+    {
+      "t": 1778717409790,
+      "bytes": "\u001b[1Ccycle)\u001b[1C·\u001b[1Cesc\u001b[1Cto\u001b[1Cinterrupt\u001b[105C\u001b[38;5;211m3\u001b[1CMCP\u001b[1Cservers\u001b[1Cfailed\u001b[38;5;246m ·\u001b[1C/mcp\u001b[39m\r\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717409848,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✽\u001b[5Cb\u001b[2C\u001b[38;5;216ma\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717409900,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7C\u001b[7A\u001b[38;5;174me\u001b[2C\u001b[38;5;216mt\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717409958,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[8C\u001b[7A\u001b[38;5;174mr\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410016,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[9C\u001b[7A\u001b[38;5;174ma\u001b[2C\u001b[38;5;216mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410078,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[9Cti\u001b[1C\u001b[38;5;216mg…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410138,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[12C\u001b[7A\u001b[38;5;174mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410189,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✶\u001b[12Cg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410249,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[14C\u001b[7A\u001b[38;5;174m…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410308,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410423,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✢\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410540,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m·\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410754,
+      "bytes": "\u001b]0;⠂ Claude Code\u0007"
+    },
+    {
+      "t": 1778717410774,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✢\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717410884,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411051,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411168,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[1C\u001b[38;5;216mDe\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411219,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[4C\u001b[7A\u001b[38;5;216ml\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411278,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✽\u001b[1CD\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411333,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[3C\u001b[7A\u001b[38;5;174me\u001b[2C\u001b[38;5;216mb\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411387,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[4C\u001b[7A\u001b[38;5;174ml\u001b[2C\u001b[38;5;216me\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411441,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[5C\u001b[7A\u001b[38;5;174mi\u001b[2C\u001b[38;5;216mr\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411476,
+      "bytes": "\u001b]0;⠂ An app icon\u0007"
+    },
+    {
+      "t": 1778717411498,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[5Cb\u001b[2C\u001b[38;5;216ma\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411547,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7C\u001b[7A\u001b[38;5;174me\u001b[2C\u001b[38;5;216mt\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411606,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✶\u001b[7Cr\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411662,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[9C\u001b[7A\u001b[38;5;174ma\u001b[2C\u001b[38;5;216mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411716,
+      "bytes": "\u001b]0;⠐ An app icon\u0007"
+    },
+    {
+      "t": 1778717411720,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[9Cti\u001b[1C\u001b[38;5;216mg…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411770,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[12C\u001b[7A\u001b[38;5;174mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411822,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[13C\u001b[7A\u001b[38;5;174mg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411880,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✢\u001b[13C…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717411994,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m·\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412220,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✢\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412330,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412442,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412607,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412677,
+      "bytes": "\u001b]0;⠂ An app icon\u0007"
+    },
+    {
+      "t": 1778717412716,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✽\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412769,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[2C\u001b[7A\u001b[38;5;216mD\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412819,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[3C\u001b[7A\u001b[38;5;216me\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412874,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[4C\u001b[7A\u001b[38;5;216ml\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412937,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[1CD\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717412953,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[3C\u001b[7A\u001b[38;5;174meli\u001b[10C\u001b[38;5;246m(3s · ↓\u001b[1C1 tokens)\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717413060,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;231m⏺\u001b[1C\u001b[39mAn app icon          \u001b[1C         \r\u001b[1B                                                                 \r\u001b[1B\u001b[38;5;174m✶\u001b[1CDeliberating… \u001b[38;5;246m(3s · ↓\u001b[1C2 tokens)\r\u001b[1B  ⎿  Tip: Share Claude Code and earn \u001b[38;5;174m€10\u001b[38;5;246m of extra usage · \u001b[38;5;174m/passes\u001b[39m                                                                                                                                       \r\u001b[1B   \r\u001b[2B\u001b[38;5;246m❯ \u001b[39m\u001b[7m \u001b[27m                                                               \u001b[105C                           \r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────"
+    },
+    {
+      "t": 1778717413061,
+      "bytes": "────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[1C·\u001b[1Cesc\u001b[1Cto\u001b[1Cinterrupt\u001b[105C\u001b[38;5;211m3\u001b[1CMCP\u001b[1Cservers\u001b[1Cfailed\u001b[38;5;246m ·\u001b[1C/mcp\u001b[39m\r\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717413103,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[24C\u001b[7A\u001b[38;5;246m3\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717413160,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717413175,
+      "bytes": "\u001b]0;✳ An app icon\u0007"
+    },
+    {
+      "t": 1778717413176,
+      "bytes": "\u001b[2D\u001b[3B\u001b[2K\u001b[G\u001b[1A\r\u001b[6A\u001b[38;5;246m✻\u001b[1CChurned for 3s\u001b[39m       \u001b[1C         \r\u001b[1B                                                                 \r\u001b[1B\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r\u001b[1B\u001b[39m❯ \u001b[7m \u001b[27m                                                                                                                                                                                                     \r\u001b[1B\u001b[38;5;244m──────"
+    },
+    {
+      "t": 1778717413176,
+      "bytes": "──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r\u001b[1B\u001b[39m  \u001b[38;5;211m⏵⏵ bypass permissions on\u001b[38;5;246m (shift+tab to cycle)\u001b[39m                                                                                                                            \u001b[38;5;211m3 MCP servers failed\u001b[38;5;246m · /mcp\u001b[39m  \r\u001b[1B                                                                                                                                                                         "
+    },
+    {
+      "t": 1778717413176,
+      "bytes": "                               \r\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717415367,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[2C\u001b[3A\u001b[7md\u001b[27m\u001b[2mesign an app icon for a todo app\u001b[22m\r\r\n\r\n\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717417130,
+      "bytes": "\u001b[2D\u001b[3B\r\u001b[171C\u001b[1A                           \r\r\n\u001b[2C\u001b[3A"
+    },
+    {
+      "t": 1778717417769,
+      "marker": "== after turn2 =="
+    }
+  ],
+  "raw": "\u001b7\u001b[r\u001b8\u001b[?25h\u001b[?25l\u001b[?2004h\u001b[?1004h\u001b[?2031h\u001b[>0q\u001b[c\u001b]0;✳ Claude Code\u0007\u001b[38;5;174m ▐\u001b[48;5;16m▛███▜\u001b[49m▌\u001b[3C\u001b[39m\u001b[1mClaude\u001b[1CCode\u001b[1C\u001b[22m\u001b[38;5;246mv2.1.128\u001b[39m\r\r\n\u001b[38;5;174m▝▜\u001b[48;5;16m█████\u001b[49m▛▘\u001b[2C\u001b[38;5;246mOpus\u001b[1C4.7\u001b[1C(1M\u001b[1Ccontext)\u001b[1Cwith\u001b[1Chigh\u001b[1Ceffort\u001b[1C·\u001b[1CClaude\u001b[1CMax\u001b[39m\r\r\n\u001b[38;5;174m \u001b[1C▘▘\u001b[1C▝▝\u001b[4C\u001b[38;5;246m~/play\u001b[39m\r\r\n\r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n❯ \u001b[7mT\u001b[27m\u001b[2mry\u001b[1C\"how\u001b[1Cdo\u001b[1CI\u001b[1Clog\u001b[1Can\u001b[1Cerror?\"\u001b[22m\r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[135C●\u001b[1Chigh\u001b[1C·\u001b[1C/effort\u001b[39m\r\r\n\u001b[2C\u001b[3A\u001b]0;⠂ Claude Code\u0007\u001b[2D\u001b[3B\r\u001b[4A\u001b[48;5;237m\u001b[38;5;239m❯ \u001b[38;5;231mhi\u001b[39m                                                                                                                                                                                                    \r\u001b[1B\u001b[49m                              \r\u001b[1B\u001b[38;5;174m✢\u001b[39m \u001b[38;5;174mChoreog\u001b[38;5;216mrap\u001b[38;5;174mhing… \u001b[39m                                                                                                                                                                                      \r\u001b[2C\u001b[1B                                             \u001b[135C                \r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[38;5;246m❯ \u001b[39m\u001b[7m \u001b[27m\r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[1C·\u001b[1Cesc\u001b[1Cto\u001b[1Cinterrupt\u001b[116C●\u001b[1Chigh\u001b[1C·\u001b[1C/effort\u001b[39m\r\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[9C\u001b[6A\u001b[38;5;174mr\u001b[2C\u001b[38;5;216mh\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m·\u001b[9Ca\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[11C\u001b[6A\u001b[38;5;174mp\u001b[2C\u001b[38;5;216mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[12C\u001b[6A\u001b[38;5;174mhi\u001b[1C\u001b[38;5;216mg…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[14C\u001b[6A\u001b[38;5;174mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✢\u001b[14Cg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[16C\u001b[6A\u001b[38;5;174m…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✻\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✽\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;⠐ Claude Code\u0007\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✻\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✳\u001b[1C\u001b[38;5;216mC\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[3C\u001b[6A\u001b[38;5;216mho\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✢\u001b[1CC\u001b[2C\u001b[38;5;216mr\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[3C\u001b[6A\u001b[38;5;174mh\u001b[2C\u001b[38;5;216me\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m·\u001b[3Co\u001b[2C\u001b[38;5;216mo\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[5C\u001b[6A\u001b[38;5;174mr\u001b[2C\u001b[38;5;216mg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6C\u001b[6A\u001b[38;5;174me\u001b[2C\u001b[38;5;216mr\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7C\u001b[6A\u001b[38;5;174mo\u001b[2C\u001b[38;5;216ma\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✢\u001b[7Cg\u001b[2C\u001b[38;5;216mp\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[9C\u001b[6A\u001b[38;5;174mra\u001b[1C\u001b[38;5;216mhi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✳\u001b[10Cp\u001b[2C\u001b[38;5;216mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;⠂ Claude Code\u0007\u001b[2D\u001b[3B\r\u001b[12C\u001b[6A\u001b[38;5;174mh\u001b[2C\u001b[38;5;216mg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[13C\u001b[6A\u001b[38;5;174mi\u001b[2C\u001b[38;5;216m…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✶\u001b[13Cn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[15C\u001b[6A\u001b[38;5;174mg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✻\u001b[15C…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✽\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✻\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m✢\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[18C\u001b[6A\u001b[38;5;246m(2s · ↓\u001b[1C1 tokens)\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;⠐ Claude Code\u0007\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;174m·\u001b[18C\u001b[38;5;246m3\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[26C\u001b[6A\u001b[38;5;246m2\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;231m⏺\u001b[1C\u001b[39mHi! What would you like\u001b[1Cto work on?\r\u001b[2B\u001b[38;5;174m·\u001b[39m \u001b[38;5;174mChoreographing… \u001b[38;5;246m(3s · ↓\u001b[39m \u001b[38;5;246m3 tokens)\u001b[39m                                                                                                                                                                     \r\u001b[1B   \r\u001b[2B\u001b[38;5;246m❯ \u001b[39m\u001b[7m \u001b[27m                                                               \u001b[116C                \r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[1C·\u001b[1Cesc\u001b[1Cto\u001b[1Cinterrupt\u001b[116C●\u001b[1Chigh\u001b[1C·\u001b[1C/effort\u001b[39m\r\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[26C\u001b[6A\u001b[38;5;246m4\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;✳ Claude Code\u0007\u001b[2D\u001b[3B\r\u001b[6A\u001b[38;5;246m✻\u001b[1CWorked for 3s\u001b[39m          \u001b[1C         \r\u001b[3B❯ \r\u001b[47C\u001b[2B                   \r\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[171C\u001b[1A\u001b[38;5;211m3 MCP servers failed\u001b[38;5;246m · /mcp\u001b[39m\r\r\n\u001b[2C\u001b[3A\u001b]0;⠐ Claude Code\u0007\u001b[2D\u001b[3B\r\u001b[4A\u001b[48;5;237m\u001b[38;5;239m❯ \u001b[38;5;231mrespond with exactly: An app icon\u001b[39m                                                                                                                                                                     \r\u001b[1B\u001b[49m   \r\u001b[1B\u001b[38;5;174m✻\u001b[39m \u001b[38;5;174mDeli\u001b[38;5;216mber\u001b[38;5;174mating… \u001b[39m                                                                                                                                                                                        \r\u001b[1B\u001b[38;5;246m  ⎿  Tip: Share Claude Code and earn \u001b[38;5;174m€10\u001b[1C\u001b[38;5;246mof extra usage · \u001b[38;5;174m/passes\u001b[106C\u001b[39m                           \r\r\n\r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[38;5;246m❯ \u001b[39m\u001b[7m \u001b[27m\r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[1C·\u001b[1Cesc\u001b[1Cto\u001b[1Cinterrupt\u001b[105C\u001b[38;5;211m3\u001b[1CMCP\u001b[1Cservers\u001b[1Cfailed\u001b[38;5;246m ·\u001b[1C/mcp\u001b[39m\r\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✽\u001b[5Cb\u001b[2C\u001b[38;5;216ma\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7C\u001b[7A\u001b[38;5;174me\u001b[2C\u001b[38;5;216mt\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[8C\u001b[7A\u001b[38;5;174mr\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[9C\u001b[7A\u001b[38;5;174ma\u001b[2C\u001b[38;5;216mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[9Cti\u001b[1C\u001b[38;5;216mg…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[12C\u001b[7A\u001b[38;5;174mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✶\u001b[12Cg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[14C\u001b[7A\u001b[38;5;174m…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✢\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m·\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;⠂ Claude Code\u0007\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✢\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[1C\u001b[38;5;216mDe\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[4C\u001b[7A\u001b[38;5;216ml\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✽\u001b[1CD\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[3C\u001b[7A\u001b[38;5;174me\u001b[2C\u001b[38;5;216mb\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[4C\u001b[7A\u001b[38;5;174ml\u001b[2C\u001b[38;5;216me\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[5C\u001b[7A\u001b[38;5;174mi\u001b[2C\u001b[38;5;216mr\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;⠂ An app icon\u0007\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[5Cb\u001b[2C\u001b[38;5;216ma\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7C\u001b[7A\u001b[38;5;174me\u001b[2C\u001b[38;5;216mt\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✶\u001b[7Cr\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[9C\u001b[7A\u001b[38;5;174ma\u001b[2C\u001b[38;5;216mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;⠐ An app icon\u0007\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[9Cti\u001b[1C\u001b[38;5;216mg…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[12C\u001b[7A\u001b[38;5;174mn\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[13C\u001b[7A\u001b[38;5;174mg\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✢\u001b[13C…\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m·\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✢\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✶\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;⠂ An app icon\u0007\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✽\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[2C\u001b[7A\u001b[38;5;216mD\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[3C\u001b[7A\u001b[38;5;216me\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[4C\u001b[7A\u001b[38;5;216ml\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✻\u001b[1CD\u001b[2C\u001b[38;5;216mi\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[3C\u001b[7A\u001b[38;5;174meli\u001b[10C\u001b[38;5;246m(3s · ↓\u001b[1C1 tokens)\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;231m⏺\u001b[1C\u001b[39mAn app icon          \u001b[1C         \r\u001b[1B                                                                 \r\u001b[1B\u001b[38;5;174m✶\u001b[1CDeliberating… \u001b[38;5;246m(3s · ↓\u001b[1C2 tokens)\r\u001b[1B  ⎿  Tip: Share Claude Code and earn \u001b[38;5;174m€10\u001b[38;5;246m of extra usage · \u001b[38;5;174m/passes\u001b[39m                                                                                                                                       \r\u001b[1B   \r\u001b[2B\u001b[38;5;246m❯ \u001b[39m\u001b[7m \u001b[27m                                                               \u001b[105C                           \r\r\n\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\u001b[39m\r\r\n\u001b[2C\u001b[38;5;211m⏵⏵\u001b[1Cbypass\u001b[1Cpermissions\u001b[1Con\u001b[38;5;246m (shift+tab\u001b[1Cto\u001b[1Ccycle)\u001b[1C·\u001b[1Cesc\u001b[1Cto\u001b[1Cinterrupt\u001b[105C\u001b[38;5;211m3\u001b[1CMCP\u001b[1Cservers\u001b[1Cfailed\u001b[38;5;246m ·\u001b[1C/mcp\u001b[39m\r\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[24C\u001b[7A\u001b[38;5;246m3\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[7A\u001b[38;5;174m✳\u001b[39m\r\r\n\r\n\r\n\r\n\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b]0;✳ An app icon\u0007\u001b[2D\u001b[3B\u001b[2K\u001b[G\u001b[1A\r\u001b[6A\u001b[38;5;246m✻\u001b[1CChurned for 3s\u001b[39m       \u001b[1C         \r\u001b[1B                                                                 \r\u001b[1B\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r\u001b[1B\u001b[39m❯ \u001b[7m \u001b[27m                                                                                                                                                                                                     \r\u001b[1B\u001b[38;5;244m────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\r\u001b[1B\u001b[39m  \u001b[38;5;211m⏵⏵ bypass permissions on\u001b[38;5;246m (shift+tab to cycle)\u001b[39m                                                                                                                            \u001b[38;5;211m3 MCP servers failed\u001b[38;5;246m · /mcp\u001b[39m  \r\u001b[1B                                                                                                                                                                                                        \r\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[2C\u001b[3A\u001b[7md\u001b[27m\u001b[2mesign an app icon for a todo app\u001b[22m\r\r\n\r\n\r\n\u001b[2C\u001b[3A\u001b[2D\u001b[3B\r\u001b[171C\u001b[1A                           \r\r\n\u001b[2C\u001b[3A"
+}
