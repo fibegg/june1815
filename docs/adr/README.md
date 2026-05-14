@@ -21,3 +21,4 @@ and follow the same Context → Decision → Consequences → Alternatives shape
 | [0010](./0010-bearer-everywhere-with-cookie.md) | Bearer on every route; cookie carry-over for asset fetches | Accepted |
 | [0011](./0011-ui-as-npm-workspace.md) | UI as an opt-in npm workspace under `ui/` | Accepted |
 | [0012](./0012-attachments-as-data-urls.md) | Attachments delivered as base64 data URLs in the message body | Accepted |
+| [0013](./0013-centralized-tui-rule-registry.md) | Centralized TUI parsing under `src/pty/tui/` (markers + extractors + engine) | Accepted |
