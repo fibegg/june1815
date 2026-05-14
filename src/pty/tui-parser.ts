@@ -52,21 +52,36 @@ export interface TuiPatterns {
 // itself doesn't change.
 export const DEFAULT_PATTERNS: TuiPatterns = Object.freeze({
   // The ready state is signalled by the footer hint line, NOT by the
-  // input chevron — that line also appears mid-turn. The footer
-  // says `? for shortcuts ● <effort> · /effort` when idle. Spaces
-  // between words are collapsed by xterm rendering at narrow cells so
-  // we tolerate `for ?shortcuts`/`forshortcuts` alike.
-  readyMarker: /\?\s*for\s*shortcuts/iu,
+  // input chevron — that line also appears mid-turn. Claude's footer
+  // can read either:
+  //   `? for shortcuts ● <effort> · /effort`             (default mode)
+  //   `⏵⏵ bypass permissions on (shift+tab to cycle) …`  (bypass mode)
+  //   `⏵ accept edits …` / `⏵ plan mode on …`            (other modes)
+  // Either signals an idle TUI ready to accept input. Whitespace is
+  // collapsed in narrow xterm cells so we use `\s*` between tokens.
+  readyMarker: /\?\s*for\s*shortcuts|bypass\s*permissions\s*on|accept\s*edits|plan\s*mode\s*on/iu,
   // Assistant text and tool calls both use the `⏺` (U+23FA, BLACK
   // CIRCLE FOR RECORD) marker at the start of the rendered line.
   // We disambiguate at the parser level: a `Name(args)` immediately
   // after the marker is a tool call; bare text is assistant content.
   assistantBlockStart: /^\s*⏺\s+/u,
-  reasoningBlockStart: /^\s*✻\s+(Thinking|Pondering|Reasoning|Cogitat|Shenanigan)/iu,
+  // Real reasoning content starts with an active-tense verb followed by an
+  // ellipsis: `✻ Thinking…`, `✻ Cogitating…`. Past-tense turn-summary
+  // lines like `✻ Brewed for 2s` / `✻ Cogitated for 0s` are NOT reasoning
+  // — they're just elapsed-time markers — so we require the `…` (or `...`)
+  // suffix to anchor.
+  reasoningBlockStart: /^\s*✻\s+[A-Za-z]+ing\s*(?:…|\.{3})/u,
   blockEnd: /^\s*[─━═]{3,}|^\s*[│┃║]\s*>\s|^\s*Usage:/u,
   toolCallLine: /^\s*⏺\s+([A-Za-z][A-Za-z0-9_]*)\(([^)]*)\)/u,
   usageLine: /Usage:\s*(\d+)\s*in\s*\/\s*(\d+)\s*out/iu,
-  permissionPrompt: /(allow|approve|run|continue|confirm).+[?](.|\s)*$/iu,
+  // A real permission dialog looks like:
+  //   `Allow Claude to run this command? (y/N)`
+  //   `Approve edit to <path>? [yes / no / always]`
+  // Require: an action word at word-boundary AND a `?` AND an explicit
+  // answer-style suffix like `(y/N)`, `[Y/n]`, `yes/no`, or `Yes,` so
+  // we don't grab `Tip:` lines that incidentally contain "Run" / "?".
+  permissionPrompt:
+    /\b(?:allow|approve|confirm)\b[^?]*\?\s*(?:\(|\[|yes\b|y\/n|y\s*\/\s*n|always)/iu,
   oauthUrl: /(https?:\/\/[^\s]*claude\.ai[^\s]*)/iu,
   trustPrompt: /Quick\s*safety\s*check|trust\s*this\s*folder/iu,
   busyFooter: /esc\s*to\s*interrupt/iu,
@@ -165,11 +180,18 @@ export class TuiParser {
     //     ❯ <user message>          (echoed user)
     //     ⏺ <assistant response>    (one or more lines)
     //     ✻ <verb> for Ns           (turn summary)
-    // Extract the LAST `⏺` block and its content. Tool-call lines also
-    // start with `⏺ Name(args)`; we strip those from the text-delta
-    // because they're emitted as `tool_use` events separately.
-    const assistantIdx = findLastLineIndex(lines, (l) =>
-      this.patterns.assistantBlockStart.test(l) && !this.patterns.toolCallLine.test(l),
+    // The buffer accumulates ALL prior turns, so we anchor on the LAST
+    // `❯ <text>` (the most recent user echo that has actual content —
+    // an empty `❯` is the placeholder input box). The current response
+    // is the FIRST `⏺ <text>` line below that anchor, excluding
+    // tool-call shapes (`⏺ Name(args)`).
+    const userEchoIdx = findLastLineIndex(lines, (l) => isUserEchoLine(l));
+    const searchFrom = Math.max(0, userEchoIdx + 1);
+    const assistantIdx = findLineIndex(
+      lines,
+      (l) =>
+        this.patterns.assistantBlockStart.test(l) && !this.patterns.toolCallLine.test(l),
+      searchFrom,
     );
     if (assistantIdx >= 0) {
       const block = collectAssistantBlock(lines, assistantIdx, snap.cursorY);
@@ -183,17 +205,25 @@ export class TuiParser {
     }
 
     // -- Reasoning ---------------------------------------------------------
-    const reasoningIdx = findLineIndex(lines, (l) => this.patterns.reasoningBlockStart.test(l));
+    // Only the in-flight reasoning marker (`✻ Thinking…` etc.) is
+    // interesting; the past-tense summary (`✻ Brewed for 2s`) and the
+    // spinner status (`✢ Crunching…`) are NOT reasoning content. We
+    // search *below the last user echo* to avoid resurrecting a prior
+    // turn's reasoning marker, and we only emit when there's actual
+    // non-marker content below the marker line.
+    const reasoningIdx = findLineIndex(
+      lines,
+      (l) => this.patterns.reasoningBlockStart.test(l),
+      searchFrom,
+    );
     if (reasoningIdx >= 0) {
-      const block = collectBlock(
-        lines,
-        reasoningIdx,
-        this.patterns.blockEnd,
-        this.patterns.reasoningBlockStart,
-      );
-      const text = block.join('\n').trim();
+      const block = collectAssistantBlock(lines, reasoningIdx, snap.cursorY);
+      // Drop the leading verb line — its `✻ Thinking…` form is just a
+      // marker, not content. Anything that survives is real reasoning.
+      const inner = block.slice(1).filter((l) => l.trim().length > 0);
+      const text = inner.join('\n').trim();
       const delta = computeDelta(this.state.emittedReasoning, text);
-      if (delta.length > 0) {
+      if (delta.length > 0 && text.length > 0) {
         events.push({ type: 'reasoning_delta', text: delta });
         this.state.emittedReasoning = text;
         this.state.turnHadActivity = true;
@@ -280,6 +310,20 @@ function collectBlock(
 
 function trimTrailingWs(s: string): string {
   return s.replace(/[ \t]+$/u, '');
+}
+
+/** A user-echo line: `❯ <something non-empty>`. The empty input
+ *  placeholder `❯` (followed by spaces or "Try …" tip text) is NOT a
+ *  user message and must not anchor our assistant search — those lines
+ *  return false here. */
+function isUserEchoLine(line: string): boolean {
+  const m = /^\s*❯\s*(.*?)\s*$/u.exec(line);
+  if (!m) return false;
+  const content = m[1] ?? '';
+  if (content.length === 0) return false;
+  // The default empty-input hint reads `Try "<something>"`.
+  if (/^Try\s+["'<]/u.test(content)) return false;
+  return true;
 }
 
 /** Hard stops that end an assistant block. Any line whose trimmed prefix

@@ -91,7 +91,7 @@ describe('TuiParser reasoning', () => {
   it('emits reasoning_delta for thinking blocks', () => {
     const p = new TuiParser();
     p.markTurnStarted();
-    const evs = p.parse(snapFromLines(['✻ Thinking', '  weighing options', '  it depends']));
+    const evs = p.parse(snapFromLines(['✻ Thinking…', '  weighing options', '  it depends']));
     const r = evs.find((e): e is Extract<TuiEvent, { type: 'reasoning_delta' }> => e.type === 'reasoning_delta');
     expect(r?.text).toContain('weighing options');
   });
@@ -142,6 +142,18 @@ describe('TuiParser permission prompts', () => {
       (e): e is Extract<TuiEvent, { type: 'permission_prompt' }> => e.type === 'permission_prompt',
     );
     expect(q?.question).toContain('Allow');
+  });
+
+  it('does NOT mistake tip lines containing "Run" or "?" for permission prompts', () => {
+    const p = new TuiParser();
+    p.markTurnStarted();
+    const evs = p.parse(
+      snapFromLines([
+        '⎿  Tip: Running multiple Claude sessions? Use /color and /rename.',
+        '⎿  Tip: Use /permissions to pre-approve and pre-deny.',
+      ]),
+    );
+    expect(evs.find((e) => e.type === 'permission_prompt')).toBeUndefined();
   });
 });
 
@@ -198,10 +210,14 @@ describe('TuiParser auth_required', () => {
 describe('DEFAULT_PATTERNS', () => {
   it('matches the documented landmarks (sanity check on regex objects)', () => {
     expect(DEFAULT_PATTERNS.readyMarker.test('? for shortcuts ● high · /effort')).toBe(true);
+    expect(DEFAULT_PATTERNS.readyMarker.test('⏵⏵ bypass permissions on (shift+tab to cycle)')).toBe(true);
     expect(DEFAULT_PATTERNS.busyFooter.test('esc to interrupt ● high')).toBe(true);
     expect(DEFAULT_PATTERNS.assistantBlockStart.test('⏺ hi')).toBe(true);
-    expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Thinking')).toBe(true);
-    expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Cogitating')).toBe(true);
+    expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Thinking…')).toBe(true);
+    expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Cogitating...')).toBe(true);
+    // past-tense turn summaries are NOT reasoning
+    expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Cogitated for 0s')).toBe(false);
+    expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Brewed for 2s')).toBe(false);
     expect(DEFAULT_PATTERNS.toolCallLine.test('⏺ Bash(ls)')).toBe(true);
     expect(DEFAULT_PATTERNS.usageLine.test('Usage: 10 in / 20 out')).toBe(true);
     expect(DEFAULT_PATTERNS.trustPrompt.test('Quick safety check')).toBe(true);

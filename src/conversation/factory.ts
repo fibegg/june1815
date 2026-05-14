@@ -51,6 +51,14 @@ export class ProductionConversationFactory implements ConversationFactory {
       const uploadsDir = join(this.deps.uploadsRoot, opts.id);
       args.push('--add-dir', uploadsDir);
     }
+    // The user explicitly named the cwd when they created the conversation
+    // — that's their consent for claude to read/write/run inside it.
+    // Without bypassPermissions, claude prompts on every Read / Bash /
+    // Edit, which hangs a wrapped TUI session on dialogs the operator
+    // can't see. The PTY parser still emits `permission_prompt` events
+    // for any prompt that does slip through; this just unblocks the
+    // common file-read path needed for image attachments.
+    args.push('--permission-mode', 'bypassPermissions');
 
     const pty = ClaudePty.start(
       {

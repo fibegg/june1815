@@ -52,6 +52,8 @@ describe('ProductionConversationFactory', () => {
     expect(args).toContain('sess-42');
     expect(args).toContain('--add-dir');
     expect(args).toContain('/work');
+    expect(args).toContain('--permission-mode');
+    expect(args).toContain('bypassPermissions');
   });
 
   it('omits optional flags when not supplied', async () => {
