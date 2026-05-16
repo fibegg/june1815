@@ -167,6 +167,75 @@ describe('TuiParser turn_complete', () => {
     const evs = p.parse(snapFromLines(['⏺ Hello', '? for shortcuts ● high']));
     expect(evs.find((e) => e.type === 'turn_complete')).toBeDefined();
   });
+
+  it('emits turn_complete via the sawBusy latch even if a later snapshot loses the ready footer', () => {
+    // This is the live-stuck bug: an image-attached turn finishes with an
+    // API error, the ready footer flashes once, then the next snapshot
+    // re-renders with characters our footer regex doesn't match. Without
+    // the sawBusy latch, the conversation would be stuck in busy forever.
+    const p = new TuiParser();
+    p.markTurnStarted();
+    // 1. busy footer first — claude starts working
+    p.parse(snapFromLines(['esc to interrupt']));
+    // 2. API error renders + ready footer briefly visible (fires turn_complete here on the canonical path)
+    p.parse(
+      snapFromLines([
+        '⎿  API Error: 400 invalid_request_error',
+        '? for shortcuts',
+      ]),
+    );
+    // 3. Next snapshot the footer becomes unrecognised — but the latch
+    //    means turn_complete already fired on snapshot 2, and re-firing
+    //    is gated by inTurn (false now).
+    const evs3 = p.parse(snapFromLines(['⎿  API Error: 400 invalid_request_error']));
+    // No re-fire (inTurn is false after turn_complete).
+    expect(evs3.find((e) => e.type === 'turn_complete')).toBeUndefined();
+  });
+
+  it('emits turn_complete on the *first* snapshot after busy that still shows ready, even mixed with activity', () => {
+    const p = new TuiParser();
+    p.markTurnStarted();
+    p.parse(snapFromLines(['esc to interrupt']));
+    p.parse(snapFromLines(['⏺ Hello', '⎿  API Error: 400', 'esc to interrupt']));
+    const evs = p.parse(
+      snapFromLines(['⏺ Hello', '⎿  API Error: 400', '? for shortcuts']),
+    );
+    expect(evs.find((e) => e.type === 'turn_complete')).toBeDefined();
+  });
+
+  it('emits turn_complete on past-tense `✻ Verbed for Ns` summary, even with no footer in the buffer', () => {
+    // The live image-error case: the buffer never contains the
+    // bypass-permissions footer at all (it gets rendered past row 49
+    // and falls off the captured snapshot), but the past-tense
+    // `✻ Sautéed for 2s` line IS captured. Parser must complete the turn
+    // from that signal alone, given activity was observed.
+    const p = new TuiParser();
+    p.markTurnStarted();
+    // Snapshot 1: assistant text is visible (activity=true) and a spinner is
+    // still rendering; no footer / no past-tense summary yet.
+    p.parse(snapFromLines(['⏺ Blank.', '✳ Spinning…']));
+    // Snapshot 2: past-tense summary now visible, still no footer.
+    const evs = p.parse(snapFromLines(['⏺ Blank.', '✻ Sautéed for 2s']));
+    expect(evs.find((e) => e.type === 'turn_complete')).toBeDefined();
+  });
+
+  it('latches turn_complete via lastFooter when ready was seen during activity but the snapshot then loses footer match', () => {
+    // The bug we observed live: ready footer is visible briefly during
+    // mid-turn rendering but lost on the next snapshot. Provided we
+    // observed busy at some point AND we have activity, turn_complete
+    // must still fire. This test forces the sequence by sending activity
+    // and ready in the same snapshot, then unknown-footer in the next —
+    // the first snapshot will fire turn_complete; the latch ensures the
+    // engine clears `inTurn`.
+    const p = new TuiParser();
+    p.markTurnStarted();
+    p.parse(snapFromLines(['esc to interrupt'])); // sawBusy
+    const evs1 = p.parse(snapFromLines(['⏺ Hi', '? for shortcuts']));
+    expect(evs1.find((e) => e.type === 'turn_complete')).toBeDefined();
+    // Subsequent unknown-footer snapshot must NOT fire turn_complete again.
+    const evs2 = p.parse(snapFromLines(['⏺ Hi']));
+    expect(evs2.find((e) => e.type === 'turn_complete')).toBeUndefined();
+  });
 });
 
 describe('TuiParser trust_prompt', () => {

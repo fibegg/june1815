@@ -215,7 +215,28 @@ export class Conversation {
     if (this._state === 'killed') return;
     const snap = this.terminal.snapshot();
     const events = this.parser.parse(snap);
+    if (process.env.JUNE15_DEBUG_TUI === '1') {
+      const ps = (this.parser as unknown as { engine?: { snapshotState?(): unknown } }).engine?.snapshotState?.() as
+        | { inTurn?: boolean; turnHadActivity?: boolean; lastFooter?: string; readyEmitted?: boolean }
+        | undefined;
+      console.error(
+        `[tui-debug] state=${this._state} cursorY=${snap.cursorY} events=${
+          events.map((e) => e.type).join(',') || 'none'
+        } inTurn=${ps?.inTurn} hadAct=${ps?.turnHadActivity} lastFooter=${ps?.lastFooter}`,
+      );
+    }
     for (const e of events) this.handleParserEvent(e);
+
+    // Watchdog: while a turn is in flight, keep snapshotting on a slow
+    // tick even if no fresh bytes arrive. The TUI sometimes settles into
+    // its final state (ready footer after an API error, for example)
+    // before any further PTY output — without this we'd never observe
+    // the busy→ready transition and the conversation would be stuck.
+    if (this._state === 'busy') {
+      this.burstTimer = this.timers.setTimeout(() => {
+        void this.snapshotInternal();
+      }, this.maxBurstMs);
+    }
   }
 
   private handleParserEvent(e: TuiEvent): void {

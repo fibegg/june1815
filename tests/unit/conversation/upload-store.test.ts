@@ -141,12 +141,14 @@ describe('composeMessageWithAttachments', () => {
     expect(composeMessageWithAttachments('hi', [])).toBe('hi');
   });
 
-  it('prepends @-mention lines for each attachment', () => {
+  it('joins @-mentions on a single line with the user text', () => {
+    // Single-line composition required: embedded \n flips claude's input
+    // into multi-line mode where \r no longer submits.
     const out = composeMessageWithAttachments('look at these', [
       { kind: 'image', path: '/a/img1.png', bytes: 1, contentType: 'image/png', name: 'img1.png' },
       { kind: 'image', path: '/a/img2.png', bytes: 1, contentType: 'image/png', name: 'img2.png' },
     ]);
-    expect(out).toBe('@/a/img1.png\n@/a/img2.png\n\nlook at these');
+    expect(out).toBe('@/a/img1.png @/a/img2.png look at these');
   });
 
   it('returns only the @-mentions when text is empty', () => {

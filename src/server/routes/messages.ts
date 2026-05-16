@@ -84,6 +84,10 @@ function bridge(e: ConversationEvent, messageId: string): SseEvent | null {
       return e.summary !== undefined
         ? { type: 'tool_use', name: e.name, summary: e.summary }
         : { type: 'tool_use', name: e.name };
+    case 'tool_result':
+      return { type: 'tool_use', name: e.name, summary: e.summary };
+    case 'error':
+      return { type: 'error', code: e.code, message: e.message };
     case 'usage':
       return { type: 'usage', inputTokens: e.inputTokens, outputTokens: e.outputTokens };
     case 'permission_prompt':

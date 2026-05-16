@@ -158,25 +158,134 @@ export interface LineExtractor {
   }): { readonly events: readonly TuiEvent[]; readonly stateUpdate: Partial<ParserState> };
 }
 
+/** Determine the most recent footer state. When both footers appear in
+ *  the buffer (old one stuck in scrollback, new one at the bottom),
+ *  position-priority wins: the LAST matching line decides. */
+function currentFooter(lines: readonly string[]): 'ready' | 'busy' | 'unknown' {
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    const line = lines[i] ?? '';
+    if (matches('busyFooter', line)) return 'busy';
+    if (matches('readyFooter', line)) return 'ready';
+  }
+  return 'unknown';
+}
+
 export const READY_LINE_EXTRACTOR: LineExtractor = {
   name: 'ready-and-turn-complete',
   purpose:
-    'Watch the footer. Emit `ready` once on first idle; emit `turn_complete` when busy→idle after activity.',
-  apply({ lines, state }) {
-    const readyVisible = lines.some((l) => matches('readyFooter', l));
-    const busyVisible = lines.some((l) => matches('busyFooter', l));
+    'Detect end-of-turn from any reliable signal: ready footer return, busy→ready transition, or a past-tense `✻ Verbed for Ns` summary line. Also emits the cross-turn `ready` event.',
+  apply({ lines, state, anchor }) {
+    const footer = currentFooter(lines);
     const trustVisible = lines.some((l) => matches('trustPrompt', l));
+    // Only count a past-tense summary if it's BELOW the current turn's
+    // anchor. Previous-turn summaries linger in the buffer and would
+    // otherwise immediately fire turn_complete on the next turn.
+    let turnSummaryVisible = false;
+    for (let i = anchor; i < lines.length; i += 1) {
+      if (matches('turnSummary', lines[i] ?? '')) {
+        turnSummaryVisible = true;
+        break;
+      }
+    }
     const events: TuiEvent[] = [];
     const update: Partial<ParserState> = {};
 
-    if (readyVisible && !busyVisible && !trustVisible && !state.readyEmitted) {
+    if (process.env.JUNE15_DEBUG_TUI === '1') {
+      console.error(
+        `[ready-ex] footer=${footer} inTurn=${state.inTurn} hadAct=${state.turnHadActivity} lastFooter=${state.lastFooter} sawBusy=${state.sawBusyInTurn} summary=${turnSummaryVisible}`,
+      );
+    }
+    if (footer === 'ready' && !trustVisible && !state.readyEmitted) {
       events.push({ type: 'ready' });
       update.readyEmitted = true;
     }
-    if (state.inTurn && readyVisible && !busyVisible && state.turnHadActivity) {
+
+    // Latch: remember we observed a busy footer during this turn.
+    if (footer === 'busy') update.sawBusyInTurn = true;
+    if (footer !== 'unknown') update.lastFooter = footer;
+
+    // `turn_complete` fires when ANY of the following holds:
+    //   (a) Current footer is `ready` AND we previously saw `busy`
+    //       (the canonical busy → ready transition).
+    //   (b) Current footer is `ready` AND we have activity — covers
+    //       cases where the busy footer rendered too briefly.
+    //   (c) Last observed footer was `ready`, we saw `busy` earlier,
+    //       AND we have activity — covers cases where a later snapshot
+    //       stops matching the ready footer (xterm cursor-right escapes
+    //       leaving zero-width content, scrollback dropping the footer
+    //       row, …) but we know the transition already happened.
+    //   (d) A past-tense `✻ Verbed for Ns` summary line BELOW the
+    //       current turn's anchor is visible AND we have activity —
+    //       claude only renders that line after the turn is finished,
+    //       even on API-error turns where the footer never reaches our
+    //       visible buffer. We require below-anchor + activity to avoid
+    //       false-firing on a previous turn's leftover summary.
+    const sawBusy = state.sawBusyInTurn || footer === 'busy' || update.sawBusyInTurn === true;
+    const atReadyNow = footer === 'ready';
+    const lastWasReady = state.lastFooter === 'ready' || update.lastFooter === 'ready';
+    const transitionedToReady =
+      (atReadyNow && (sawBusy || state.turnHadActivity)) ||
+      (lastWasReady && sawBusy && state.turnHadActivity) ||
+      (turnSummaryVisible && state.turnHadActivity);
+    if (state.inTurn && transitionedToReady) {
       events.push({ type: 'turn_complete' });
     }
     return { events, stateUpdate: update };
+  },
+};
+
+export const API_ERROR_EXTRACTOR: LineExtractor = {
+  name: 'api-error',
+  purpose:
+    'Emit `error` events for `⎿ API Error:` / `⎿ Error:` lines. Dedups across the turn so a repeated render doesn\'t double-fire.',
+  apply({ lines, state }) {
+    const events: TuiEvent[] = [];
+    const next = new Set(state.emittedErrors);
+    for (const line of lines) {
+      const m = MARKERS.apiErrorLine.pattern.exec(line);
+      if (!m?.[1]) continue;
+      const message = m[1].trim();
+      if (next.has(message)) continue;
+      next.add(message);
+      events.push({
+        type: 'error',
+        code: 'claude_api_error',
+        message,
+      });
+    }
+    if (events.length === 0) return { events: [], stateUpdate: {} };
+    return {
+      events,
+      stateUpdate: { emittedErrors: next, turnHadActivity: true },
+    };
+  },
+};
+
+export const TOOL_RESULT_EXTRACTOR: LineExtractor = {
+  name: 'tool-result',
+  purpose:
+    'Emit `tool_result` for `⎿ <Name> <summary>` lines (file reads, bash output, etc). Excludes `⎿ Tip:` and `⎿ API Error:`.',
+  apply({ lines, state, anchor }) {
+    const events: TuiEvent[] = [];
+    const next = new Set(state.announcedToolResults);
+    for (let i = anchor; i < lines.length; i += 1) {
+      const line = lines[i] ?? '';
+      const m = MARKERS.toolResultLine.pattern.exec(line);
+      if (!m) continue;
+      const sig = `${i}::${line.trim()}`;
+      if (next.has(sig)) continue;
+      next.add(sig);
+      events.push({
+        type: 'tool_result',
+        name: m[1] ?? '',
+        summary: (m[2] ?? '').trim(),
+      });
+    }
+    if (events.length === 0) return { events: [], stateUpdate: {} };
+    return {
+      events,
+      stateUpdate: { announcedToolResults: next, turnHadActivity: true },
+    };
   },
 };
 
@@ -296,11 +405,15 @@ export const BLOCK_EXTRACTORS: readonly BlockExtractor[] = Object.freeze([
 
 export const LINE_EXTRACTORS: readonly LineExtractor[] = Object.freeze([
   TRUST_PROMPT_EXTRACTOR,
-  READY_LINE_EXTRACTOR,
+  API_ERROR_EXTRACTOR,
   TOOL_USE_EXTRACTOR,
+  TOOL_RESULT_EXTRACTOR,
   USAGE_LINE_EXTRACTOR,
   OAUTH_URL_EXTRACTOR,
   PERMISSION_DIALOG_EXTRACTOR,
+  // Ready/turn_complete must run LAST so all activity-setting extractors
+  // upstream have already updated state for the same snapshot.
+  READY_LINE_EXTRACTOR,
 ]);
 
 void joinAndTrim;

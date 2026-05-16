@@ -134,13 +134,20 @@ export class UploadStore {
 }
 
 /** Produce the message text that a Conversation will actually send to
- *  claude: each attachment becomes a `@<absolute-path>` line, separated
- *  from the user text by a blank line. */
+ *  claude: each attachment becomes a `@<absolute-path>` token, joined to
+ *  the user text on a single line. Single-line composition is required
+ *  because embedded `\n` characters flip claude's TUI input into
+ *  multi-line mode, where `\r` inserts a newline instead of submitting.
+ *
+ *  The `@` prefix triggers claude's file-mention autocomplete — that's
+ *  intentional, since it's how claude attaches files. The InputDriver
+ *  pauses for a beat between writing the body and writing `\r` so the
+ *  dropdown finishes resolving before our submit lands. */
 export function composeMessageWithAttachments(
   text: string,
   attachments: readonly SavedAttachment[],
 ): string {
   if (attachments.length === 0) return text;
-  const refs = attachments.map((a) => `@${a.path}`).join('\n');
-  return text.length > 0 ? `${refs}\n\n${text}` : refs;
+  const refs = attachments.map((a) => `@${a.path}`).join(' ');
+  return text.length > 0 ? `${refs} ${text}` : refs;
 }

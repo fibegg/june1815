@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_KEYS, InputDriver, type PtyWriter } from '../../../src/pty/input-driver.js';
 
+/** Synchronous `setTimeout` for tests — runs the callback inline so test
+ *  assertions don't have to await timers. */
+const syncTimer: (cb: () => void, _ms: number) => unknown = (cb) => {
+  cb();
+  return 0;
+};
+
 function recordingWriter(): PtyWriter & { writes: string[]; joined(): string } {
   const writes: string[] = [];
   return {
@@ -13,22 +20,44 @@ function recordingWriter(): PtyWriter & { writes: string[]; joined(): string } {
 }
 
 describe('InputDriver.send', () => {
-  it('writes text followed by the submit keystroke', () => {
+  it('writes the body atomically, then the submit keystroke after a delay', () => {
+    // Body and submit are written separately by design — claude's TUI
+    // drops the submit keystroke if it arrives in the same read as a
+    // long paste. The delay is configurable and bypassed in tests via
+    // the syncTimer hook.
     const w = recordingWriter();
-    new InputDriver(w).send('hello');
-    expect(w.joined()).toBe(`hello${DEFAULT_KEYS.submit}`);
+    new InputDriver(w, DEFAULT_KEYS, 200, syncTimer).send('hello');
+    expect(w.writes).toEqual(['hello', DEFAULT_KEYS.submit]);
   });
 
-  it('splits embedded newlines into soft newlines + one submit', () => {
+  it('joins embedded \\n with the soft-newline key in the body write', () => {
     const w = recordingWriter();
-    new InputDriver(w).send('line one\nline two');
-    expect(w.writes).toEqual(['line one', DEFAULT_KEYS.newline, 'line two', DEFAULT_KEYS.submit]);
+    new InputDriver(w, DEFAULT_KEYS, 200, syncTimer).send('line one\nline two');
+    expect(w.writes).toEqual([
+      `line one${DEFAULT_KEYS.newline}line two`,
+      DEFAULT_KEYS.submit,
+    ]);
   });
 
-  it('an empty line in the middle still produces a soft newline', () => {
+  it('an empty middle line still produces a doubled soft newline', () => {
     const w = recordingWriter();
-    new InputDriver(w).send('a\n\nb');
-    expect(w.writes).toEqual(['a', DEFAULT_KEYS.newline, DEFAULT_KEYS.newline, 'b', DEFAULT_KEYS.submit]);
+    new InputDriver(w, DEFAULT_KEYS, 200, syncTimer).send('a\n\nb');
+    expect(w.writes).toEqual([
+      `a${DEFAULT_KEYS.newline}${DEFAULT_KEYS.newline}b`,
+      DEFAULT_KEYS.submit,
+    ]);
+  });
+
+  it('defers the submit keystroke through the injected timer', () => {
+    const w = recordingWriter();
+    const calls: Array<{ ms: number }> = [];
+    const captureTimer: (cb: () => void, ms: number) => unknown = (cb, ms) => {
+      calls.push({ ms });
+      cb();
+      return 0;
+    };
+    new InputDriver(w, DEFAULT_KEYS, 175, captureTimer).send('hi');
+    expect(calls).toEqual([{ ms: 175 }]);
   });
 });
 
@@ -83,7 +112,12 @@ describe('InputDriver.clearLine and raw', () => {
 describe('InputDriver with custom keys', () => {
   it('uses overridden submit and interrupt', () => {
     const w = recordingWriter();
-    const driver = new InputDriver(w, { ...DEFAULT_KEYS, submit: '\n', interrupt: '\x04' });
+    const driver = new InputDriver(
+      w,
+      { ...DEFAULT_KEYS, submit: '\n', interrupt: '\x04' },
+      200,
+      syncTimer,
+    );
     driver.send('hi');
     driver.interrupt();
     expect(w.writes).toEqual(['hi', '\n', '\x04']);

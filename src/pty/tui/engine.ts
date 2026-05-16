@@ -45,9 +45,15 @@ export class TuiEngine {
     this.state.emittedAssistantText = '';
     this.state.emittedReasoning = '';
     this.state.announcedTools = new Set();
+    this.state.announcedToolResults = new Set();
     this.state.emittedPermission = new Set();
     this.state.turnHadActivity = false;
     this.state.inTurn = true;
+    // The footer hasn't been observed yet for this turn. Reset to
+    // `unknown` so a `ready` → `busy` → `ready` arc fires exactly one
+    // `turn_complete` event, even if the parser sees `ready` first.
+    this.state.lastFooter = 'unknown';
+    this.state.sawBusyInTurn = false;
   }
 
   /** Inspect the live state (for tests and debug). Returns a shallow
@@ -80,11 +86,14 @@ export class TuiEngine {
     }
 
     // Side effect of turn_complete: the previous turn's text becomes
-    // "frozen" so the next turn's extractor can subtract it.
+    // "frozen" so the next turn's extractor can subtract it; we also
+    // latch `lastFooter` to `ready` so subsequent snapshots (still
+    // showing the ready footer) don't fire another turn_complete.
     if (out.some((e) => e.type === 'turn_complete')) {
       this.state.previousTurnFinalText = this.state.emittedAssistantText;
       this.state.inTurn = false;
       this.state.turnHadActivity = false;
+      this.state.lastFooter = 'ready';
     }
 
     return out;
@@ -168,7 +177,7 @@ export class TuiEngine {
 /** Strip the leading marker glyph and one space from a starter line.
  *  The starter line carries the first chunk of payload after the
  *  marker, so we keep it but peel the marker. */
-function stripStarterMarker(line: string, marker: 'assistantStart' | 'reasoningStart' | string): string {
+function stripStarterMarker(line: string, marker: string): string {
   if (marker === 'assistantStart') return stripLeadingMarker(line, '⏺');
   if (marker === 'reasoningStart') {
     // For `✻ Thinking…` we drop the entire line (the verb itself isn't

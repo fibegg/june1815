@@ -31,7 +31,9 @@ export type MarkerName =
   | 'trustPrompt'
   | 'permissionDialog'
   | 'mcpFailureLine'
-  | 'systemTipLine';
+  | 'systemTipLine'
+  | 'apiErrorLine'
+  | 'toolResultLine';
 
 export interface MarkerDef {
   readonly name: MarkerName;
@@ -46,11 +48,11 @@ export interface MarkerDef {
   readonly isPlaceholderOnly?: boolean;
 }
 
-// eslint-disable-next-line no-control-regex
+ 
 const NOOP = /a^/;
 void NOOP;
 
-const RAW: readonly Omit<MarkerDef, 'pattern'>[] & ReadonlyArray<unknown> = [];
+const RAW: readonly Omit<MarkerDef, 'pattern'>[] & readonly unknown[] = [];
 void RAW;
 
 export const MARKERS: Readonly<Record<MarkerName, MarkerDef>> = Object.freeze({
@@ -89,8 +91,8 @@ export const MARKERS: Readonly<Record<MarkerName, MarkerDef>> = Object.freeze({
   turnSummary: {
     name: 'turnSummary',
     purpose:
-      "Past-tense turn elapsed-time summary: `✻ Brewed for 2s`, `✻ Cogitated for 0s`. Looks like reasoning but isn't.",
-    pattern: /^\s*✻\s+[A-Za-z]+ed\s+for\s+\d+s/u,
+      "Past-tense turn elapsed-time summary: `✻ Brewed for 2s`, `✻ Cogitated for 0s`, `✻ Sautéed for 1s`. Looks like reasoning but isn't.",
+    pattern: /^\s*✻\s+\p{L}+ed\s+for\s+\d+s/u,
   },
   subordinate: {
     name: 'subordinate',
@@ -158,6 +160,18 @@ export const MARKERS: Readonly<Record<MarkerName, MarkerDef>> = Object.freeze({
     purpose:
       'System-emitted tip rendered under a `⎿`: `⎿  Tip: Use /permissions to ...`. Subset of `subordinate` and `tipLine`.',
     pattern: /^\s*⎿\s*Tip:/iu,
+  },
+  apiErrorLine: {
+    name: 'apiErrorLine',
+    purpose:
+      'API error surfaced as a subordinate line: `⎿  API Error: 400 {...}` or `⎿  Error: <msg>`. Capture group 1 is the message.',
+    pattern: /⎿\s*(?:API\s*Error|Error):\s*(.+)$/iu,
+  },
+  toolResultLine: {
+    name: 'toolResultLine',
+    purpose:
+      'Tool/file-read result under a `⎿`: `⎿ Read /path/to/file (83 bytes)`. Distinct from `apiErrorLine` and `systemTipLine`.',
+    pattern: /^\s*⎿\s+(?!Tip:|API\s*Error|Error)([A-Za-z][\w-]*)\s+(.+)$/u,
   },
 });
 
