@@ -16,6 +16,12 @@ const STATUS_FOR_CODE: Record<June15ErrorCode, number> = {
   conversation_limit_reached: 429,
   http_bad_request: 400,
   http_unauthorized: 401,
+  // These codes only fire from CLI modes (the stream-json shim, tool-defs
+  // loader). They never reach the HTTP error handler, but they're listed
+  // here to keep the union exhaustive.
+  shim_no_claude_path: 503,
+  shim_bad_input: 400,
+  tool_defs_invalid: 400,
 };
 
 /**

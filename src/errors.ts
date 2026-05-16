@@ -18,7 +18,10 @@ export type June15ErrorCode =
   | 'conversation_busy'
   | 'conversation_limit_reached'
   | 'http_bad_request'
-  | 'http_unauthorized';
+  | 'http_unauthorized'
+  | 'shim_no_claude_path'
+  | 'shim_bad_input'
+  | 'tool_defs_invalid';
 
 export class June15Error extends Error {
   public override readonly name = 'June15Error';

@@ -6,6 +6,55 @@ import { TerminalAdapter } from '../pty/terminal.js';
 import { TuiParser } from '../pty/tui-parser.js';
 import type { ConversationFactory } from './manager.js';
 
+/**
+ * Low-level helper that turns a fully-formed `claude` argv into a
+ * `Conversation` wrapping the PTY+terminal+parser+driver stack. Exposed
+ * so that consumers OTHER than the HTTP factory (e.g. the stream-json
+ * shim) can build a Conversation with their own arg list, without
+ * re-implementing the wiring.
+ *
+ * The caller owns the argv: this function will not inject defaults like
+ * `--permission-mode` or `--add-dir`. That's the factory's job (for the
+ * HTTP path) or the shim runner's job (for stream-json mode).
+ */
+export interface AssembleConversationDeps {
+  readonly id: string;
+  readonly claudePath: string;
+  readonly args: readonly string[];
+  readonly cwd: string;
+  readonly env: NodeJS.ProcessEnv;
+  readonly cols: number;
+  readonly rows: number;
+  readonly idleQuietMs: number;
+  readonly spawner?: PtySpawner;
+}
+
+export function assembleConversation(deps: AssembleConversationDeps): Conversation {
+  const pty = ClaudePty.start(
+    {
+      command: deps.claudePath,
+      args: [...deps.args],
+      cwd: deps.cwd,
+      env: deps.env,
+      cols: deps.cols,
+      rows: deps.rows,
+    },
+    deps.spawner ?? new NodePtySpawner(),
+  );
+  const terminal = new TerminalAdapter({ cols: deps.cols, rows: deps.rows });
+  const parser = new TuiParser();
+  const driver = new InputDriver({ write: (d) => { pty.write(d); } });
+  return new Conversation({
+    id: deps.id,
+    cwd: deps.cwd,
+    pty,
+    terminal,
+    parser,
+    driver,
+    idleQuietMs: deps.idleQuietMs,
+  });
+}
+
 export interface ProductionFactoryDeps {
   /** Absolute path to the resolved claude binary. */
   readonly claudePath: string;
@@ -60,30 +109,16 @@ export class ProductionConversationFactory implements ConversationFactory {
     // common file-read path needed for image attachments.
     args.push('--permission-mode', 'bypassPermissions');
 
-    const pty = ClaudePty.start(
-      {
-        command: this.deps.claudePath,
-        args,
-        cwd: opts.cwd,
-        env: this.deps.env,
-        cols: this.deps.cols,
-        rows: this.deps.rows,
-      },
-      this.deps.spawner ?? new NodePtySpawner(),
-    );
-
-    const terminal = new TerminalAdapter({ cols: this.deps.cols, rows: this.deps.rows });
-    const parser = new TuiParser();
-    const driver = new InputDriver({ write: (d) => { pty.write(d); } });
-
-    const conv = new Conversation({
+    const conv = assembleConversation({
       id: opts.id,
+      claudePath: this.deps.claudePath,
+      args,
       cwd: opts.cwd,
-      pty,
-      terminal,
-      parser,
-      driver,
+      env: this.deps.env,
+      cols: this.deps.cols,
+      rows: this.deps.rows,
       idleQuietMs: this.deps.idleQuietMs,
+      ...(this.deps.spawner ? { spawner: this.deps.spawner } : {}),
     });
     return Promise.resolve(conv);
   }

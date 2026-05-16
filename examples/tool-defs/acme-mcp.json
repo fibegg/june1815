@@ -1,0 +1,17 @@
+{
+  "$schema": "https://june15.dev/schemas/tool-defs.v1.json",
+  "version": 1,
+  "tools": {
+    "acme__find_user": {
+      "summaryRegex": "^(?<user>\\S+)\\s+in\\s+(?<org>\\S+)$",
+      "input": { "username": "{user}", "scope": "{org}" }
+    },
+    "acme__send_notification": {
+      "summaryRegex": "^(\\S+)\\s+\"(.+)\"$",
+      "input": { "channel": "{1}", "body": "{2}" }
+    },
+    "acme__list_records": {
+      "input": { "table": "{summary}", "limit": 50 }
+    }
+  }
+}

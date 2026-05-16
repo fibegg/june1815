@@ -282,6 +282,65 @@ rm -rf ~/.local/share/june15        # purges saved bearer + session markers
 rm -rf /tmp/june15-e2e-*            # any orphaned e2e temp dirs
 ```
 
+## Using `june15` as a drop-in `claude` wrapper (stream-JSON shim mode)
+
+Any tool that spawns the `claude` CLI in its stream-JSON IPC mode —
+the official `@anthropic-ai/claude-agent-sdk`, custom SDK clients, the
+`-p` print mode — can spawn `june15` instead and get back the same
+wire shape. Internally, `june15` drives the real `claude` through its
+TUI, parses the screen, and re-emits each event as the matching
+stream-JSON message on stdout.
+
+Point the consumer at `june15` and set one env var:
+
+```bash
+export JUNE15_CLAUDE_PATH=$(which claude)
+# Then point whatever currently spawns `claude` at `june15` instead.
+```
+
+Smoke test it directly with newline-delimited JSON on stdin/stdout:
+
+```bash
+echo '{"type":"user","message":{"role":"user","content":[{"type":"text","text":"reply with exactly: HELLO"}]}}' \
+  | june15 --output-format stream-json --verbose --input-format stream-json --model claude-opus-4-7
+```
+
+The shim activates automatically whenever it sees
+`--output-format stream-json`, `--input-format stream-json`, `-p`, or
+`--print`. With any other invocation, `june15` behaves as the normal
+`gogogo` / `doctor` / `config` CLI.
+
+See [`docs/design/shim-mode.md`](./docs/design/shim-mode.md) for the
+full wire-protocol spec and arg-filtering rules.
+
+## Custom tool plugins
+
+When `june15` reports a tool call (`tool_use`) on the wire, it
+synthesizes a structured `input` object from the TUI's view of the
+tool. Built-in mappings cover well-known claude tools out of the box
+(`Read`, `Bash`, `Edit`, `Grep`, `WebFetch`, …). Custom or MCP tools
+get a `{summary: "<raw>"}` fallback unless you ship a tool-defs file:
+
+```jsonc
+// ~/.config/june15/tool-defs.json
+{
+  "version": 1,
+  "tools": {
+    "acme__find_user": {
+      "summaryRegex": "^(?<user>\\S+)\\s+in\\s+(?<org>\\S+)$",
+      "input": { "username": "{user}", "scope": "{org}" }
+    }
+  }
+}
+```
+
+Discovery order (later wins): built-ins → `JUNE15_TOOL_DEFS` env var
+(`:`-separated paths) → `~/.config/june15/tool-defs.json` →
+`--tool-defs` CLI flag (repeatable).
+
+See [`docs/design/tool-plugins.md`](./docs/design/tool-plugins.md) for
+the full spec and more examples.
+
 ## Configuration
 
 CLI flags > `process.env` (`JUNE15_*`) > `./june15.yml` >

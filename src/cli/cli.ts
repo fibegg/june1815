@@ -14,6 +14,9 @@ const EXIT_CODE_FOR_ERROR: Partial<Record<June15ErrorCode, number>> = {
   pty_dead: ExitCode.PtyUnavailable,
   http_bad_request: ExitCode.BadInput,
   http_unauthorized: ExitCode.AuthUnavailable,
+  shim_no_claude_path: ExitCode.ClaudeNotFound,
+  shim_bad_input: ExitCode.BadInput,
+  tool_defs_invalid: ExitCode.BadInput,
 };
 
 /** Output / error sinks. Tests inject a recorder; production uses
