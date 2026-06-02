@@ -11,6 +11,7 @@ export type June15ErrorCode =
   | 'claude_not_found'
   | 'claude_install_declined'
   | 'claude_install_failed'
+  | 'claude_onboarding_required'
   | 'auth_unavailable'
   | 'pty_spawn_failed'
   | 'pty_dead'

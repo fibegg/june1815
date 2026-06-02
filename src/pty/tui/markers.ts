@@ -33,7 +33,8 @@ export type MarkerName =
   | 'mcpFailureLine'
   | 'systemTipLine'
   | 'apiErrorLine'
-  | 'toolResultLine';
+  | 'toolResultLine'
+  | 'onboardingPrompt';
 
 export interface MarkerDef {
   readonly name: MarkerName;
@@ -172,6 +173,12 @@ export const MARKERS: Readonly<Record<MarkerName, MarkerDef>> = Object.freeze({
     purpose:
       'Tool/file-read result under a `⎿`: `⎿ Read /path/to/file (83 bytes)`. Distinct from `apiErrorLine` and `systemTipLine`.',
     pattern: /^\s*⎿\s+(?!Tip:|API\s*Error|Error)([A-Za-z][\w-]*)\s+(.+)$/u,
+  },
+  onboardingPrompt: {
+    name: 'onboardingPrompt',
+    purpose:
+      "First-run onboarding gate that blocks the chat-ready footer and which the parser cannot drive: the theme picker (`Choose the text style…`), the model-effort picker (`Effort lets you control the tradeoff…`), or the generic `Let's get started.` splash. Calibrated against Claude Code 2.1.x first-run flow.",
+    pattern: /choose the text style|let'?s get started|effort lets you control/iu,
   },
 });
 
