@@ -163,10 +163,22 @@ export async function composeGogogo(opts: {
 
 function resolveUiDistDir(config: Config): string {
   if (config.ui.distDir) return config.ui.distDir;
-  // Default: dist/ui sibling of the running JS file. Works in both
-  // src/ (during tests) and dist/ (after build) layouts.
+  // The published package ships the BUILT UI at dist/ui. After bundling,
+  // this code runs as dist/cli/bin.js (here = .../dist/cli), so dist/ui is
+  // one level up. The previous `'..','..','ui'` resolved to the SOURCE
+  // ui/ dir, whose index.html points at /src/main.tsx and renders a blank
+  // page in production. Probe the likely built locations (a built
+  // index.html must exist) and fall back to the bundled-CLI default.
   const here = dirname(fileURLToPath(import.meta.url));
-  return join(here, '..', '..', 'ui');
+  const candidates = [
+    join(here, '..', 'ui'), // dist/cli → dist/ui (bundled CLI entry)
+    join(here, 'ui'), // dist → dist/ui (library entry)
+    join(here, '..', 'dist', 'ui'),
+  ];
+  for (const c of candidates) {
+    if (existsSync(join(c, 'index.html'))) return c;
+  }
+  return candidates[0] ?? join(here, '..', 'ui');
 }
 
 export function buildServerApp(composition: GogogoComposition, version: string): ReturnType<typeof createServer>['app'] {
