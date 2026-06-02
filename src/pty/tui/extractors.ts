@@ -63,6 +63,20 @@ function joinAndTrim(lines: readonly string[]): string {
 
 const TEXT_PIPELINE = [trimRightPerLine, collapseBlankRuns, trimEdgeBlanks] as const;
 
+/**
+ * Shape of a real tool name as rendered in the TUI: a CamelCase built-in
+ * (`Read`, `Bash`, `WebFetch`, …) or an MCP `server__tool` identifier.
+ * Used to keep the tool-result extractor from misreading a Bash turn's
+ * raw stdout (e.g. `⎿ build-ok done`) as a phantom `tool_result` whose
+ * "name" is a fragment of command output.
+ */
+const TOOL_NAME_SHAPE =
+  /^(?:[A-Z][A-Za-z0-9]*|[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)*__[A-Za-z0-9_]+)$/u;
+
+function looksLikeToolName(name: string): boolean {
+  return TOOL_NAME_SHAPE.test(name);
+}
+
 // -------------------------------------------------------------------------
 //  The extractor catalogue
 // -------------------------------------------------------------------------
@@ -272,12 +286,19 @@ export const TOOL_RESULT_EXTRACTOR: LineExtractor = {
       const line = lines[i] ?? '';
       const m = MARKERS.toolResultLine.pattern.exec(line);
       if (!m) continue;
+      const name = m[1] ?? '';
+      // A `⎿ <token> <rest>` line is only a genuine tool RESULT header
+      // when <token> is a plausible tool name. Otherwise it's raw command
+      // output (a Bash turn's stdout, a grep hit, …) that must NOT be
+      // reported as a phantom tool_result — which the SSE layer would in
+      // turn surface as a bogus tool_use.
+      if (!looksLikeToolName(name)) continue;
       const sig = `${i}::${line.trim()}`;
       if (next.has(sig)) continue;
       next.add(sig);
       events.push({
         type: 'tool_result',
-        name: m[1] ?? '',
+        name,
         summary: (m[2] ?? '').trim(),
       });
     }
@@ -302,6 +323,32 @@ export const TRUST_PROMPT_EXTRACTOR: LineExtractor = {
     }
     if (!trustVisible && state.trustPromptEmitted) {
       return { events: [], stateUpdate: { trustPromptEmitted: false } };
+    }
+    return { events: [], stateUpdate: {} };
+  },
+};
+
+export const ONBOARDING_EXTRACTOR: LineExtractor = {
+  name: 'onboarding',
+  purpose:
+    'Surface a `claude_onboarding_required` error when claude is sitting on a first-run onboarding screen the parser cannot drive (theme/effort picker). Turns an otherwise silent `starting` hang — the footer never matches, so `ready` never fires — into an explicit, debuggable signal. Latches; resets when the screen is gone. Does NOT set turnHadActivity (an onboarding screen is not turn activity).',
+  apply({ lines, state }) {
+    const onboardingVisible = lines.some((l) => matches('onboardingPrompt', l));
+    if (onboardingVisible && !state.onboardingEmitted) {
+      return {
+        events: [
+          {
+            type: 'error',
+            code: 'claude_onboarding_required',
+            message:
+              'claude is showing a first-run onboarding screen (theme/effort picker) that june15 cannot drive. Run `claude` once in an interactive terminal to complete onboarding, then retry.',
+          },
+        ],
+        stateUpdate: { onboardingEmitted: true },
+      };
+    }
+    if (!onboardingVisible && state.onboardingEmitted) {
+      return { events: [], stateUpdate: { onboardingEmitted: false } };
     }
     return { events: [], stateUpdate: {} };
   },
@@ -405,6 +452,7 @@ export const BLOCK_EXTRACTORS: readonly BlockExtractor[] = Object.freeze([
 
 export const LINE_EXTRACTORS: readonly LineExtractor[] = Object.freeze([
   TRUST_PROMPT_EXTRACTOR,
+  ONBOARDING_EXTRACTOR,
   API_ERROR_EXTRACTOR,
   TOOL_USE_EXTRACTOR,
   TOOL_RESULT_EXTRACTOR,

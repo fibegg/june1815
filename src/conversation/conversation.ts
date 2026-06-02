@@ -62,6 +62,15 @@ export class Conversation {
 
   private _state: ConversationState = 'starting';
   private readonly subscribers = new Set<(e: ConversationEvent) => void>();
+  /**
+   * Latched blocking diagnostic emitted during `starting` — currently the
+   * first-run onboarding screen the parser can't drive. It's emitted before
+   * any HTTP client connects, so we remember it to (a) fail `waitForReady`
+   * fast instead of timing out, and (b) replay it to any SSE subscriber
+   * that attaches after detection (otherwise the diagnostic is lost and the
+   * client hangs with no explanation).
+   */
+  private blockedReason: { readonly code: string; readonly message: string } | null = null;
 
   private dataTimer: NodeJS.Timeout | number | null = null;
   private burstTimer: NodeJS.Timeout | number | null = null;
@@ -97,6 +106,17 @@ export class Conversation {
   /** Subscribe to events. Returns an unsubscribe function. */
   onEvent(cb: (event: ConversationEvent) => void): () => void {
     this.subscribers.add(cb);
+    // Replay a latched blocking diagnostic (e.g. onboarding) so a
+    // subscriber that connects AFTER detection still learns why the
+    // conversation isn't progressing, instead of waiting in silence.
+    if (this.blockedReason) {
+      const { code, message } = this.blockedReason;
+      try {
+        cb({ type: 'error', code, message });
+      } catch {
+        // Subscriber failures must not break subscription.
+      }
+    }
     return () => this.subscribers.delete(cb);
   }
 
@@ -248,7 +268,26 @@ export class Conversation {
       this.driver.raw('\r');
       return;
     }
+    if (
+      e.type === 'error' &&
+      e.code === 'claude_onboarding_required' &&
+      this._state === 'starting'
+    ) {
+      // claude is parked on a first-run onboarding screen (theme/effort
+      // picker) the parser can't drive. Don't hang silently: latch the
+      // reason, fail any waitForReady callers fast, and forward the
+      // diagnostic to current subscribers. Late subscribers get it
+      // replayed on subscribe.
+      this.blockedReason = { code: e.code, message: e.message };
+      const err = new June15Error('claude_onboarding_required', e.message);
+      for (const reject of this.readyRejecters) reject(err);
+      this.readyResolvers = [];
+      this.readyRejecters = [];
+      this.emit(e);
+      return;
+    }
     if (e.type === 'ready' && this._state === 'starting') {
+      this.blockedReason = null;
       this.setState('ready');
       for (const resolve of this.readyResolvers) resolve();
       this.readyResolvers = [];

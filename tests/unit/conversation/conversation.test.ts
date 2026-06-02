@@ -182,4 +182,30 @@ describe('Conversation lifecycle', () => {
     emitExit({ exitCode: 1, signal: null });
     await expect(p).rejects.toThrow();
   });
+
+  it('fails waitForReady fast (not on timeout) when claude shows a first-run onboarding screen', async () => {
+    const { emitData, conv } = setupConversation();
+    const p = conv.waitForReady(30_000);
+    emitData('Choose the text style that looks best with your terminal\r\n❯ 1. Dark mode\r\n');
+    await conv.snapshotNow();
+    // Rejects immediately via the onboarding interception, not after 30s.
+    await expect(p).rejects.toThrow(/onboarding/i);
+    // Still `starting` (we surface the reason; we don't pretend to recover).
+    expect(conv.state).toBe('starting');
+  });
+
+  it('replays the onboarding diagnostic to a subscriber that attaches after detection', async () => {
+    const { emitData, conv } = setupConversation();
+    emitData('Choose the text style that looks best with your terminal\r\n');
+    await conv.snapshotNow();
+    // A late subscriber (e.g. an SSE /messages stream opened after startup)
+    // must still receive the diagnostic instead of hanging.
+    const late: ConversationEvent[] = [];
+    conv.onEvent((e) => late.push(e));
+    const err = late.find(
+      (e): e is Extract<ConversationEvent, { type: 'error' }> =>
+        e.type === 'error' && e.code === 'claude_onboarding_required',
+    );
+    expect(err).toBeDefined();
+  });
 });
