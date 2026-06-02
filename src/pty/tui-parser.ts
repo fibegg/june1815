@@ -15,8 +15,9 @@ import { TuiEngine } from './tui/engine.js';
 import { MARKERS, type MarkerName } from './tui/markers.js';
 import { computeDelta as engineComputeDelta } from './tui/transforms.js';
 import type { TerminalSnapshot } from './terminal.js';
+import type { TuiEvent } from './tui/types.js';
 
-export type { TuiEvent } from './tui/types.js';
+export type { TuiEvent };
 export { MARKERS } from './tui/markers.js';
 
 /** Legacy `TuiPatterns` shape kept so existing tests and consumers
@@ -95,7 +96,7 @@ export class TuiParser {
     this.engine.markTurnStarted();
   }
 
-  parse(snap: TerminalSnapshot): import('./tui/types.js').TuiEvent[] {
+  parse(snap: TerminalSnapshot): TuiEvent[] {
     return this.engine.parse(snap);
   }
 }

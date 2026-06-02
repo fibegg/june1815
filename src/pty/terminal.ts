@@ -4,6 +4,11 @@
 import * as XtermHeadless from '@xterm/headless';
 import type { Terminal as TerminalType } from '@xterm/headless';
 const XtermCtor =
+  // The cast keeps `.Terminal` optional so the `.default` fallback below
+  // stays type-valid: @xterm/headless is CJS at runtime and Node's ESM
+  // interop may surface the class on `.default` rather than as a named
+  // export, even though the package's types now claim otherwise.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   (XtermHeadless as { Terminal?: typeof TerminalType }).Terminal ??
   ((XtermHeadless as unknown as { default?: { Terminal: typeof TerminalType } }).default
     ?.Terminal);

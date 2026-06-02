@@ -134,7 +134,7 @@ const realProbeSpawn: AuthProbeSpawnFacade = {
       const timer = setTimeout(() => {
         child.kill('SIGKILL');
       }, timeoutMs);
-      timer.unref?.();
+      timer.unref();
       child.stdout.on('data', (c: Buffer | string) => {
         stdout += c.toString();
       });
