@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { bearerAuthMiddleware } from '../../../src/server/middleware/bearer-auth.js';
 import { errorHandler } from '../../../src/server/middleware/error.js';
 import { requestIdMiddleware } from '../../../src/server/middleware/request-id.js';
-import { June15Error } from '../../../src/errors.js';
+import { June1815Error } from '../../../src/errors.js';
 
 describe('requestIdMiddleware', () => {
   it('echoes an incoming x-request-id header back', async () => {
@@ -75,7 +75,7 @@ describe('bearerAuthMiddleware', () => {
 
   it('accepts the token from the configured cookie', async () => {
     const res = await makeApp({ token: 'secret' }).fetch(
-      new Request('http://t/v1/x', { headers: { cookie: 'june15_token=secret' } }),
+      new Request('http://t/v1/x', { headers: { cookie: 'june1815_token=secret' } }),
     );
     expect(res.status).toBe(200);
   });
@@ -83,7 +83,7 @@ describe('bearerAuthMiddleware', () => {
   it('decodes percent-encoded cookie values', async () => {
     const res = await makeApp({ token: 'a/b%c' }).fetch(
       new Request('http://t/v1/x', {
-        headers: { cookie: `june15_token=${encodeURIComponent('a/b%c')}` },
+        headers: { cookie: `june1815_token=${encodeURIComponent('a/b%c')}` },
       }),
     );
     expect(res.status).toBe(200);
@@ -96,7 +96,7 @@ describe('bearerAuthMiddleware', () => {
     expect(res.status).toBe(200);
     const setCookie = res.headers.get('set-cookie');
     expect(setCookie).toBeTruthy();
-    expect(setCookie).toMatch(/june15_token=secret/);
+    expect(setCookie).toMatch(/june1815_token=secret/);
     expect(setCookie).toMatch(/HttpOnly/);
     expect(setCookie).toMatch(/SameSite=Strict/);
   });
@@ -106,12 +106,12 @@ describe('bearerAuthMiddleware', () => {
       new Request('http://t/v1/x?token=secret'),
     );
     expect(res.status).toBe(200);
-    expect(res.headers.get('set-cookie')).toMatch(/june15_token=secret/);
+    expect(res.headers.get('set-cookie')).toMatch(/june1815_token=secret/);
   });
 
   it('does NOT plant a Set-Cookie when auth came from the cookie itself', async () => {
     const res = await makeApp({ token: 'secret' }).fetch(
-      new Request('http://t/v1/x', { headers: { cookie: 'june15_token=secret' } }),
+      new Request('http://t/v1/x', { headers: { cookie: 'june1815_token=secret' } }),
     );
     expect(res.status).toBe(200);
     expect(res.headers.get('set-cookie')).toBeNull();
@@ -143,10 +143,10 @@ describe('bearerAuthMiddleware', () => {
 });
 
 describe('errorHandler', () => {
-  it('maps a known June15Error code to its HTTP status', async () => {
+  it('maps a known June1815Error code to its HTTP status', async () => {
     const app = new Hono();
     app.get('/boom', () => {
-      throw new June15Error('conversation_not_found', 'no such convo');
+      throw new June1815Error('conversation_not_found', 'no such convo');
     });
     app.onError(errorHandler());
     const res = await app.fetch(new Request('http://t/boom'));
@@ -158,7 +158,7 @@ describe('errorHandler', () => {
   it('returns 429 on conversation_limit_reached', async () => {
     const app = new Hono();
     app.get('/boom', () => {
-      throw new June15Error('conversation_limit_reached', 'too many');
+      throw new June1815Error('conversation_limit_reached', 'too many');
     });
     app.onError(errorHandler());
     const res = await app.fetch(new Request('http://t/boom'));

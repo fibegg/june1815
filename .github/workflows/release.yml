@@ -56,7 +56,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           npm publish --provenance --access public
-          echo "url=https://www.npmjs.com/package/june15/v/${{ steps.read-version.outputs.version }}" >> "$GITHUB_OUTPUT"
+          echo "url=https://www.npmjs.com/package/june1815/v/${{ steps.read-version.outputs.version }}" >> "$GITHUB_OUTPUT"
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,7 +72,7 @@ jobs:
     uses: ./.github/workflows/slack-notify.yml
     with:
       status: ${{ needs.publish.result == 'success' && 'success' || 'failure' }}
-      title: ${{ needs.publish.result == 'success' && format('june15 v{0} published', needs.publish.outputs.version) || 'june15 release failed' }}
+      title: ${{ needs.publish.result == 'success' && format('june1815 v{0} published', needs.publish.outputs.version) || 'june1815 release failed' }}
       body: ${{ needs.publish.result == 'success' && format('npm: {0}', needs.publish.outputs.url) || 'Release workflow failed — check the logs.' }}
       url: ${{ needs.publish.outputs.url }}
     secrets:

@@ -57,14 +57,14 @@ describe('detectAuth', () => {
     expect(r.source).toBe('env_claude_key');
   });
 
-  it('reads june15 token file when env is empty', () => {
+  it('reads june1815 token file when env is empty', () => {
     const r = detectAuth({
       env: {},
       homeDir: '/h',
       dataDir: '/d',
       fs: fakeFs({ '/d/agent_token.txt': 'token-value' }),
     });
-    expect(r.source).toBe('june15_token_file');
+    expect(r.source).toBe('june1815_token_file');
     expect(r.path).toBe('/d/agent_token.txt');
   });
 

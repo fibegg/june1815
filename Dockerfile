@@ -20,7 +20,7 @@ RUN npm run build && npm prune --omit=dev --no-audit --no-fund
 FROM node:22-slim AS runtime
 ENV NODE_ENV=production \
     CI=false \
-    JUNE15_DATA_DIR=/var/lib/june15
+    JUNE1815_DATA_DIR=/var/lib/june1815
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -30,27 +30,27 @@ RUN apt-get update \
         build-essential \
  && rm -rf /var/lib/apt/lists/*
 
-# Install the official claude CLI globally so `docker run june15 gogogo`
+# Install the official claude CLI globally so `docker run june1815 gogogo`
 # works zero-config. Users can swap this out by building their own image.
 RUN --mount=type=cache,target=/root/.npm \
     npm install -g @anthropic-ai/claude-code --no-audit --no-fund \
  && find /usr/local/lib/node_modules -type f -name '*.map' -delete
 
-RUN useradd -m -u 10001 -d /home/june15 june15 \
- && mkdir -p /var/lib/june15 \
- && chown -R june15:june15 /var/lib/june15
+RUN useradd -m -u 10001 -d /home/june1815 june1815 \
+ && mkdir -p /var/lib/june1815 \
+ && chown -R june1815:june1815 /var/lib/june1815
 
-USER june15
-WORKDIR /home/june15/app
+USER june1815
+WORKDIR /home/june1815/app
 
-COPY --link --from=build --chown=june15:june15 /app/dist ./dist
-COPY --link --from=build --chown=june15:june15 /app/node_modules ./node_modules
-COPY --link --from=build --chown=june15:june15 /app/package.json ./
-COPY --link --from=build --chown=june15:june15 /app/june15.example.yml ./
+COPY --link --from=build --chown=june1815:june1815 /app/dist ./dist
+COPY --link --from=build --chown=june1815:june1815 /app/node_modules ./node_modules
+COPY --link --from=build --chown=june1815:june1815 /app/package.json ./
+COPY --link --from=build --chown=june1815:june1815 /app/june1815.example.yml ./
 
 EXPOSE 7150
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=10s \
-  CMD node -e "fetch('http://127.0.0.1:'+(process.env.JUNE15_PORT||7150)+'/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.JUNE1815_PORT||7150)+'/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
 
 ENTRYPOINT ["/usr/bin/tini","--","node","dist/cli/bin.js"]
 CMD ["gogogo","--host","0.0.0.0"]

@@ -1,5 +1,5 @@
 import type * as NodePtyModule from 'node-pty';
-import { June15Error } from '../errors.js';
+import { June1815Error } from '../errors.js';
 
 /** Information emitted when the PTY child process exits. */
 export interface PtyExit {
@@ -76,7 +76,7 @@ type ExitListener = (info: PtyExit) => void;
 /**
  * Higher-level wrapper over `PtyHandle`. Tracks lifecycle state, fans out
  * data and exit events to multiple consumers, and refuses operations on a
- * dead PTY with a typed `June15Error('pty_dead')`.
+ * dead PTY with a typed `June1815Error('pty_dead')`.
  */
 export class ClaudePty {
   private constructor(
@@ -89,7 +89,7 @@ export class ClaudePty {
     try {
       handle = spawner.spawn(opts);
     } catch (err) {
-      throw new June15Error('pty_spawn_failed', `failed to spawn PTY: ${(err as Error).message}`, {
+      throw new June1815Error('pty_spawn_failed', `failed to spawn PTY: ${(err as Error).message}`, {
         command: opts.command,
       });
     }
@@ -140,7 +140,7 @@ export class ClaudePty {
 
   private assertAlive(op: string): void {
     if (this._state !== 'alive') {
-      throw new June15Error('pty_dead', `cannot ${op} on a PTY that has exited`);
+      throw new June1815Error('pty_dead', `cannot ${op} on a PTY that has exited`);
     }
   }
 

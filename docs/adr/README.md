@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-This directory captures non-trivial design decisions for june15.
+This directory captures non-trivial design decisions for june1815.
 
 Each ADR is short, decision-focused, and append-only — superseded ADRs stay in
 the tree and link forward to their replacement. New entries copy

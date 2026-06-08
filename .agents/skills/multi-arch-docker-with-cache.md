@@ -57,7 +57,7 @@ by `scope` (we use `docker` to share across our docker workflow runs).
 `mode=max` caches every layer, not just the final one — costs more
 storage, dramatically faster on near-identical rebuilds.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `Dockerfile` — three stages (deps/build/runtime), BUILDPLATFORM
   pinned on the two builder stages, --link COPY everywhere, npm cache

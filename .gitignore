@@ -28,13 +28,13 @@ Thumbs.db
 *.swp
 *.swo
 
-# Runtime data (june15 data dir when run from repo root for dev)
+# Runtime data (june1815 data dir when run from repo root for dev)
 data/
-.june15/
+.june1815/
 playground/
 
 # Local-only config (the *.example.yml is checked in)
-june15.yml
+june1815.yml
 .env
 .env.local
 

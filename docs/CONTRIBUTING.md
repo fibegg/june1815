@@ -1,6 +1,6 @@
 # Contributing
 
-Welcome. june15 is small, opinionated, and aims to stay that way. Before
+Welcome. june1815 is small, opinionated, and aims to stay that way. Before
 opening a PR:
 
 1. Run the full check loop locally:

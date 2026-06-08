@@ -1,16 +1,16 @@
 /**
- * Minimal SSE client for a running `june15 gogogo` instance.
+ * Minimal SSE client for a running `june1815 gogogo` instance.
  * Usage:
- *   JUNE15_BEARER=<token> npx tsx client.ts "say hi"
+ *   JUNE1815_BEARER=<token> npx tsx client.ts "say hi"
  */
 
-const URL_BASE = process.env['JUNE15_URL'] ?? 'http://127.0.0.1:7150';
-const BEARER = process.env['JUNE15_BEARER'] ?? '';
-const CWD = process.env['JUNE15_CWD'] ?? '/tmp';
+const URL_BASE = process.env['JUNE1815_URL'] ?? 'http://127.0.0.1:7150';
+const BEARER = process.env['JUNE1815_BEARER'] ?? '';
+const CWD = process.env['JUNE1815_CWD'] ?? '/tmp';
 
 if (!BEARER) {
   // eslint-disable-next-line no-console
-  console.error('JUNE15_BEARER env var required (the bearer token printed by `june15 gogogo`)');
+  console.error('JUNE1815_BEARER env var required (the bearer token printed by `june1815 gogogo`)');
   process.exit(2);
 }
 

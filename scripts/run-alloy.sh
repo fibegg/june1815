@@ -6,16 +6,16 @@
 #   scripts/run-alloy.sh session_lifecycle     # one suite
 #
 # Environment overrides:
-#   ALLOY_JAR — path to the Alloy 6 fat jar (default ~/.local/share/june15/alloy.jar)
+#   ALLOY_JAR — path to the Alloy 6 fat jar (default ~/.local/share/june1815/alloy.jar)
 #   JAVA      — Java executable to use (default `java`)
-#   OUT       — output directory for analyzer JSON (default /tmp/june15-alloy)
+#   OUT       — output directory for analyzer JSON (default /tmp/june1815-alloy)
 set -euo pipefail
 
 REPO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." &> /dev/null && pwd)"
 ALLOY_DIR="${REPO_ROOT}/docs/alloy"
-OUT="${OUT:-/tmp/june15-alloy}"
+OUT="${OUT:-/tmp/june1815-alloy}"
 JAVA="${JAVA:-java}"
-ALLOY_JAR="${ALLOY_JAR:-${HOME}/.local/share/june15/alloy.jar}"
+ALLOY_JAR="${ALLOY_JAR:-${HOME}/.local/share/june1815/alloy.jar}"
 
 if [ ! -f "${ALLOY_JAR}" ]; then
   echo "ALLOY_JAR not found at ${ALLOY_JAR}. Download from:"

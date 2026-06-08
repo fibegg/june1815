@@ -36,7 +36,7 @@ function format(checks: readonly Check[]): string {
 }
 
 export const registerDoctor: CommandRegistrar = (program, io) => {
-  const cmd = new Command('doctor').description('diagnose june15\'s runtime prerequisites').action(
+  const cmd = new Command('doctor').description('diagnose june1815\'s runtime prerequisites').action(
     async (raw: DoctorOptions, command: Command) => {
       const common = (command.parent?.opts() ?? {});
       const cliPartial = commonOptionsToConfig({ ...common, ...raw });
@@ -68,7 +68,7 @@ export const registerDoctor: CommandRegistrar = (program, io) => {
       const auth = detectAuth({
         env: process.env,
         homeDir: homedir(),
-        dataDir: config.dataDir ?? join(homedir(), '.local', 'share', 'june15'),
+        dataDir: config.dataDir ?? join(homedir(), '.local', 'share', 'june1815'),
       });
       checks.push({
         label: 'auth source',
@@ -76,7 +76,7 @@ export const registerDoctor: CommandRegistrar = (program, io) => {
         status: auth.authenticated ? 'ok' : 'warn',
       });
 
-      const dataDir = config.dataDir ?? join(homedir(), '.local', 'share', 'june15');
+      const dataDir = config.dataDir ?? join(homedir(), '.local', 'share', 'june1815');
       checks.push({
         label: 'data dir',
         value: `${dataDir} (${existsSync(dataDir) ? 'exists' : 'will be created on first use'})`,

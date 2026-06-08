@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ClaudePty, type PtyExit, type PtyHandle, type PtySpawner } from '../../../src/pty/claude-pty.js';
-import { isJune15Error } from '../../../src/errors.js';
+import { isJune1815Error } from '../../../src/errors.js';
 
 function fakeHandle(): {
   handle: PtyHandle;
@@ -110,8 +110,8 @@ describe('ClaudePty', () => {
       pty.write('hi');
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) expect(err.code).toBe('pty_dead');
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) expect(err.code).toBe('pty_dead');
     }
   });
 
@@ -140,7 +140,7 @@ describe('ClaudePty', () => {
     expect(f.killed).toEqual([]);
   });
 
-  it('reports spawn failure as June15Error pty_spawn_failed', () => {
+  it('reports spawn failure as June1815Error pty_spawn_failed', () => {
     const badSpawner: PtySpawner = {
       spawn: () => {
         throw new Error('exec not found');
@@ -153,8 +153,8 @@ describe('ClaudePty', () => {
       );
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) {
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) {
         expect(err.code).toBe('pty_spawn_failed');
         expect(err.message).toContain('exec not found');
       }

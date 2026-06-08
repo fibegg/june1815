@@ -2,7 +2,7 @@
 
 ## When to use
 
-Library-shaped code with clear inputs and outputs. june15's pure modules
+Library-shaped code with clear inputs and outputs. june1815's pure modules
 (config loader, parsers, queue, terminal adapter) benefit hugely; the
 integration assembly in `cli/commands/gogogo.ts` benefits less but is
 still factored so the *composition* (`composeGogogo`) is testable
@@ -33,7 +33,7 @@ without binding a socket.
 - Don't test logging output unless it's a public contract. We treat
   the logger as a fire-and-forget sink.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - Every `src/x/y.ts` has a `tests/unit/x/y.test.ts` peer.
 - `tests/integration/` is reserved for tests that spin up a real

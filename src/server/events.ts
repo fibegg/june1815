@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * Schemas for every event the server emits over SSE. Exported as a public
- * subpath (`june15/events`) so consumers can import the zod schemas (or the
+ * subpath (`june1815/events`) so consumers can import the zod schemas (or the
  * inferred TS types) without depending on internals.
  */
 

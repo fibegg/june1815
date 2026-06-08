@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { June15Error } from '../errors.js';
+import { June1815Error } from '../errors.js';
 import type { Mode } from '../config/schema.js';
 
 /** Outcome of an install attempt. */
@@ -84,7 +84,7 @@ export async function installClaude(input: InstallInput): Promise<InstallResult>
   if (input.mode === 'headless' && !input.autoInstall) {
     input.log?.warn(
       "`claude` not found and headless mode forbids unattended install. " +
-        'Set JUNE15_AUTO_INSTALL=1 or pass --auto-install to permit it, ' +
+        'Set JUNE1815_AUTO_INSTALL=1 or pass --auto-install to permit it, ' +
         `or run \`${display}\` manually.`,
     );
     return { installed: false, reason: 'headless_no_consent' };
@@ -114,20 +114,20 @@ export async function installClaude(input: InstallInput): Promise<InstallResult>
   return { installed: true, command: display };
 }
 
-/** Convenience wrapper that throws `June15Error` for non-installed outcomes. */
+/** Convenience wrapper that throws `June1815Error` for non-installed outcomes. */
 export async function installOrThrow(input: InstallInput): Promise<void> {
   const r = await installClaude(input);
   if (r.installed) return;
   switch (r.reason) {
     case 'declined':
-      throw new June15Error('claude_install_declined', 'user declined to install claude');
+      throw new June1815Error('claude_install_declined', 'user declined to install claude');
     case 'headless_no_consent':
-      throw new June15Error(
+      throw new June1815Error(
         'claude_install_declined',
-        'headless mode cannot install claude without --auto-install / JUNE15_AUTO_INSTALL=1',
+        'headless mode cannot install claude without --auto-install / JUNE1815_AUTO_INSTALL=1',
       );
     case 'spawn_failed':
-      throw new June15Error(
+      throw new June1815Error(
         'claude_install_failed',
         `claude install failed: ${r.details ?? '(no stderr)'}`,
       );

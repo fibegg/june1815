@@ -1,7 +1,7 @@
-# june15 Alloy Models
+# june1815 Alloy Models
 
 This directory holds small, runnable Alloy specifications for the design
-invariants that june15's tests cannot easily express by themselves. They are
+invariants that june1815's tests cannot easily express by themselves. They are
 **executable specs** — the analyzer either confirms each invariant holds for
 all bounded states or returns a concrete counterexample.
 
@@ -19,7 +19,7 @@ The script wraps:
 ```sh
 JAVA_HOME=/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home \
   /opt/homebrew/bin/alloy exec -f -t json \
-  -o /tmp/june15-alloy-<suite> \
+  -o /tmp/june1815-alloy-<suite> \
   -c '*' docs/alloy/<suite>.als
 ```
 

@@ -9,7 +9,7 @@ import type {
   SavedAttachment,
   UploadStore,
 } from '../../conversation/upload-store.js';
-import { June15Error } from '../../errors.js';
+import { June1815Error } from '../../errors.js';
 import type { SseEvent } from '../events.js';
 import type { AppEnv } from '../server.js';
 
@@ -42,7 +42,7 @@ function toAttachmentInput(
 
 /** Saves each attachment under the conversation's upload directory and
  *  returns the resulting `SavedAttachment` records for the Conversation to
- *  splice into the outgoing text. Throws `June15Error('http_bad_request')`
+ *  splice into the outgoing text. Throws `June1815Error('http_bad_request')`
  *  on malformed data URLs. */
 function saveAttachments(
   store: UploadStore,
@@ -53,7 +53,7 @@ function saveAttachments(
     try {
       return store.save(messageId, toAttachmentInput(a), i);
     } catch (err) {
-      throw new June15Error(
+      throw new June1815Error(
         'http_bad_request',
         `attachment[${i}]: ${(err as Error).message}`,
       );
@@ -113,21 +113,21 @@ export function registerMessageRoutes(app: Hono<AppEnv>, deps: MessageRouteDeps)
     intent: 'stream' | 'queue',
   ): Promise<Response> => {
     const id = c.req.param('id') ?? '';
-    if (id.length === 0) throw new June15Error('http_bad_request', 'missing conversation id');
+    if (id.length === 0) throw new June1815Error('http_bad_request', 'missing conversation id');
     const conv = deps.conversations.get(id);
-    if (!conv) throw new June15Error('conversation_not_found', id);
+    if (!conv) throw new June1815Error('conversation_not_found', id);
     const body: unknown = await c.req.json().catch(() => {
-      throw new June15Error('http_bad_request', 'invalid JSON body');
+      throw new June1815Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = SendBodySchema.safeParse(body);
-    if (!parsed.success) throw new June15Error('http_bad_request', 'text required');
+    if (!parsed.success) throw new June1815Error('http_bad_request', 'text required');
 
     const attachments = parsed.data.attachments ?? [];
     let messageId: string;
     if (attachments.length > 0) {
       const store = deps.uploadStoreFor?.(id);
       if (!store) {
-        throw new June15Error(
+        throw new June1815Error(
           'http_bad_request',
           'attachments not supported on this server (uploadStoreFor not configured)',
         );
@@ -152,7 +152,7 @@ export function registerMessageRoutes(app: Hono<AppEnv>, deps: MessageRouteDeps)
   app.post('/v1/conversations/:id/interrupt', async (c) => {
     const id = c.req.param('id');
     const conv = deps.conversations.get(id);
-    if (!conv) throw new June15Error('conversation_not_found', id);
+    if (!conv) throw new June1815Error('conversation_not_found', id);
     await c.req.json().catch(() => undefined);
     conv.interrupt();
     return c.json({ interrupted: true });
@@ -161,12 +161,12 @@ export function registerMessageRoutes(app: Hono<AppEnv>, deps: MessageRouteDeps)
   app.post('/v1/conversations/:id/steer', async (c) => {
     const id = c.req.param('id');
     const conv = deps.conversations.get(id);
-    if (!conv) throw new June15Error('conversation_not_found', id);
+    if (!conv) throw new June1815Error('conversation_not_found', id);
     const body: unknown = await c.req.json().catch(() => {
-      throw new June15Error('http_bad_request', 'invalid JSON body');
+      throw new June1815Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = SteerBodySchema.safeParse(body);
-    if (!parsed.success) throw new June15Error('http_bad_request', 'text required');
+    if (!parsed.success) throw new June1815Error('http_bad_request', 'text required');
     const messageId = conv.steer(parsed.data.text);
     return c.json({ messageId, steered: true });
   });

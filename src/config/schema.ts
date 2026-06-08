@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * Server (HTTP) configuration.
  *
- * `auth.bearerToken` is optional in the schema because june15 generates a
+ * `auth.bearerToken` is optional in the schema because june1815 generates a
  * random token on first boot if none is supplied. The generated value is
  * printed to stdout (interactive mode) or stderr (headless mode) so the
  * operator can copy it.
@@ -50,13 +50,13 @@ export const LimitsConfigSchema = z
 
 export const UiConfigSchema = z
   .object({
-    /** When true, june15 serves the bundled chat UI from `dist/ui/`. */
+    /** When true, june1815 serves the bundled chat UI from `dist/ui/`. */
     enabled: z.boolean().default(false),
     /** Override the path to the built UI directory. Default is the
      *  package-relative `dist/ui` which the published tarball ships. */
     distDir: z.string().optional(),
     /** When true, the cookie planted by the bearer middleware omits the
-     *  `Secure` flag so it works over plain HTTP. Default true (june15 is
+     *  `Secure` flag so it works over plain HTTP. Default true (june1815 is
      *  typically bound to 127.0.0.1). Set false behind TLS. */
     cookieInsecure: z.boolean().default(true),
   })

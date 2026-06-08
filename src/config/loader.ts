@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { ZodError } from 'zod';
-import { June15Error } from '../errors.js';
+import { June1815Error } from '../errors.js';
 import { ENV_KEYS, type EnvKeyDef } from './env-keys.js';
 import { type Config, ConfigSchema } from './schema.js';
 import { parseYaml } from './yaml.js';
@@ -117,7 +117,7 @@ function loadYamlFile(path: string, fs: FsFacade): PlainObject {
   try {
     content = fs.readFileSync(path, 'utf8');
   } catch (err) {
-    throw new June15Error('config_yaml_read', `failed to read ${path}: ${(err as Error).message}`, {
+    throw new June1815Error('config_yaml_read', `failed to read ${path}: ${(err as Error).message}`, {
       path,
     });
   }
@@ -128,8 +128,8 @@ function loadYamlFile(path: string, fs: FsFacade): PlainObject {
  * Resolve the final, validated config. Precedence (high to low):
  *  1. cliOverrides
  *  2. process.env (mapped via ENV_KEYS)
- *  3. ./june15.yml  (or `configPath` if provided)
- *  4. ~/.config/june15/june15.yml
+ *  3. ./june1815.yml  (or `configPath` if provided)
+ *  4. ~/.config/june1815/june1815.yml
  *  5. ConfigSchema defaults
  */
 export function loadConfig(input: LoaderInput = {}): Config {
@@ -138,8 +138,8 @@ export function loadConfig(input: LoaderInput = {}): Config {
   const env = input.env ?? process.env;
   const fs = input.fs ?? realFs;
 
-  const projectYamlPath = input.configPath ?? join(cwd, 'june15.yml');
-  const userYamlPath = join(home, '.config', 'june15', 'june15.yml');
+  const projectYamlPath = input.configPath ?? join(cwd, 'june1815.yml');
+  const userYamlPath = join(home, '.config', 'june1815', 'june1815.yml');
 
   const userYaml = loadYamlFile(userYamlPath, fs);
   const projectYaml = loadYamlFile(projectYamlPath, fs);
@@ -158,9 +158,9 @@ export function loadConfig(input: LoaderInput = {}): Config {
   return parsed.data;
 }
 
-function configError(zodErr: ZodError): June15Error {
+function configError(zodErr: ZodError): June1815Error {
   const issues = zodErr.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
-  return new June15Error('config_invalid', `config validation failed: ${issues}`, {
+  return new June1815Error('config_invalid', `config validation failed: ${issues}`, {
     issues: zodErr.issues,
   });
 }

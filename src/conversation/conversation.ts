@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { June15Error } from '../errors.js';
+import { June1815Error } from '../errors.js';
 import type { ClaudePty, PtyExit } from '../pty/claude-pty.js';
 import type { InputDriver } from '../pty/input-driver.js';
 import type { TerminalAdapter } from '../pty/terminal.js';
@@ -125,13 +125,13 @@ export class Conversation {
   waitForReady(timeoutMs = 30_000): Promise<void> {
     if (this._state === 'ready' || this._state === 'busy') return Promise.resolve();
     if (this._state === 'killed') {
-      return Promise.reject(new June15Error('pty_dead', 'pty already exited'));
+      return Promise.reject(new June1815Error('pty_dead', 'pty already exited'));
     }
     return new Promise<void>((resolve, reject) => {
       this.readyResolvers.push(resolve);
       this.readyRejecters.push(reject);
       const t = this.timers.setTimeout(() => {
-        reject(new June15Error('pty_dead', `timed out after ${timeoutMs}ms waiting for ready`));
+        reject(new June1815Error('pty_dead', `timed out after ${timeoutMs}ms waiting for ready`));
       }, timeoutMs);
       // Best-effort cleanup if we resolve normally.
       const cleanup = (): void => {
@@ -145,7 +145,7 @@ export class Conversation {
    *  message id. */
   send(text: string): string {
     if (this._state === 'killed') {
-      throw new June15Error('pty_dead', 'cannot send to a killed conversation');
+      throw new June1815Error('pty_dead', 'cannot send to a killed conversation');
     }
     const msg: QueuedMessage = { id: randomUUID(), text, enqueuedAt: Date.now() };
     this.queue.enqueue(msg);
@@ -213,7 +213,7 @@ export class Conversation {
     this.emit({ type: 'pty_exited', exitCode: info.exitCode, signal: info.signal });
     if (!wasKilled) {
       for (const reject of this.readyRejecters)
-        reject(new June15Error('pty_dead', `pty exited (code ${info.exitCode}) before ready`));
+        reject(new June1815Error('pty_dead', `pty exited (code ${info.exitCode}) before ready`));
       this.readyRejecters = [];
       this.readyResolvers = [];
     }
@@ -235,7 +235,7 @@ export class Conversation {
     if (this._state === 'killed') return;
     const snap = this.terminal.snapshot();
     const events = this.parser.parse(snap);
-    if (process.env.JUNE15_DEBUG_TUI === '1') {
+    if (process.env.JUNE1815_DEBUG_TUI === '1') {
       const ps = (this.parser as unknown as { engine?: { snapshotState?(): unknown } }).engine?.snapshotState?.() as
         | { inTurn?: boolean; turnHadActivity?: boolean; lastFooter?: string; readyEmitted?: boolean }
         | undefined;
@@ -279,7 +279,7 @@ export class Conversation {
       // diagnostic to current subscribers. Late subscribers get it
       // replayed on subscribe.
       this.blockedReason = { code: e.code, message: e.message };
-      const err = new June15Error('claude_onboarding_required', e.message);
+      const err = new June1815Error('claude_onboarding_required', e.message);
       for (const reject of this.readyRejecters) reject(err);
       this.readyResolvers = [];
       this.readyRejecters = [];

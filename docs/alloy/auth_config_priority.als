@@ -12,7 +12,7 @@ abstract sig AuthSource {
 one sig EnvOAuthToken    extends AuthSource { } { rank = 5 }
 one sig EnvAnthropicKey  extends AuthSource { } { rank = 4 }
 one sig EnvClaudeKey     extends AuthSource { } { rank = 3 }
-one sig June15TokenFile  extends AuthSource { } { rank = 2 }
+one sig June1815TokenFile  extends AuthSource { } { rank = 2 }
 one sig ClaudeCreds      extends AuthSource { } { rank = 1 }
 one sig NoAuth           extends AuthSource { } { rank = 0 }
 
@@ -36,7 +36,7 @@ fact authResolutionRule {
 // Reachability -------------------------------------------------------------
 
 run someEnvOAuth   { some w: AuthWorld | w.resolved = EnvOAuthToken   } for 4
-run someTokenFile  { some w: AuthWorld | w.resolved = June15TokenFile } for 4
+run someTokenFile  { some w: AuthWorld | w.resolved = June1815TokenFile } for 4
 run someNoAuth     { some w: AuthWorld | w.resolved = NoAuth          } for 4
 
 // Safety -------------------------------------------------------------------

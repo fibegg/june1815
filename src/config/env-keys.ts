@@ -1,5 +1,5 @@
 /**
- * The single source of truth for every environment variable june15 recognizes.
+ * The single source of truth for every environment variable june1815 recognizes.
  *
  * Each entry maps an ENV key to a YAML path (dot-separated, walks the
  * Config tree). The loader uses this list to construct a partial config
@@ -10,7 +10,7 @@
 export type EnvKeyType = 'string' | 'number' | 'boolean';
 
 export interface EnvKeyDef {
-  /** ENV variable name. Conventionally JUNE15_ prefix. */
+  /** ENV variable name. Conventionally JUNE1815_ prefix. */
   env: string;
   /** Dot-path into the Config tree (e.g. "server.port"). */
   yaml: string;
@@ -26,35 +26,35 @@ export interface EnvKeyDef {
 
 export const ENV_KEYS: readonly EnvKeyDef[] = Object.freeze([
   {
-    env: 'JUNE15_MODE',
+    env: 'JUNE1815_MODE',
     yaml: 'mode',
     type: 'string',
     description: 'UX mode: interactive (TTY prompts) or headless (no prompts).',
     example: 'interactive',
   },
   {
-    env: 'JUNE15_DATA_DIR',
+    env: 'JUNE1815_DATA_DIR',
     yaml: 'dataDir',
     type: 'string',
     description: 'Conversation state and session markers location.',
-    example: '~/.local/share/june15',
+    example: '~/.local/share/june1815',
   },
   {
-    env: 'JUNE15_HOST',
+    env: 'JUNE1815_HOST',
     yaml: 'server.host',
     type: 'string',
     description: 'HTTP bind address. Use 0.0.0.0 to expose beyond localhost.',
     example: '127.0.0.1',
   },
   {
-    env: 'JUNE15_PORT',
+    env: 'JUNE1815_PORT',
     yaml: 'server.port',
     type: 'number',
     description: 'HTTP listen port.',
     example: '7150',
   },
   {
-    env: 'JUNE15_BEARER_TOKEN',
+    env: 'JUNE1815_BEARER_TOKEN',
     yaml: 'server.auth.bearerToken',
     type: 'string',
     description:
@@ -63,77 +63,77 @@ export const ENV_KEYS: readonly EnvKeyDef[] = Object.freeze([
     secret: true,
   },
   {
-    env: 'JUNE15_AUTO_INSTALL',
+    env: 'JUNE1815_AUTO_INSTALL',
     yaml: 'claude.autoInstall',
     type: 'boolean',
     description: 'Permit headless installation of `claude` via `npm i -g @anthropic-ai/claude-code`.',
     example: 'false',
   },
   {
-    env: 'JUNE15_CLAUDE_PATH',
+    env: 'JUNE1815_CLAUDE_PATH',
     yaml: 'claude.path',
     type: 'string',
     description: 'Explicit path to the `claude` executable. Overrides PATH lookup.',
     example: '/usr/local/bin/claude',
   },
   {
-    env: 'JUNE15_PTY_COLS',
+    env: 'JUNE1815_PTY_COLS',
     yaml: 'pty.cols',
     type: 'number',
     description: 'PTY width. Wider PTY reduces line-wrap noise in the TUI parser.',
     example: '200',
   },
   {
-    env: 'JUNE15_PTY_ROWS',
+    env: 'JUNE1815_PTY_ROWS',
     yaml: 'pty.rows',
     type: 'number',
     description: 'PTY height. Tall enough to hold reasoning + tool blocks.',
     example: '50',
   },
   {
-    env: 'JUNE15_PTY_IDLE_QUIET_MS',
+    env: 'JUNE1815_PTY_IDLE_QUIET_MS',
     yaml: 'pty.idleQuietMs',
     type: 'number',
     description: 'Quiet period in ms before the TUI parser snapshots the screen.',
     example: '10',
   },
   {
-    env: 'JUNE15_LOG_LEVEL',
+    env: 'JUNE1815_LOG_LEVEL',
     yaml: 'logger.level',
     type: 'string',
     description: 'pino log level: fatal | error | warn | info | debug | trace.',
     example: 'info',
   },
   {
-    env: 'JUNE15_LOG_PRETTY',
+    env: 'JUNE1815_LOG_PRETTY',
     yaml: 'logger.pretty',
     type: 'boolean',
     description: 'Force human-readable log output. Default: true in interactive mode.',
     example: 'true',
   },
   {
-    env: 'JUNE15_MAX_CONVERSATIONS',
+    env: 'JUNE1815_MAX_CONVERSATIONS',
     yaml: 'limits.maxConversations',
     type: 'number',
     description: 'Maximum concurrent conversations (each runs its own `claude` child).',
     example: '8',
   },
   {
-    env: 'JUNE15_UI_ENABLED',
+    env: 'JUNE1815_UI_ENABLED',
     yaml: 'ui.enabled',
     type: 'boolean',
     description: 'Serve the bundled chat UI at `/`. Disabled by default.',
     example: 'false',
   },
   {
-    env: 'JUNE15_UI_DIST_DIR',
+    env: 'JUNE1815_UI_DIST_DIR',
     yaml: 'ui.distDir',
     type: 'string',
     description: 'Override path to the built UI directory. Defaults to dist/ui inside the package.',
-    example: '/opt/june15/dist/ui',
+    example: '/opt/june1815/dist/ui',
   },
   {
-    env: 'JUNE15_UI_COOKIE_INSECURE',
+    env: 'JUNE1815_UI_COOKIE_INSECURE',
     yaml: 'ui.cookieInsecure',
     type: 'boolean',
     description: 'Omit Secure flag on the auth cookie so it works over plain HTTP. Set false behind TLS.',

@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { describe, expect, it } from 'vitest';
 import { runCli, type CliIo } from '../../../src/cli/cli.js';
 import { ExitCode } from '../../../src/cli/exit-codes.js';
-import { June15Error } from '../../../src/errors.js';
+import { June1815Error } from '../../../src/errors.js';
 import { applyCommonOptions, commonOptionsToConfig } from '../../../src/cli/cli-options.js';
 
 function ioForTesting() {
@@ -18,15 +18,15 @@ function ioForTesting() {
 }
 
 describe('runCli error translation', () => {
-  it('maps June15Error config_invalid to ExitCode.BadInput', async () => {
+  it('maps June1815Error config_invalid to ExitCode.BadInput', async () => {
     const { io, stderr, exit } = ioForTesting();
-    await runCli(['node', 'june15', 'boom'], {
+    await runCli(['node', 'june1815', 'boom'], {
       version: '0.0.0',
       io,
       registrars: [
         (program) => {
           program.command('boom').action(() => {
-            throw new June15Error('config_invalid', 'bad');
+            throw new June1815Error('config_invalid', 'bad');
           });
         },
       ],
@@ -37,13 +37,13 @@ describe('runCli error translation', () => {
 
   it('maps claude_not_found to ExitCode.ClaudeNotFound', async () => {
     const { io, exit } = ioForTesting();
-    await runCli(['node', 'june15', 'boom'], {
+    await runCli(['node', 'june1815', 'boom'], {
       version: '0.0.0',
       io,
       registrars: [
         (program) => {
           program.command('boom').action(() => {
-            throw new June15Error('claude_not_found', 'no claude');
+            throw new June1815Error('claude_not_found', 'no claude');
           });
         },
       ],
@@ -51,9 +51,9 @@ describe('runCli error translation', () => {
     expect(exit).toContain(ExitCode.ClaudeNotFound);
   });
 
-  it('maps non-June15 errors to ExitCode.Error', async () => {
+  it('maps non-June1815 errors to ExitCode.Error', async () => {
     const { io, stderr, exit } = ioForTesting();
-    await runCli(['node', 'june15', 'boom'], {
+    await runCli(['node', 'june1815', 'boom'], {
       version: '0.0.0',
       io,
       registrars: [
@@ -81,8 +81,8 @@ describe('applyCommonOptions / commonOptionsToConfig', () => {
   });
 
   it('--data-dir lands at dataDir', () => {
-    const partial = commonOptionsToConfig({ dataDir: '/tmp/june15' });
-    expect(partial.dataDir).toBe('/tmp/june15');
+    const partial = commonOptionsToConfig({ dataDir: '/tmp/june1815' });
+    expect(partial.dataDir).toBe('/tmp/june1815');
   });
 
   it('--log-level wraps under logger.level', () => {

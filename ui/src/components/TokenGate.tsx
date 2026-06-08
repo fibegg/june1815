@@ -57,10 +57,10 @@ export function TokenGate({ children }: { children: React.ReactNode }): JSX.Elem
           <CardHeader>
             <div className="flex items-center gap-2">
               <KeyRound className="h-5 w-5 text-primary" />
-              <CardTitle>june15</CardTitle>
+              <CardTitle>june1815</CardTitle>
             </div>
             <p className="text-sm text-muted-foreground">
-              Enter the bearer token printed by <code className="font-mono">june15 gogogo</code>
+              Enter the bearer token printed by <code className="font-mono">june1815 gogogo</code>
             </p>
           </CardHeader>
           <CardContent>

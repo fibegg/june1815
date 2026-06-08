@@ -32,7 +32,7 @@ re-plant; non-GET responses don't carry `Set-Cookie`.
 - Carve out one or two truly public paths (`/healthz`) via a
   `publicPaths` allowlist — never carve out the UI.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `src/server/middleware/bearer-auth.ts` — the three-source check plus
   the cookie planting.
@@ -45,6 +45,6 @@ re-plant; non-GET responses don't carry `Set-Cookie`.
 
 - Reverse proxies that strip cookies on cache-related paths. Add
   `Cache-Control: no-cache` on responses that carry `Set-Cookie`.
-- `?token=` ending up in server logs. june15's request logger does not
+- `?token=` ending up in server logs. june1815's request logger does not
   log query strings; if you copy this pattern, make sure yours does the
   same.

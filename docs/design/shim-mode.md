@@ -1,11 +1,11 @@
 # Shim mode — drop-in `claude` stream-JSON adapter
 
-`june15` is invokable as a drop-in replacement for the `claude` CLI
+`june1815` is invokable as a drop-in replacement for the `claude` CLI
 **when claude is being driven through its stream-JSON IPC protocol**.
 Any tool that spawns `claude --output-format stream-json --verbose
 --input-format stream-json …` (the protocol used by the official
 `@anthropic-ai/claude-agent-sdk`, custom SDK wrappers, and a handful
-of third-party automation tools) can spawn `june15` instead and get
+of third-party automation tools) can spawn `june1815` instead and get
 back the same wire shape — except the bytes are produced by a
 PTY-driven `claude` TUI under the hood rather than `claude` talking
 stream-JSON directly.
@@ -22,7 +22,7 @@ This is useful when you want:
 ## How it activates
 
 The shim is selected by **flag-sniffing the argv** in `bin.ts`. There
-is no `june15 shim` subcommand because the caller spawning `claude` is
+is no `june1815 shim` subcommand because the caller spawning `claude` is
 not aware of subcommands — it just passes the IPC flags. We detect:
 
 - `--output-format stream-json` (space or `=` form)
@@ -35,7 +35,7 @@ and the rest of the CLI (commander, `gogogo`, …) is bypassed entirely.
 ## Discovery
 
 ```
-caller spawns: june15 --output-format stream-json --verbose
+caller spawns: june1815 --output-format stream-json --verbose
                       --input-format stream-json --model … …
                       < stdin (NDJSON SDKUserMessage)
                       > stdout (NDJSON SDKMessage)
@@ -45,9 +45,9 @@ caller spawns: june15 --output-format stream-json --verbose
 
 | Env var | Required | Purpose |
 |---|---|---|
-| `JUNE15_CLAUDE_PATH` | **yes** | Absolute path to the real `claude` binary. Must exist and be executable. If unset or missing, the shim emits a `system/init` followed by a `result/error` and exits 1. |
-| `JUNE15_DATA_DIR` | no | Where per-session uploads land. Defaults to `~/.local/share/june15`. |
-| `JUNE15_TOOL_DEFS` | no | `:`-separated list (`;` on Windows) of additional `tool-defs.json` files to load — see [tool-plugins.md](./tool-plugins.md). |
+| `JUNE1815_CLAUDE_PATH` | **yes** | Absolute path to the real `claude` binary. Must exist and be executable. If unset or missing, the shim emits a `system/init` followed by a `result/error` and exits 1. |
+| `JUNE1815_DATA_DIR` | no | Where per-session uploads land. Defaults to `~/.local/share/june1815`. |
+| `JUNE1815_TOOL_DEFS` | no | `:`-separated list (`;` on Windows) of additional `tool-defs.json` files to load — see [tool-plugins.md](./tool-plugins.md). |
 
 ## Argument handling
 
@@ -110,7 +110,7 @@ content blocks. Recognised block types:
 
 - `text` — concatenated into the message text
 - `image` (`source.type === "base64"`) — decoded, written under
-  `<JUNE15_DATA_DIR>/uploads/<session_id>/<message_id>/<name>`, and
+  `<JUNE1815_DATA_DIR>/uploads/<session_id>/<message_id>/<name>`, and
   referenced as `@<absolute-path>` in the composed message text
 
 Other block types are dropped with a stderr warning. Non-`user`
@@ -172,9 +172,9 @@ the session id (the typical SDK pattern), that's transparent.
 ## Quick smoke test
 
 ```bash
-export JUNE15_CLAUDE_PATH=/opt/homebrew/bin/claude
+export JUNE1815_CLAUDE_PATH=/opt/homebrew/bin/claude
 echo '{"type":"user","message":{"role":"user","content":[{"type":"text","text":"reply with exactly: HELLO"}]}}' \
-  | june15 --output-format stream-json --verbose --input-format stream-json --model claude-opus-4-7
+  | june1815 --output-format stream-json --verbose --input-format stream-json --model claude-opus-4-7
 ```
 
 Expected: NDJSON `system/init` → `stream_event` `text_delta` "HELLO"

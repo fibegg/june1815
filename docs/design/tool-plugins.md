@@ -1,6 +1,6 @@
 # Tool plugins — user-extensible tool input synthesis
 
-When `june15` reports a tool call to a wire-protocol consumer (whether
+When `june1815` reports a tool call to a wire-protocol consumer (whether
 via [shim mode](./shim-mode.md) or — in a future change — the HTTP
 SSE stream), it needs to translate the TUI's `(name, summary)` view of
 a tool call into the structured `input` object that consumers expect.
@@ -36,9 +36,9 @@ If neither condition applies, ignore this doc — the defaults are fine.
 Tool def files are loaded in this order (later wins on conflict):
 
 1. **Built-in defaults** baked into the package
-2. **Env var** — `JUNE15_TOOL_DEFS=/path/a.json:/path/b.json` (`:` on
+2. **Env var** — `JUNE1815_TOOL_DEFS=/path/a.json:/path/b.json` (`:` on
    POSIX, `;` on Windows)
-3. **Config-relative** — `~/.config/june15/tool-defs.json` if it
+3. **Config-relative** — `~/.config/june1815/tool-defs.json` if it
    exists
 4. **CLI flag** — `--tool-defs /path/c.json` (repeatable; only the
    shim sees this — passed in via the shim's argv)
@@ -52,7 +52,7 @@ startup over a malformed plugin.
 
 ```jsonc
 {
-  "$schema": "https://june15.dev/schemas/tool-defs.v1.json",
+  "$schema": "https://june1815.dev/schemas/tool-defs.v1.json",
   "version": 1,
   "tools": {
     "Read": {
@@ -190,6 +190,6 @@ display (the built-in expects `file_path` but the new TUI now shows
 The TUI is built for humans, and humans read `Read(/etc/hosts)` as
 self-explanatory text. Wire-protocol consumers can't parse free-form
 text, so something has to translate. Hard-coding that translation per
-tool name in june15's source means every new MCP tool needs a june15
+tool name in june1815's source means every new MCP tool needs a june1815
 release. A small JSON config file makes the translation
 user-extensible without forking.

@@ -24,7 +24,7 @@ if (skip) {
   console.warn(`[e2e] skipping suite: ${(preflight as { ok: false; reason: string }).reason}`);
 }
 
-describe.skipIf(skip)('june15 e2e — full API coverage', () => {
+describe.skipIf(skip)('june1815 e2e — full API coverage', () => {
   const ctx = {} as TestCtx;
 
   beforeAll(async () => {

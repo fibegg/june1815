@@ -45,7 +45,7 @@ For the kinds of properties we care about (queue ordering, lifecycle
 totality, resolution determinism) that's the difference between "I have
 confidence" and "I have a proof, bounded".
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `docs/alloy/session_lifecycle.{md,als}`
 - `docs/alloy/message_queue.{md,als}`

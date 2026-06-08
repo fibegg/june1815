@@ -49,7 +49,7 @@ The `startsWith` fallback handles re-renders: if the TUI repainted the
 block, emit the whole thing and let the receiver tolerate the small
 churn.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `src/pty/terminal.ts` — xterm-headless adapter.
 - `src/pty/tui-parser.ts` — pattern-driven, `__test.computeDelta` exported

@@ -34,10 +34,10 @@ adding a new env key takes one focused edit, not a multi-file refactor.
 The loader is a pure function: `(cli, env, fs, paths) -> Config`.
 - No `process.env` reads outside the loader.
 - No singletons; tests instantiate fresh.
-- Failure returns a typed `June15Error('config_invalid')` with a
+- Failure returns a typed `June1815Error('config_invalid')` with a
   human-readable issue list.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `src/config/schema.ts`, `src/config/env-keys.ts`, `src/config/loader.ts`.
 - `src/config/render-env-example.ts` + `scripts/gen-env-example.ts`.

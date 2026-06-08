@@ -37,7 +37,7 @@ describe('ConfigSchema', () => {
   it('accepts a fully populated tree', () => {
     const populated = ConfigSchema.parse({
       mode: 'headless',
-      dataDir: '/var/lib/june15',
+      dataDir: '/var/lib/june1815',
       server: { host: '0.0.0.0', port: 8080, auth: { bearerToken: 'a'.repeat(32) } },
       claude: { path: '/usr/local/bin/claude', autoInstall: true },
       pty: { cols: 240, rows: 80, idleQuietMs: 20 },

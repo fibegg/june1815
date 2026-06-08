@@ -7,7 +7,7 @@ export interface LoadToolDefsOptions {
   /** `--tool-defs <path>` occurrences from the CLI. */
   readonly cliPaths?: readonly string[];
   /**
-   * Pre-split entries from the `JUNE15_TOOL_DEFS` env var. Splitting is
+   * Pre-split entries from the `JUNE1815_TOOL_DEFS` env var. Splitting is
    * the caller's responsibility (POSIX `:` vs Windows `;`).
    */
   readonly envPaths?: readonly string[];

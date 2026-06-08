@@ -8,8 +8,8 @@ type DeepPartial<T> = {
 /** Apply the set of common flags that every command honors. */
 export function applyCommonOptions(cmd: Command): Command {
   return cmd
-    .option('--config <path>', 'path to a june15.yml config file (overrides ./june15.yml)')
-    .option('--data-dir <path>', 'override JUNE15_DATA_DIR')
+    .option('--config <path>', 'path to a june1815.yml config file (overrides ./june1815.yml)')
+    .option('--data-dir <path>', 'override JUNE1815_DATA_DIR')
     .option('--log-level <level>', 'pino log level: fatal|error|warn|info|debug|trace')
     .addOption(new Option('--headless', 'force headless mode').conflicts('interactive'))
     .addOption(new Option('--interactive', 'force interactive mode').conflicts('headless'));

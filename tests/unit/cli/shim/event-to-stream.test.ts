@@ -165,13 +165,13 @@ describe('EventToStream', () => {
 
   it('emitStartupError emits a result/error without requiring a turn', () => {
     const sink = recordingSink();
-    makeWriter().emitStartupError(sink, 'JUNE15_CLAUDE_PATH not set');
+    makeWriter().emitStartupError(sink, 'JUNE1815_CLAUDE_PATH not set');
     expect(sink.lines).toHaveLength(1);
     expect(sink.lines[0]).toMatchObject({
       type: 'result',
       subtype: 'error',
       is_error: true,
-      errors: ['JUNE15_CLAUDE_PATH not set'],
+      errors: ['JUNE1815_CLAUDE_PATH not set'],
     });
   });
 

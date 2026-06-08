@@ -1,18 +1,18 @@
 # HTTP client example
 
-A TypeScript program that connects to a running `june15 gogogo`, creates
+A TypeScript program that connects to a running `june1815 gogogo`, creates
 a conversation, sends a message, and prints text deltas as they arrive.
 
 ## Run
 
 ```sh
 # from this directory
-JUNE15_URL=http://127.0.0.1:7150 \
-JUNE15_BEARER=<your-bearer> \
+JUNE1815_URL=http://127.0.0.1:7150 \
+JUNE1815_BEARER=<your-bearer> \
   npx tsx client.ts "say hi in three words"
 ```
 
-If `JUNE15_URL` / `JUNE15_BEARER` are unset, the client reads from
+If `JUNE1815_URL` / `JUNE1815_BEARER` are unset, the client reads from
 `process.env` and falls back to defaults (`http://127.0.0.1:7150` and an
 empty token). You can also write them in a `.env` file beside this
 script and source it.

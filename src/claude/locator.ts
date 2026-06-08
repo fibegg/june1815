@@ -20,7 +20,7 @@ export interface LocatorFs {
 }
 
 export interface LocatorInput {
-  /** Explicit override (from JUNE15_CLAUDE_PATH or config.claude.path). */
+  /** Explicit override (from JUNE1815_CLAUDE_PATH or config.claude.path). */
   overridePath?: string | undefined;
   /** The value of $PATH. */
   pathVar?: string | undefined;
@@ -82,7 +82,7 @@ function findNvmBinDirs(home: string, fs: LocatorFs): string[] {
 
 /**
  * Resolve a path to the `claude` executable, walking a prioritized search:
- *   1. explicit override (JUNE15_CLAUDE_PATH / config.claude.path)
+ *   1. explicit override (JUNE1815_CLAUDE_PATH / config.claude.path)
  *   2. every directory on $PATH
  *   3. nvm bin directories (newest Node version first)
  *   4. ~/.npm/bin (npm global prefix default)

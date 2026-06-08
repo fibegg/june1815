@@ -30,7 +30,7 @@ function walk(obj: Record<string, unknown>, prefix: string): Record<string, unkn
 }
 
 export const registerConfig: CommandRegistrar = (program, io) => {
-  const cfg = new Command('config').description('inspect or print example june15 configuration');
+  const cfg = new Command('config').description('inspect or print example june1815 configuration');
 
   const show = new Command('show')
     .description('print the resolved config tree (secrets redacted)')
@@ -44,14 +44,14 @@ export const registerConfig: CommandRegistrar = (program, io) => {
   cfg.addCommand(show);
 
   const example = new Command('example')
-    .description('print the annotated june15.example.yml')
+    .description('print the annotated june1815.example.yml')
     .action(() => {
       // Resolve the example file relative to the package — works both in
       // dist/ and in source layouts.
       const here = dirname(fileURLToPath(import.meta.url));
       const candidates = [
-        join(here, '..', '..', '..', 'june15.example.yml'),
-        join(here, '..', '..', 'june15.example.yml'),
+        join(here, '..', '..', '..', 'june1815.example.yml'),
+        join(here, '..', '..', 'june1815.example.yml'),
       ];
       let content: string | null = null;
       for (const c of candidates) {
@@ -63,7 +63,7 @@ export const registerConfig: CommandRegistrar = (program, io) => {
         }
       }
       if (content === null) {
-        io.stderr('error: could not locate june15.example.yml\n');
+        io.stderr('error: could not locate june1815.example.yml\n');
         io.exit(1);
         return;
       }

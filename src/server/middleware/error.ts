@@ -1,7 +1,7 @@
 import type { ErrorHandler } from 'hono';
-import { isJune15Error, type June15ErrorCode } from '../../errors.js';
+import { isJune1815Error, type June1815ErrorCode } from '../../errors.js';
 
-const STATUS_FOR_CODE: Record<June15ErrorCode, number> = {
+const STATUS_FOR_CODE: Record<June1815ErrorCode, number> = {
   config_invalid: 400,
   config_yaml_parse: 400,
   config_yaml_read: 500,
@@ -26,13 +26,13 @@ const STATUS_FOR_CODE: Record<June15ErrorCode, number> = {
 };
 
 /**
- * Catch-all error handler. Maps `June15Error` codes to HTTP status codes and
+ * Catch-all error handler. Maps `June1815Error` codes to HTTP status codes and
  * emits a stable JSON envelope. Unknown errors become 500 with a generic
  * message — the actual error message is logged but not leaked to clients.
  */
 export function errorHandler(log?: { error(err: unknown, msg: string): void }): ErrorHandler {
   return (err, c) => {
-    if (isJune15Error(err)) {
+    if (isJune1815Error(err)) {
       const status = STATUS_FOR_CODE[err.code];
       return c.json(
         { code: err.code, message: err.message, details: err.details },

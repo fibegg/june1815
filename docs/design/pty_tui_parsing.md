@@ -1,6 +1,6 @@
 # PTY → TUI parsing
 
-The hard part of june15. Walk through it once and the rest of the codebase
+The hard part of june1815. Walk through it once and the rest of the codebase
 is easy to follow.
 
 ## Why we don't `claude -p`
@@ -87,7 +87,7 @@ without a live `claude` binary.
 
 - **Soft wrap**: if the PTY cols are smaller than the longest TUI line,
   text wraps and the parser sees split lines. Mitigation: default to
-  `cols: 200`, configurable via `JUNE15_PTY_COLS`.
+  `cols: 200`, configurable via `JUNE1815_PTY_COLS`.
 - **Alternate buffer**: some claude features switch to the alternate
   screen (similar to vim). xterm-headless tracks alternate buffers
   natively; our snapshot reads the active buffer, which is the right

@@ -4,16 +4,16 @@ import { ENV_KEYS, findEnvKey } from '../../../src/config/env-keys.js';
 describe('ENV_KEYS catalogue', () => {
   it('exposes at least the minimum required leaves', () => {
     const envNames = ENV_KEYS.map((k) => k.env);
-    expect(envNames).toContain('JUNE15_PORT');
-    expect(envNames).toContain('JUNE15_HOST');
-    expect(envNames).toContain('JUNE15_BEARER_TOKEN');
-    expect(envNames).toContain('JUNE15_MODE');
-    expect(envNames).toContain('JUNE15_AUTO_INSTALL');
+    expect(envNames).toContain('JUNE1815_PORT');
+    expect(envNames).toContain('JUNE1815_HOST');
+    expect(envNames).toContain('JUNE1815_BEARER_TOKEN');
+    expect(envNames).toContain('JUNE1815_MODE');
+    expect(envNames).toContain('JUNE1815_AUTO_INSTALL');
   });
 
-  it('every env name uses the JUNE15_ prefix', () => {
+  it('every env name uses the JUNE1815_ prefix', () => {
     for (const k of ENV_KEYS) {
-      expect(k.env).toMatch(/^JUNE15_[A-Z][A-Z0-9_]*$/);
+      expect(k.env).toMatch(/^JUNE1815_[A-Z][A-Z0-9_]*$/);
     }
   });
 
@@ -35,7 +35,7 @@ describe('ENV_KEYS catalogue', () => {
   });
 
   it('marks the bearer token as secret', () => {
-    const tok = findEnvKey('JUNE15_BEARER_TOKEN');
+    const tok = findEnvKey('JUNE1815_BEARER_TOKEN');
     expect(tok?.secret).toBe(true);
   });
 

@@ -42,11 +42,11 @@ export interface AuthServiceOptions {
 }
 
 /**
- * Manages june15's own token file and answers "what's the current auth
+ * Manages june1815's own token file and answers "what's the current auth
  * source?" queries.
  *
  * Resolution order:
- *   1. Local sources — env vars, june15 token file, ~/.claude/.credentials.json.
+ *   1. Local sources — env vars, june1815 token file, ~/.claude/.credentials.json.
  *      Fast, no subprocess.
  *   2. `claude auth status` probe. Catches the case where claude stores
  *      credentials in the macOS Keychain or another OS-managed store

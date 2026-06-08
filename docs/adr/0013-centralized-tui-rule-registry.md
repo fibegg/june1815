@@ -5,7 +5,7 @@
 
 ## Context
 
-The Claude Code TUI is the only contract june15 has with `claude`, and
+The Claude Code TUI is the only contract june1815 has with `claude`, and
 it changes frequently. Across just the first two rounds of real-world
 testing we had to react to:
 

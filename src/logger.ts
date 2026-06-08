@@ -36,7 +36,7 @@ export function loggerOptionsFromConfig(
 export function createLogger(opts: LoggerOptions): Logger {
   const base: PinoLoggerOptions = {
     level: opts.level,
-    base: { name: 'june15' },
+    base: { name: 'june1815' },
     timestamp: pino.stdTimeFunctions.isoTime,
   };
 

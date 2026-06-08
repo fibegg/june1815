@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { Hono } from 'hono';
 import type { AppEnv } from '../server.js';
 import type { AuthService } from '../auth-service.js';
-import { June15Error } from '../../errors.js';
+import { June1815Error } from '../../errors.js';
 
 const TokenBodySchema = z.object({
   token: z.string().min(16).max(4096),
@@ -37,11 +37,11 @@ export function registerAuthRoutes(
 
   app.post('/v1/auth/token', async (c) => {
     const body: unknown = await c.req.json().catch(() => {
-      throw new June15Error('http_bad_request', 'invalid JSON body');
+      throw new June1815Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = TokenBodySchema.safeParse(body);
     if (!parsed.success) {
-      throw new June15Error('http_bad_request', 'token must be 16..4096 chars');
+      throw new June1815Error('http_bad_request', 'token must be 16..4096 chars');
     }
     deps.auth.setToken(parsed.data.token);
     return c.json({ stored: true });

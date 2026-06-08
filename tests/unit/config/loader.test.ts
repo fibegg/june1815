@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { deepMerge, envToPartial, loadConfig, type FsFacade } from '../../../src/config/loader.js';
-import { isJune15Error } from '../../../src/errors.js';
+import { isJune1815Error } from '../../../src/errors.js';
 
 function emptyFs(): FsFacade {
   return {
@@ -55,9 +55,9 @@ describe('envToPartial', () => {
 
   it('coerces numbers and booleans', () => {
     const out = envToPartial({
-      JUNE15_PORT: '8080',
-      JUNE15_AUTO_INSTALL: 'true',
-      JUNE15_HOST: '0.0.0.0',
+      JUNE1815_PORT: '8080',
+      JUNE1815_AUTO_INSTALL: 'true',
+      JUNE1815_HOST: '0.0.0.0',
     });
     expect(out).toEqual({
       server: { port: 8080, host: '0.0.0.0' },
@@ -66,14 +66,14 @@ describe('envToPartial', () => {
   });
 
   it('accepts varied boolean spellings', () => {
-    expect(envToPartial({ JUNE15_AUTO_INSTALL: '1' })).toEqual({ claude: { autoInstall: true } });
-    expect(envToPartial({ JUNE15_AUTO_INSTALL: 'yes' })).toEqual({ claude: { autoInstall: true } });
-    expect(envToPartial({ JUNE15_AUTO_INSTALL: 'off' })).toEqual({ claude: { autoInstall: false } });
+    expect(envToPartial({ JUNE1815_AUTO_INSTALL: '1' })).toEqual({ claude: { autoInstall: true } });
+    expect(envToPartial({ JUNE1815_AUTO_INSTALL: 'yes' })).toEqual({ claude: { autoInstall: true } });
+    expect(envToPartial({ JUNE1815_AUTO_INSTALL: 'off' })).toEqual({ claude: { autoInstall: false } });
   });
 
   it('ignores blank values', () => {
-    expect(envToPartial({ JUNE15_PORT: '' })).toEqual({});
-    expect(envToPartial({ JUNE15_PORT: '   ' })).toEqual({});
+    expect(envToPartial({ JUNE1815_PORT: '' })).toEqual({});
+    expect(envToPartial({ JUNE1815_PORT: '   ' })).toEqual({});
   });
 });
 
@@ -87,7 +87,7 @@ describe('loadConfig priority', () => {
 
   it('CLI overrides win over ENV', () => {
     const c = loadConfig({
-      env: { JUNE15_PORT: '9000' },
+      env: { JUNE1815_PORT: '9000' },
       cwd: '/x',
       homeDir: '/h',
       fs: emptyFs(),
@@ -97,9 +97,9 @@ describe('loadConfig priority', () => {
   });
 
   it('ENV overrides project yaml', () => {
-    const fs = fsWith({ '/x/june15.yml': 'server:\n  port: 3000\n' });
+    const fs = fsWith({ '/x/june1815.yml': 'server:\n  port: 3000\n' });
     const c = loadConfig({
-      env: { JUNE15_PORT: '5000' },
+      env: { JUNE1815_PORT: '5000' },
       cwd: '/x',
       homeDir: '/h',
       fs,
@@ -109,37 +109,37 @@ describe('loadConfig priority', () => {
 
   it('project yaml overrides user yaml', () => {
     const fs = fsWith({
-      '/x/june15.yml': 'server:\n  port: 3000\n',
-      '/h/.config/june15/june15.yml': 'server:\n  port: 1234\n',
+      '/x/june1815.yml': 'server:\n  port: 3000\n',
+      '/h/.config/june1815/june1815.yml': 'server:\n  port: 1234\n',
     });
     const c = loadConfig({ env: {}, cwd: '/x', homeDir: '/h', fs });
     expect(c.server.port).toBe(3000);
   });
 
   it('user yaml beats defaults', () => {
-    const fs = fsWith({ '/h/.config/june15/june15.yml': 'server:\n  port: 4567\n' });
+    const fs = fsWith({ '/h/.config/june1815/june1815.yml': 'server:\n  port: 4567\n' });
     const c = loadConfig({ env: {}, cwd: '/x', homeDir: '/h', fs });
     expect(c.server.port).toBe(4567);
   });
 
-  it('throws June15Error config_invalid on out-of-range port', () => {
+  it('throws June1815Error config_invalid on out-of-range port', () => {
     try {
       loadConfig({
-        env: { JUNE15_PORT: '999999' },
+        env: { JUNE1815_PORT: '999999' },
         cwd: '/x',
         homeDir: '/h',
         fs: emptyFs(),
       });
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) expect(err.code).toBe('config_invalid');
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) expect(err.code).toBe('config_invalid');
     }
   });
 
-  it('honors an explicit configPath over ./june15.yml', () => {
+  it('honors an explicit configPath over ./june1815.yml', () => {
     const fs = fsWith({
-      '/x/june15.yml': 'server:\n  port: 3000\n',
+      '/x/june1815.yml': 'server:\n  port: 3000\n',
       '/x/custom.yml': 'server:\n  port: 4444\n',
     });
     const c = loadConfig({ env: {}, cwd: '/x', homeDir: '/h', fs, configPath: '/x/custom.yml' });
@@ -147,13 +147,13 @@ describe('loadConfig priority', () => {
   });
 
   it('throws config_yaml_parse on malformed YAML', () => {
-    const fs = fsWith({ '/x/june15.yml': '\t- this: : is invalid\n' });
+    const fs = fsWith({ '/x/june1815.yml': '\t- this: : is invalid\n' });
     try {
       loadConfig({ env: {}, cwd: '/x', homeDir: '/h', fs });
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) expect(err.code).toBe('config_yaml_parse');
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) expect(err.code).toBe('config_yaml_parse');
     }
   });
 });

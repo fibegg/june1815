@@ -28,8 +28,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // During `npm --workspace @june15/ui run dev`, proxy API calls to a
-      // running `june15 gogogo` so the UI dev server doesn't need the
+      // During `npm --workspace @june1815/ui run dev`, proxy API calls to a
+      // running `june1815 gogogo` so the UI dev server doesn't need the
       // bearer token in the address bar.
       '/v1': 'http://127.0.0.1:7150',
       '/healthz': 'http://127.0.0.1:7150',

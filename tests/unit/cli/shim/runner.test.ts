@@ -117,17 +117,17 @@ describe('runShim end-to-end with stub PTY', () => {
   afterEach(() => { tmpDirs.splice(0); });
 
   function newDataDir(): string {
-    const d = join(tmpdir(), `june15-runner-test-${Math.random().toString(36).slice(2)}`);
+    const d = join(tmpdir(), `june1815-runner-test-${Math.random().toString(36).slice(2)}`);
     mkdirSync(d, { recursive: true });
     tmpDirs.push(d);
     return d;
   }
 
-  it('emits system/init first, even when JUNE15_CLAUDE_PATH is missing', async () => {
+  it('emits system/init first, even when JUNE1815_CLAUDE_PATH is missing', async () => {
     const out = ndjsonSink();
     const code = await runShim({
       argv: ['--output-format', 'stream-json', '--input-format', 'stream-json'],
-      env: { JUNE15_DATA_DIR: newDataDir() },
+      env: { JUNE1815_DATA_DIR: newDataDir() },
       io: { stdout: out.sink, stderr: () => undefined },
       stdin: fromString(''),
     });
@@ -137,17 +137,17 @@ describe('runShim end-to-end with stub PTY', () => {
       type: 'result',
       subtype: 'error',
       is_error: true,
-      errors: ['JUNE15_CLAUDE_PATH is not set'],
+      errors: ['JUNE1815_CLAUDE_PATH is not set'],
     });
   });
 
-  it('emits a result/error when JUNE15_CLAUDE_PATH points to a non-existent path', async () => {
+  it('emits a result/error when JUNE1815_CLAUDE_PATH points to a non-existent path', async () => {
     const out = ndjsonSink();
     const code = await runShim({
       argv: ['--output-format', 'stream-json', '--input-format', 'stream-json'],
       env: {
-        JUNE15_CLAUDE_PATH: '/does/not/exist/claude',
-        JUNE15_DATA_DIR: newDataDir(),
+        JUNE1815_CLAUDE_PATH: '/does/not/exist/claude',
+        JUNE1815_DATA_DIR: newDataDir(),
       },
       io: { stdout: out.sink, stderr: () => undefined },
       stdin: fromString(''),
@@ -190,8 +190,8 @@ describe('runShim end-to-end with stub PTY', () => {
         '--model', 'claude-opus-4-7',
       ],
       env: {
-        JUNE15_CLAUDE_PATH: fakeClaude,
-        JUNE15_DATA_DIR: dataDir,
+        JUNE1815_CLAUDE_PATH: fakeClaude,
+        JUNE1815_DATA_DIR: dataDir,
       },
       io: { stdout: out.sink, stderr: () => undefined },
       stdin: fromString(`${userMsg}\n`),
@@ -260,8 +260,8 @@ describe('runShim end-to-end with stub PTY', () => {
         '--tool-defs', toolDefsPath,
       ],
       env: {
-        JUNE15_CLAUDE_PATH: fakeClaude,
-        JUNE15_DATA_DIR: dataDir,
+        JUNE1815_CLAUDE_PATH: fakeClaude,
+        JUNE1815_DATA_DIR: dataDir,
       },
       io: { stdout: out.sink, stderr: () => undefined },
       stdin: fromString(`${userMsg}\n`),

@@ -15,7 +15,7 @@ Each `claude` child has non-trivial startup cost (MCP server boot, system prompt
 
 ## Decision
 
-june15 runs **one long-lived `claude` child process per `conversation_id`**, each in its own cwd. The `ConversationManager` owns a `Map<conversationId, Conversation>`. A hard cap (`JUNE15_MAX_CONVERSATIONS`, default 8) bounds the fleet. When the cap is hit, new conversation requests fail fast with a structured error rather than evicting a live conversation.
+june1815 runs **one long-lived `claude` child process per `conversation_id`**, each in its own cwd. The `ConversationManager` owns a `Map<conversationId, Conversation>`. A hard cap (`JUNE1815_MAX_CONVERSATIONS`, default 8) bounds the fleet. When the cap is hit, new conversation requests fail fast with a structured error rather than evicting a live conversation.
 
 ## Consequences
 

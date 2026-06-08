@@ -24,7 +24,7 @@ GET /v1/auth/status
 ```
 
 `source` is one of: `env_oauth`, `env_anthropic_key`, `env_claude_key`,
-`june15_token_file`, `claude_credentials`, `none`.
+`june1815_token_file`, `claude_credentials`, `none`.
 
 ```
 POST /v1/auth/token        { "token": "..." }   -> { "stored": true }

@@ -24,7 +24,7 @@ POST /v1/conversations/:id/messages
 Server pipeline:
 
 1. zod validates the body. `dataUrl` is `string`, capped at a generous
-   bound (20 MB raw chars in june15) per entry; the array is capped at
+   bound (20 MB raw chars in june1815) per entry; the array is capped at
    16 entries.
 2. `UploadStore.save(messageId, attachment, index)` parses the data URL,
    sanitizes the filename (strip path separators, control chars, leading
@@ -45,14 +45,14 @@ three converge on `readAsDataURL`.
 ## Sanitization is load-bearing
 
 A naive `path.join(uploadsDir, attachment.name)` is a directory-traversal
-hole. june15's `sanitizeFileName`:
+hole. june1815's `sanitizeFileName`:
 
 - Strips `\x00-\x1f`, `/`, `\`, `:`, `*`, `?`, `"`, `<`, `>`, `|`.
 - Strips leading dots so users can't write `.../../etc/passwd`.
 - Caps total length at 96 chars.
 - Falls back to `unnamed` if nothing survives.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `src/conversation/upload-store.ts` — `UploadStore`, `parseDataUrl`,
   `composeMessageWithAttachments`.

@@ -15,21 +15,21 @@ function snapFromLines(lines: string[], cols = 200, rows = 50): TerminalSnapshot
 
 // Regression: a Bash turn's raw stdout under `⎿` must NOT be misread as a
 // tool_result whose "name" is a fragment of command output. Observed live
-// on claude 2.1.156: `Bash(echo june15-works)` produced a correct
-// tool_use {Bash} PLUS a phantom tool_result {name:"june15-works"} which
+// on claude 2.1.156: `Bash(echo june1815-works)` produced a correct
+// tool_use {Bash} PLUS a phantom tool_result {name:"june1815-works"} which
 // the SSE layer surfaces as a bogus tool_use.
 describe('TUI tool-result: command output is not a phantom tool_result', () => {
   it('emits the real Bash tool_use but NOT a tool_result for its stdout', () => {
     const p = new TuiParser();
     p.markTurnStarted();
     const evs = p.parse(
-      snapFromLines(['⏺ Bash(echo june15-works)', '  ⎿ june15-works and more text']),
+      snapFromLines(['⏺ Bash(echo june1815-works)', '  ⎿ june1815-works and more text']),
     );
     const toolUse = evs.find(
       (e): e is Extract<TuiEvent, { type: 'tool_use' }> => e.type === 'tool_use',
     );
-    expect(toolUse).toEqual({ type: 'tool_use', name: 'Bash', summary: 'echo june15-works' });
-    // The stdout line's first token ("june15-works") is not a tool name.
+    expect(toolUse).toEqual({ type: 'tool_use', name: 'Bash', summary: 'echo june1815-works' });
+    // The stdout line's first token ("june1815-works") is not a tool name.
     expect(evs.find((e) => e.type === 'tool_result')).toBeUndefined();
   });
 

@@ -4,13 +4,13 @@
     {
       "name": "ui-preview",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--workspace", "@june15/ui", "run", "preview", "--", "--port", "4173"],
+      "runtimeArgs": ["--workspace", "@june1815/ui", "run", "preview", "--", "--port", "4173"],
       "port": 4173
     },
     {
       "name": "ui-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--workspace", "@june15/ui", "run", "dev", "--", "--port", "5173"],
+      "runtimeArgs": ["--workspace", "@june1815/ui", "run", "dev", "--", "--port", "5173"],
       "port": 5173
     }
   ]

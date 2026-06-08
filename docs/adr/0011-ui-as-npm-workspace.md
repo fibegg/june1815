@@ -31,7 +31,7 @@ is never read from disk.
 ## Consequences
 
 **Easier**
-- The runtime npm package stays small. Servers that only embed june15
+- The runtime npm package stays small. Servers that only embed june1815
   programmatically don't pay for React + Vite.
 - One `npm install` at the repo root sets up both workspaces.
 - The UI gets its own `tsconfig.json` (with JSX + DOM libs) and its own
@@ -47,10 +47,10 @@ is never read from disk.
 ## Alternatives considered
 
 - **One workspace, ui under src/** — Forces the UI's deps into the
-  server's `package.json`. Consumers installing `june15` from npm would
+  server's `package.json`. Consumers installing `june1815` from npm would
   download Vite/React. Non-starter.
 - **Separate repo** — Adds release coordination and version skew. Not
   worth it for a single-package project where UI + server ship together.
-- **Vite served via a sub-package** (`@june15/ui` published as its own
+- **Vite served via a sub-package** (`@june1815/ui` published as its own
   npm) — Possible future move when there are external consumers of the UI
   alone. Out of scope for v1.

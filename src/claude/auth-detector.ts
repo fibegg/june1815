@@ -7,7 +7,7 @@ export type AuthSource =
   | 'env_oauth'
   | 'env_anthropic_key'
   | 'env_claude_key'
-  | 'june15_token_file'
+  | 'june1815_token_file'
   | 'claude_credentials'
   | 'claude_cli_session'
   | 'none';
@@ -43,7 +43,7 @@ export interface AuthDetectorInput {
   env?: NodeJS.ProcessEnv;
   /** Defaults to `os.homedir()`. */
   homeDir?: string;
-  /** Where june15 stores its token file. Defaults to `<homeDir>/.local/share/june15`. */
+  /** Where june1815 stores its token file. Defaults to `<homeDir>/.local/share/june1815`. */
   dataDir?: string;
   /** Filesystem facade — real fs by default. */
   fs?: AuthDetectorFs;
@@ -60,17 +60,17 @@ const ENV_PRIORITY: readonly EnvCandidate[] = Object.freeze([
   { key: 'CLAUDE_API_KEY', source: 'env_claude_key' },
 ]);
 
-const JUNE15_TOKEN_FILE = 'agent_token.txt';
+const JUNE1815_TOKEN_FILE = 'agent_token.txt';
 const CLAUDE_CREDENTIALS_REL = ['.claude', '.credentials.json'] as const;
 
 /**
- * Resolve which authentication source june15 should advertise to the user
+ * Resolve which authentication source june1815 should advertise to the user
  * and downstream consumers. The precedence (high to low):
  *
  *   1. CLAUDE_CODE_OAUTH_TOKEN  (env)  — preferred OAuth token
  *   2. ANTHROPIC_API_KEY        (env)
  *   3. CLAUDE_API_KEY           (env)
- *   4. <dataDir>/agent_token.txt — june15's own token file
+ *   4. <dataDir>/agent_token.txt — june1815's own token file
  *   5. ~/.claude/.credentials.json — Claude CLI's own credential store
  *   6. none
  *
@@ -84,7 +84,7 @@ const CLAUDE_CREDENTIALS_REL = ['.claude', '.credentials.json'] as const;
 export function detectAuth(input: AuthDetectorInput = {}): AuthInfo {
   const env = input.env ?? process.env;
   const home = input.homeDir ?? homedir();
-  const dataDir = input.dataDir ?? join(home, '.local', 'share', 'june15');
+  const dataDir = input.dataDir ?? join(home, '.local', 'share', 'june1815');
   const fs = input.fs ?? realFs;
 
   for (const c of ENV_PRIORITY) {
@@ -94,11 +94,11 @@ export function detectAuth(input: AuthDetectorInput = {}): AuthInfo {
     }
   }
 
-  const tokenPath = join(dataDir, JUNE15_TOKEN_FILE);
+  const tokenPath = join(dataDir, JUNE1815_TOKEN_FILE);
   if (fs.existsSync(tokenPath)) {
     try {
       if (fs.readFileSync(tokenPath, 'utf8').trim().length > 0) {
-        return { authenticated: true, source: 'june15_token_file', path: tokenPath };
+        return { authenticated: true, source: 'june1815_token_file', path: tokenPath };
       }
     } catch {
       /* unreadable — fall through */

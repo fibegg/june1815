@@ -87,7 +87,7 @@ export function registerUiRoutes(app: Hono<AppEnv>, deps: UiRouteDeps): void {
   if (!fs.existsSync(indexPath)) {
     app.get('/', (c) =>
       c.text(
-        `june15 UI is enabled but index.html was not found under ${distDir}.\n` +
+        `june1815 UI is enabled but index.html was not found under ${distDir}.\n` +
           'Run `npm run build:ui` (or set ui.distDir to your built directory).\n',
         503,
       ),

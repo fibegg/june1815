@@ -41,7 +41,7 @@ export async function spawnGogogo(opts: SpawnOptions = {}): Promise<SpawnedServe
   if (!existsSync(binPath)) {
     throw new Error(`built CLI not found at ${binPath}; run \`npm run build:server\` first`);
   }
-  const dataDir = mkdtempSync(join(tmpdir(), 'june15-e2e-'));
+  const dataDir = mkdtempSync(join(tmpdir(), 'june1815-e2e-'));
   const port = opts.port ?? 0;
   const args = [
     binPath,
@@ -55,9 +55,9 @@ export async function spawnGogogo(opts: SpawnOptions = {}): Promise<SpawnedServe
 
   const env: NodeJS.ProcessEnv = {
     ...(opts.env ?? process.env),
-    JUNE15_MODE: 'headless',
+    JUNE1815_MODE: 'headless',
     // Quieten the child's logs unless the test explicitly turns them up.
-    JUNE15_LOG_LEVEL: process.env.JUNE15_E2E_LOG_LEVEL ?? 'warn',
+    JUNE1815_LOG_LEVEL: process.env.JUNE1815_E2E_LOG_LEVEL ?? 'warn',
   };
 
   const child = spawn(process.execPath, args, {

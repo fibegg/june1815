@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { Hono } from 'hono';
 import type { ConversationManager } from '../../conversation/manager.js';
-import { June15Error } from '../../errors.js';
+import { June1815Error } from '../../errors.js';
 import type { AppEnv } from '../server.js';
 
 const CreateBodySchema = z.object({
@@ -39,11 +39,11 @@ export function registerConversationRoutes(
 
   app.post('/v1/conversations', async (c) => {
     const body: unknown = await c.req.json().catch(() => {
-      throw new June15Error('http_bad_request', 'invalid JSON body');
+      throw new June1815Error('http_bad_request', 'invalid JSON body');
     });
     const parsed = CreateBodySchema.safeParse(body);
     if (!parsed.success) {
-      throw new June15Error('http_bad_request', parsed.error.issues.map((i) => i.message).join('; '));
+      throw new June1815Error('http_bad_request', parsed.error.issues.map((i) => i.message).join('; '));
     }
     const args: Parameters<typeof deps.conversations.create>[0] = { cwd: parsed.data.cwd };
     if (parsed.data.id !== undefined) args.id = parsed.data.id;
@@ -64,7 +64,7 @@ export function registerConversationRoutes(
 
   app.get('/v1/conversations/:id', (c) => {
     const conv = deps.conversations.get(c.req.param('id'));
-    if (!conv) throw new June15Error('conversation_not_found', c.req.param('id'));
+    if (!conv) throw new June1815Error('conversation_not_found', c.req.param('id'));
     return c.json(
       summarize({
         id: conv.id,

@@ -67,13 +67,13 @@ jobs:
         id: cache-alloy
         uses: actions/cache@v4
         with:
-          path: ~/.local/share/june15/alloy.jar
+          path: ~/.local/share/june1815/alloy.jar
           key: alloy-6.2.0
       - name: Download Alloy
         if: steps.cache-alloy.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ~/.local/share/june15
-          curl -sSL -o ~/.local/share/june15/alloy.jar \
+          mkdir -p ~/.local/share/june1815
+          curl -sSL -o ~/.local/share/june1815/alloy.jar \
             https://github.com/AlloyTools/org.alloytools.alloy/releases/download/v6.2.0/org.alloytools.alloy.dist.jar
       - name: Run Alloy specs
         run: scripts/run-alloy.sh

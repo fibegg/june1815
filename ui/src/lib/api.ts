@@ -6,7 +6,7 @@ import type {
   SseEvent,
 } from './types.js';
 
-const TOKEN_KEY = 'june15.token';
+const TOKEN_KEY = 'june1815.token';
 
 /** Capture `?token=...` from the URL into sessionStorage and strip it
  *  from the address bar so we don't ship the token in browser history or

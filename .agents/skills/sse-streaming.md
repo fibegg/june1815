@@ -52,11 +52,11 @@ retry. This invariant is encoded in
 
 Your internal event types and your public SSE types should not be
 identical — keep them separate so refactors don't break the wire
-contract. june15 has `ConversationEvent` (internal) and `SseEvent`
+contract. june1815 has `ConversationEvent` (internal) and `SseEvent`
 (public); a `bridge()` function maps between them and filters
 internal-only events.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `src/server/events.ts` — zod schemas for every SSE event (the *public*
   contract).

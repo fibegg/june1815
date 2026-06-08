@@ -1,5 +1,5 @@
 {
-  "$schema": "https://june15.dev/schemas/tool-defs.v1.json",
+  "$schema": "https://june1815.dev/schemas/tool-defs.v1.json",
   "version": 1,
   "tools": {
     "acme__find_user": {

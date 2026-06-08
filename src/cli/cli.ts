@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import { ExitCode } from './exit-codes.js';
-import { isJune15Error, type June15ErrorCode } from '../errors.js';
+import { isJune1815Error, type June1815ErrorCode } from '../errors.js';
 
-const EXIT_CODE_FOR_ERROR: Partial<Record<June15ErrorCode, number>> = {
+const EXIT_CODE_FOR_ERROR: Partial<Record<June1815ErrorCode, number>> = {
   config_invalid: ExitCode.BadInput,
   config_yaml_parse: ExitCode.BadInput,
   config_yaml_read: ExitCode.BadInput,
@@ -47,12 +47,12 @@ export interface RunCliOptions {
 }
 
 /** Parse argv and dispatch to the matching command. Translates thrown
- *  `June15Error` values to stable process exit codes. */
+ *  `June1815Error` values to stable process exit codes. */
 export async function runCli(argv: readonly string[], opts: RunCliOptions): Promise<void> {
   const io = opts.io ?? realIo;
   const program = new Command();
   program
-    .name('june15')
+    .name('june1815')
     .description('Wrap the Claude CLI TUI via PTY and expose it as an HTTP app-server.')
     .version(opts.version, '-v, --version', 'output the package version')
     .showHelpAfterError()
@@ -67,7 +67,7 @@ export async function runCli(argv: readonly string[], opts: RunCliOptions): Prom
   try {
     await program.parseAsync(argv);
   } catch (err) {
-    if (isJune15Error(err)) {
+    if (isJune1815Error(err)) {
       const code = EXIT_CODE_FOR_ERROR[err.code] ?? ExitCode.Error;
       io.stderr(`error [${err.code}]: ${err.message}\n`);
       io.exit(code);

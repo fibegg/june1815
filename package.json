@@ -1,5 +1,5 @@
 {
-  "name": "june15",
+  "name": "june1815",
   "version": "0.1.0",
   "description": "Wrap the Claude CLI's interactive TUI via PTY and expose it as an HTTP app-server (REST + SSE).",
   "keywords": [
@@ -15,14 +15,14 @@
     "ai"
   ],
   "license": "MIT",
-  "author": "june15 contributors",
-  "homepage": "https://github.com/fibegg/june15#readme",
+  "author": "june1815 contributors",
+  "homepage": "https://github.com/fibegg/june1815#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fibegg/june15.git"
+    "url": "git+https://github.com/fibegg/june1815.git"
   },
   "bugs": {
-    "url": "https://github.com/fibegg/june15/issues"
+    "url": "https://github.com/fibegg/june1815/issues"
   },
   "type": "module",
   "workspaces": ["ui"],
@@ -43,12 +43,12 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "june15": "./dist/cli/bin.js"
+    "june1815": "./dist/cli/bin.js"
   },
   "files": [
     "dist",
-    "june15.example.yml",
-    "june15.schema.json",
+    "june1815.example.yml",
+    "june1815.schema.json",
     "LICENSE",
     "README.md"
   ],
@@ -56,10 +56,10 @@
     "postinstall": "node scripts/fix-node-pty.mjs",
     "build": "npm run build:server && npm run build:ui",
     "build:server": "tsup",
-    "build:ui": "npm --workspace @june15/ui run build",
+    "build:ui": "npm --workspace @june1815/ui run build",
     "clean": "rm -rf dist coverage .vitest-cache",
     "dev": "tsup --watch",
-    "dev:ui": "npm --workspace @june15/ui run dev",
+    "dev:ui": "npm --workspace @june1815/ui run dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

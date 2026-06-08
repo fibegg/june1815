@@ -11,7 +11,7 @@ describe('e2e preflight (unit)', () => {
   it('does not return ok=true purely from PATH; auth must also resolve', () => {
     // Force-find a fake claude via override; rest of env has no auth.
     const r = checkPreflight({
-      JUNE15_CLAUDE_PATH: '/nonexistent/claude',
+      JUNE1815_CLAUDE_PATH: '/nonexistent/claude',
       PATH: '/nonexistent',
       HOME: '/no-home',
     });

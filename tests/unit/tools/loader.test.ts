@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadToolDefs, __test } from '../../../src/tools/loader.js';
 
 function tempDir(): string {
-  const dir = join(tmpdir(), `june15-loader-test-${Math.random().toString(36).slice(2)}`);
+  const dir = join(tmpdir(), `june1815-loader-test-${Math.random().toString(36).slice(2)}`);
   mkdirSync(dir, { recursive: true });
   return dir;
 }

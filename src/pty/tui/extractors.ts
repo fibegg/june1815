@@ -204,7 +204,7 @@ export const READY_LINE_EXTRACTOR: LineExtractor = {
     const events: TuiEvent[] = [];
     const update: Partial<ParserState> = {};
 
-    if (process.env.JUNE15_DEBUG_TUI === '1') {
+    if (process.env.JUNE1815_DEBUG_TUI === '1') {
       console.error(
         `[ready-ex] footer=${footer} inTurn=${state.inTurn} hadAct=${state.turnHadActivity} lastFooter=${state.lastFooter} sawBusy=${state.sawBusyInTurn} summary=${turnSummaryVisible}`,
       );
@@ -341,7 +341,7 @@ export const ONBOARDING_EXTRACTOR: LineExtractor = {
             type: 'error',
             code: 'claude_onboarding_required',
             message:
-              'claude is showing a first-run onboarding screen (theme/effort picker) that june15 cannot drive. Run `claude` once in an interactive terminal to complete onboarding, then retry.',
+              'claude is showing a first-run onboarding screen (theme/effort picker) that june1815 cannot drive. Run `claude` once in an interactive terminal to complete onboarding, then retry.',
           },
         ],
         stateUpdate: { onboardingEmitted: true },

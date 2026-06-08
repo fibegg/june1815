@@ -283,7 +283,7 @@ export class EventToStream {
 
   /**
    * Emit a synthetic `result/error` directly. Used by the runner when
-   * something fails before claude is even spawned (e.g. JUNE15_CLAUDE_PATH
+   * something fails before claude is even spawned (e.g. JUNE1815_CLAUDE_PATH
    * missing). Doesn't touch turn counters.
    */
   emitStartupError(sink: NdjsonSink, message: string): void {

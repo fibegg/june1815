@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { June15Error } from '../errors.js';
+import { June1815Error } from '../errors.js';
 import type { Conversation } from './conversation.js';
 import type { SessionMarkerStore } from './session-marker.js';
 
@@ -60,14 +60,14 @@ export class ConversationManager {
 
   async create(opts: CreateConversationOptions): Promise<Conversation> {
     if (this.conversations.size >= this.opts.maxConversations) {
-      throw new June15Error(
+      throw new June1815Error(
         'conversation_limit_reached',
         `max ${this.opts.maxConversations} conversations active`,
       );
     }
     const id = opts.id ?? randomUUID();
     if (this.conversations.has(id)) {
-      throw new June15Error('conversation_busy', `conversation ${id} already exists`);
+      throw new June1815Error('conversation_busy', `conversation ${id} already exists`);
     }
     const resumeSessionId = this.opts.markers.read(id) ?? undefined;
     const factoryArgs: Parameters<ConversationFactory['create']>[0] = {
@@ -87,7 +87,7 @@ export class ConversationManager {
   async delete(id: string): Promise<void> {
     const conv = this.conversations.get(id);
     if (!conv) {
-      throw new June15Error('conversation_not_found', `no conversation ${id}`);
+      throw new June1815Error('conversation_not_found', `no conversation ${id}`);
     }
     this.conversations.delete(id);
     conv.kill();

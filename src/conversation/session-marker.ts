@@ -23,7 +23,7 @@ const MARKER_FILE = 'session.txt';
 
 /**
  * Persists each conversation's Claude-side `session_id` to disk so a
- * conversation can be resumed across june15 restarts via `claude --resume`
+ * conversation can be resumed across june1815 restarts via `claude --resume`
  * or `--session-id`.
  *
  * Layout: `<dataDir>/conversations/<conversationId>/session.txt`.

@@ -1,6 +1,6 @@
 # Design
 
-Living documentation of how june15 is built.
+Living documentation of how june1815 is built.
 
 - [`architecture.md`](./architecture.md) — system diagram, component
   responsibilities, dataflow.

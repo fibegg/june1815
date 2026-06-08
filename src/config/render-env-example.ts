@@ -1,14 +1,14 @@
 import { ENV_KEYS } from './env-keys.js';
 
 const HEADER = [
-  '# june15 environment reference.',
+  '# june1815 environment reference.',
   '#',
   '# This file is auto-generated from src/config/env-keys.ts by',
   '# `npm run gen:env-example`. Do not edit by hand — edit env-keys.ts.',
   '#',
   '# Every key listed here can also live under the equivalent YAML path in',
-  '# `june15.yml`. Precedence: CLI args > process.env > project june15.yml >',
-  '# ~/.config/june15/june15.yml > built-in defaults.',
+  '# `june1815.yml`. Precedence: CLI args > process.env > project june1815.yml >',
+  '# ~/.config/june1815/june1815.yml > built-in defaults.',
   '',
 ];
 

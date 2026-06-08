@@ -28,7 +28,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   data URLs; written to per-conversation upload dirs and exposed to
   `claude` via `--add-dir` (ADR-0012).
 - Optional React + Tailwind + shadcn-style chat UI mounted at `/`
-  when `JUNE15_UI_ENABLED=1`. Lives as a separate npm workspace under
+  when `JUNE1815_UI_ENABLED=1`. Lives as a separate npm workspace under
   `ui/` so the runtime npm package stays small for headless consumers
   (ADR-0011).
 - End-to-end test suite under `tests/e2e/` that spawns the built CLI,

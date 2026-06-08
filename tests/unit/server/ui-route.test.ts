@@ -14,12 +14,12 @@ function inMemoryFs(files: Record<string, string>): UiFs {
 describe('registerUiRoutes', () => {
   it('serves index.html at /', async () => {
     const app = new Hono<AppEnv>();
-    const fs = inMemoryFs({ '/dist/ui/index.html': '<html>june15</html>' });
+    const fs = inMemoryFs({ '/dist/ui/index.html': '<html>june1815</html>' });
     registerUiRoutes(app, { distDir: '/dist/ui', fs });
     const res = await app.fetch(new Request('http://t/'));
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toContain('text/html');
-    expect(await res.text()).toBe('<html>june15</html>');
+    expect(await res.text()).toBe('<html>june1815</html>');
   });
 
   it('serves an asset at /assets/app.js with the right content type', async () => {

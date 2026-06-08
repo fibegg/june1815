@@ -1,6 +1,6 @@
 # Replication guide
 
-How to rebuild june15 from scratch, in order. Pair with the focused notes
+How to rebuild june1815 from scratch, in order. Pair with the focused notes
 in [`.agents/skills/`](../../.agents/skills/) — each skill below points to
 the one that documents *how* we adopted it.
 
@@ -69,7 +69,7 @@ See `.agents/skills/pty-screen-scraping.md`.
 
 ## 7. HTTP server
 
-- `events.ts` — zod event schemas (publishes as the `june15/events`
+- `events.ts` — zod event schemas (publishes as the `june1815/events`
   subpath).
 - `sse.ts` — SSE framing helper.
 - middleware: `request-id`, `bearer-auth`, `error`.
@@ -79,7 +79,7 @@ See `.agents/skills/pty-screen-scraping.md`.
 
 ## 8. CLI
 
-- `cli.ts` — commander wiring, June15Error → exit-code mapping.
+- `cli.ts` — commander wiring, June1815Error → exit-code mapping.
 - `commands/gogogo.ts` — composes everything; pure `composeGogogo()` step
   for testing.
 - `commands/doctor.ts` — checks PATH, claude, auth, geometry, bind.

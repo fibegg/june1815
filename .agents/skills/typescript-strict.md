@@ -36,7 +36,7 @@ In `tsconfig.json`:
   `[string, T | undefined][]` which forces `?? defaultValue` at every
   consumer. Live with it; the alternative is silent reads of missing keys.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `tsconfig.json` — every flag enumerated.
 - `src/config/loader.ts:setDeep` and similar functions use `parts[i]!`

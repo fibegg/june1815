@@ -9,9 +9,9 @@ Node.js, npm, and the ecosystem have largely converged on ESM. Modern dependenci
 
 ## Decision
 
-june15 ships **ESM only**. `package.json` declares `"type": "module"`. The `exports` map publishes only `import` conditions. The CLI bin uses a `#!/usr/bin/env node` shebang on an ESM file.
+june1815 ships **ESM only**. `package.json` declares `"type": "module"`. The `exports` map publishes only `import` conditions. The CLI bin uses a `#!/usr/bin/env node` shebang on an ESM file.
 
-Consumers that need CJS interop can use Node's dynamic `import('june15')`, or upgrade their package to ESM.
+Consumers that need CJS interop can use Node's dynamic `import('june1815')`, or upgrade their package to ESM.
 
 ## Consequences
 
@@ -21,7 +21,7 @@ Consumers that need CJS interop can use Node's dynamic `import('june15')`, or up
 - Top-level await is available in our own code where helpful.
 
 **Harder**
-- Some old test runners (Jest <29 without ESM config, Mocha pre-10) can't load june15 directly without configuration. We accept this as a forcing function for consumers to upgrade.
+- Some old test runners (Jest <29 without ESM config, Mocha pre-10) can't load june1815 directly without configuration. We accept this as a forcing function for consumers to upgrade.
 - Native dependencies like `node-pty` ship CJS internals; we handle the `require`/`__dirname` shim in the tsup banner (see [tsup.config.ts](../../tsup.config.ts)).
 
 ## Alternatives considered

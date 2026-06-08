@@ -17,18 +17,18 @@ export type Preflight = PreflightOk | PreflightSkip;
 
 /**
  * Decide whether the e2e suite can run. We require:
- *   - `claude` resolvable on PATH or via JUNE15_CLAUDE_PATH
+ *   - `claude` resolvable on PATH or via JUNE1815_CLAUDE_PATH
  *   - An authenticated source (env or token file or claude credentials)
  *
  * When either is missing, the suite is skipped cleanly so local devs and
  * forks without claude don't see hard failures.
  *
- * Override with `JUNE15_E2E_FORCE=1` to make a missing prerequisite
+ * Override with `JUNE1815_E2E_FORCE=1` to make a missing prerequisite
  * fail the suite hard (useful in CI lanes where the secret should be
  * present).
  */
 export function checkPreflight(env: NodeJS.ProcessEnv = process.env): Preflight {
-  const overridePath = env.JUNE15_CLAUDE_PATH;
+  const overridePath = env.JUNE1815_CLAUDE_PATH;
   const locatorInput: Parameters<typeof locateClaude>[0] = {
     home: homedir(),
     platform: process.platform,

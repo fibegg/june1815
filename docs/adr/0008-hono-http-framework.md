@@ -9,7 +9,7 @@ The HTTP layer needs to serve REST JSON endpoints and stream Server-Sent Events.
 
 ## Decision
 
-We use **Hono** with `@hono/node-server`. Hono is a routing layer built around the Fetch API; it runs on Node, Deno, Bun, Cloudflare Workers, and edge runtimes. For june15 only Node matters, but Hono's Fetch-API surface means tests can call `app.fetch(new Request(...))` directly without a server socket.
+We use **Hono** with `@hono/node-server`. Hono is a routing layer built around the Fetch API; it runs on Node, Deno, Bun, Cloudflare Workers, and edge runtimes. For june1815 only Node matters, but Hono's Fetch-API surface means tests can call `app.fetch(new Request(...))` directly without a server socket.
 
 SSE is supported natively via `hono/streaming`'s `streamSSE` helper, which is the cleanest SSE implementation among Node-side frameworks we surveyed.
 

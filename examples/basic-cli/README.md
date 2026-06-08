@@ -1,23 +1,23 @@
 # Basic CLI walkthrough
 
-Step-by-step trace of the most common june15 session: boot the server,
+Step-by-step trace of the most common june1815 session: boot the server,
 create a conversation, send a message, watch SSE events stream back.
 
 ## Prerequisites
 
 - Node 22+, `claude` on PATH and authenticated.
-- `npm i -g june15` (or `npx june15 ...`).
+- `npm i -g june1815` (or `npx june1815 ...`).
 
 ## 1. Sanity check
 
 ```sh
-june15 doctor
+june1815 doctor
 ```
 
 ```
 [ok]    claude          /usr/local/bin/claude (v1.4.2)
 [ok]    auth source     env_oauth
-[ok]    data dir        ~/.local/share/june15 (will be created on first use)
+[ok]    data dir        ~/.local/share/june1815 (will be created on first use)
 [ok]    pty cols/rows   200 x 50
 [ok]    http bind       127.0.0.1:7150
 ```
@@ -27,13 +27,13 @@ If anything is `[error]`, fix it before going further.
 ## 2. Start the server
 
 ```sh
-june15 gogogo
+june1815 gogogo
 ```
 
 Interactive mode prints:
 
 ```
-└  june15 ready
+└  june1815 ready
    URL    http://127.0.0.1:7150
    bearer ad3f29bc...e91c
 ```
@@ -115,5 +115,5 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 curl -s -H "Authorization: Bearer $TOKEN" -X DELETE $URL/v1/conversations/$ID
 ```
 
-Or just press Ctrl-C in the `june15 gogogo` terminal — all conversations
+Or just press Ctrl-C in the `june1815 gogogo` terminal — all conversations
 get killed cleanly on shutdown.

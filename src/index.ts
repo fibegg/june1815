@@ -1,11 +1,11 @@
 /**
- * Public library entry. Consumers who embed june15 in their own process
+ * Public library entry. Consumers who embed june1815 in their own process
  * (rather than as a CLI) import from here.
  *
- * The CLI lives at `june15/dist/cli/bin.js` and is published as the `june15`
+ * The CLI lives at `june1815/dist/cli/bin.js` and is published as the `june1815`
  * bin entry; you don't normally import it.
  *
- * Event schemas are also published under the subpath `june15/events` so
+ * Event schemas are also published under the subpath `june1815/events` so
  * consumers can type-check SSE payloads without depending on internals.
  */
 
@@ -38,5 +38,5 @@ export { registerAuthRoutes } from './server/routes/auth.js';
 export { registerConversationRoutes } from './server/routes/conversations.js';
 export { registerMessageRoutes } from './server/routes/messages.js';
 
-export { June15Error, isJune15Error } from './errors.js';
-export type { June15ErrorCode } from './errors.js';
+export { June1815Error, isJune1815Error } from './errors.js';
+export type { June1815ErrorCode } from './errors.js';

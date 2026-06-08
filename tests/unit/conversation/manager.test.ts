@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { ConversationManager, type ConversationFactory } from '../../../src/conversation/manager.js';
 import type { Conversation } from '../../../src/conversation/conversation.js';
 import { SessionMarkerStore, type SessionMarkerFs } from '../../../src/conversation/session-marker.js';
-import { isJune15Error } from '../../../src/errors.js';
+import { isJune1815Error } from '../../../src/errors.js';
 
 function fakeConv(id: string): Conversation {
   return {
@@ -83,8 +83,8 @@ describe('ConversationManager', () => {
       await mgr.create({ id: 'a', cwd: '/x' });
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) expect(err.code).toBe('conversation_busy');
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) expect(err.code).toBe('conversation_busy');
     }
   });
 
@@ -100,8 +100,8 @@ describe('ConversationManager', () => {
       await mgr.create({ cwd: '/x' });
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) expect(err.code).toBe('conversation_limit_reached');
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) expect(err.code).toBe('conversation_limit_reached');
     }
   });
 
@@ -142,8 +142,8 @@ describe('ConversationManager', () => {
       await mgr.delete('ghost');
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) expect(err.code).toBe('conversation_not_found');
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) expect(err.code).toBe('conversation_not_found');
     }
   });
 

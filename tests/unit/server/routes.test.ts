@@ -10,7 +10,7 @@ import type { ConversationManager } from '../../../src/conversation/manager.js';
 import type { UploadStore } from '../../../src/conversation/upload-store.js';
 import { errorHandler } from '../../../src/server/middleware/error.js';
 import type { AppEnv } from '../../../src/server/server.js';
-import { June15Error } from '../../../src/errors.js';
+import { June1815Error } from '../../../src/errors.js';
 
 function fakeConversation(overrides: Partial<Conversation> = {}): Conversation {
   return {
@@ -42,7 +42,7 @@ function fakeManager(initial: Conversation[] = []): ConversationManager {
       return c;
     }),
     delete: vi.fn(async (id: string) => {
-      if (!map.has(id)) throw new June15Error('conversation_not_found', id);
+      if (!map.has(id)) throw new June1815Error('conversation_not_found', id);
       map.delete(id);
     }),
     destroyAll: async () => {

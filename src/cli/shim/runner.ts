@@ -52,7 +52,7 @@ export async function runShim(opts: RunShimOptions): Promise<number> {
     stderr: (msg) => process.stderr.write(msg),
   };
 
-  const claudePath = opts.env.JUNE15_CLAUDE_PATH ?? '';
+  const claudePath = opts.env.JUNE1815_CLAUDE_PATH ?? '';
   const split = splitArgs(opts.argv);
 
   const sessionId = split.extracted.sessionId ?? split.extracted.resume ?? randomUUID();
@@ -62,10 +62,10 @@ export async function runShim(opts: RunShimOptions): Promise<number> {
 
   // Load tool defs (built-ins always come first, user files merged on top).
   const envSep = platform() === 'win32' ? ';' : ':';
-  const envPaths = (opts.env.JUNE15_TOOL_DEFS ?? '').split(envSep).filter((s) => s.length > 0);
+  const envPaths = (opts.env.JUNE1815_TOOL_DEFS ?? '').split(envSep).filter((s) => s.length > 0);
   const dataDir =
-    opts.env.JUNE15_DATA_DIR ?? join(homedir(), '.local', 'share', 'june15');
-  const configDirCandidate = join(homedir(), '.config', 'june15');
+    opts.env.JUNE1815_DATA_DIR ?? join(homedir(), '.local', 'share', 'june1815');
+  const configDirCandidate = join(homedir(), '.config', 'june1815');
 
   const toolDefs = loadToolDefs({
     cliPaths: split.extracted.toolDefs,
@@ -91,8 +91,8 @@ export async function runShim(opts: RunShimOptions): Promise<number> {
     writer.emitStartupError(
       io.stdout,
       claudePath.length === 0
-        ? 'JUNE15_CLAUDE_PATH is not set'
-        : `JUNE15_CLAUDE_PATH points to a non-existent path: ${claudePath}`,
+        ? 'JUNE1815_CLAUDE_PATH is not set'
+        : `JUNE1815_CLAUDE_PATH points to a non-existent path: ${claudePath}`,
     );
     return 1;
   }

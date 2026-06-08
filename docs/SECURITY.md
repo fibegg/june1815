@@ -10,7 +10,7 @@ Do not open a public GitHub issue for an unpatched vulnerability.
 
 ## Threat model
 
-june15 runs locally and exposes an HTTP server (by default on
+june1815 runs locally and exposes an HTTP server (by default on
 `127.0.0.1`). Treat it as a local-only privilege boundary: anyone who
 can reach the bearer token has full control over the wrapped `claude`
 process and any tools claude can invoke.
@@ -20,14 +20,14 @@ process and any tools claude can invoke.
 - The bearer token is generated on each boot if not configured; the
   random value is at least 24 bytes. Treat it as a secret.
 - The `claude` binary inherits the spawning environment. Don't run
-  june15 with elevated privileges if you wouldn't run claude with them.
+  june1815 with elevated privileges if you wouldn't run claude with them.
 
 ## What we patch
 
-- Crashes in june15 itself triggered by valid HTTP input or by malicious
+- Crashes in june1815 itself triggered by valid HTTP input or by malicious
   PTY content.
 - Information leaks (tokens, paths) over the HTTP surface.
-- Privilege escalation via the wrapped TUI's affordances if june15
+- Privilege escalation via the wrapped TUI's affordances if june1815
   fails to gate them on bearer auth.
 
 ## What we don't patch here

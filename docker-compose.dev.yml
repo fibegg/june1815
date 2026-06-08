@@ -1,21 +1,21 @@
 services:
-  june15-dev:
+  june1815-dev:
     image: node:22-slim
     working_dir: /app
     tty: true
     stdin_open: true
     ports:
-      - "${JUNE15_PORT:-7150}:7150"
+      - "${JUNE1815_PORT:-7150}:7150"
     environment:
       NODE_ENV: development
-      JUNE15_HOST: 0.0.0.0
-      JUNE15_PORT: 7150
-      JUNE15_MODE: headless
+      JUNE1815_HOST: 0.0.0.0
+      JUNE1815_PORT: 7150
+      JUNE1815_MODE: headless
       CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
     volumes:
       - .:/app
-      - june15-dev-node-modules:/app/node_modules
-      - june15-dev-data:/var/lib/june15
+      - june1815-dev-node-modules:/app/node_modules
+      - june1815-dev-data:/var/lib/june1815
     command: >
       bash -c "npm install &&
                npm install -g @anthropic-ai/claude-code &&
@@ -28,5 +28,5 @@ services:
       start_period: 60s
 
 volumes:
-  june15-dev-node-modules:
-  june15-dev-data:
+  june1815-dev-node-modules:
+  june1815-dev-data:

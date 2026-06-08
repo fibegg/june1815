@@ -25,8 +25,8 @@ answer, never an undefined.
 | --- | --- |
 | `CLIArg` | 4 |
 | `ProcessEnv` | 3 |
-| `ProjectYaml` (`./june15.yml`) | 2 |
-| `UserYaml` (`~/.config/june15/june15.yml`) | 1 |
+| `ProjectYaml` (`./june1815.yml`) | 2 |
+| `UserYaml` (`~/.config/june1815/june1815.yml`) | 1 |
 | `BuiltinDefault` | 0 (always present) |
 
 For any given key, resolution returns the value from the highest-precedence

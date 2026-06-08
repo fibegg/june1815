@@ -14,10 +14,10 @@ export interface BearerAuthOptions {
   /** Path prefixes that bypass the check (e.g. ['/healthz']). */
   readonly publicPaths?: readonly string[];
   /** Name of the HttpOnly cookie used to carry the token across asset
-   *  fetches. Defaults to `june15_token`. */
+   *  fetches. Defaults to `june1815_token`. */
   readonly cookieName?: string;
   /** When true, omit the `Secure` flag on the cookie so it works over plain
-   *  HTTP on localhost. Defaults to true (june15 is usually bound to
+   *  HTTP on localhost. Defaults to true (june1815 is usually bound to
    *  127.0.0.1). Production deployments behind TLS should set this false. */
   readonly cookieInsecure?: boolean;
   /** Cookie lifetime in seconds. Defaults to 12 hours. */
@@ -58,7 +58,7 @@ function parseCookie(header: string | undefined, name: string): string | null {
  */
 export function bearerAuthMiddleware(opts: BearerAuthOptions): MiddlewareHandler {
   const publicPaths = opts.publicPaths ?? [];
-  const cookieName = opts.cookieName ?? 'june15_token';
+  const cookieName = opts.cookieName ?? 'june1815_token';
   const cookieMaxAge = opts.cookieMaxAgeSec ?? 12 * 60 * 60;
   const secureFlag = opts.cookieInsecure === true ? '' : '; Secure';
 

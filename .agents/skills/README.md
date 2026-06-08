@@ -1,6 +1,6 @@
 # Skills
 
-One file per non-trivial best practice june15 adopted, including the *why*
+One file per non-trivial best practice june1815 adopted, including the *why*
 and the *how it shows up in the repo*. Use this directory as the rosetta
 between general advice and the specific code patterns that implement it.
 

@@ -1,20 +1,20 @@
-# june15.example.yml — annotated reference configuration.
+# june1815.example.yml — annotated reference configuration.
 #
-# Copy this file to `june15.yml` in your project root (or to
-# `~/.config/june15/june15.yml` for user-wide defaults) and uncomment the
+# Copy this file to `june1815.yml` in your project root (or to
+# `~/.config/june1815/june1815.yml` for user-wide defaults) and uncomment the
 # keys you want to override. Every key below can also be set via the
-# corresponding JUNE15_* env var — see `.env.example`.
+# corresponding JUNE1815_* env var — see `.env.example`.
 #
 # Precedence (high to low):
-#   CLI args  >  process.env  >  ./june15.yml  >  ~/.config/june15/june15.yml  >  defaults
+#   CLI args  >  process.env  >  ./june1815.yml  >  ~/.config/june1815/june1815.yml  >  defaults
 
 # UX mode: interactive (TTY prompts) or headless (no prompts).
 # Defaults to interactive when stdout is a TTY, headless otherwise.
 # mode: interactive
 
 # Conversation state and session markers live here.
-# Defaults to ~/.local/share/june15.
-# dataDir: ~/.local/share/june15
+# Defaults to ~/.local/share/june1815.
+# dataDir: ~/.local/share/june1815
 
 server:
   # HTTP bind address. Use 0.0.0.0 to expose beyond localhost.
@@ -27,9 +27,9 @@ server:
     # bearerToken: replace-me-with-a-random-32-char-string
 
 claude:
-  # When true and `claude` is not on PATH, `june15 gogogo` runs
+  # When true and `claude` is not on PATH, `june1815 gogogo` runs
   # `npm i -g @anthropic-ai/claude-code` without asking. Headless mode
-  # requires this OR --auto-install OR JUNE15_AUTO_INSTALL=1 to install.
+  # requires this OR --auto-install OR JUNE1815_AUTO_INSTALL=1 to install.
   # autoInstall: false
   # Explicit path to the `claude` executable. Overrides PATH lookup.
   # path: /usr/local/bin/claude

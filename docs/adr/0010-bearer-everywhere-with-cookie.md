@@ -21,7 +21,7 @@ The bearer middleware accepts **any** of three carriers, in order:
 
 1. `Authorization: Bearer <token>` header
 2. `?token=<token>` query parameter
-3. `Cookie: june15_token=<token>` (set by the middleware itself)
+3. `Cookie: june1815_token=<token>` (set by the middleware itself)
 
 On a successful header- or query-sourced auth for a `GET`, the middleware
 plants a `HttpOnly; SameSite=Strict` cookie carrying the same token. From

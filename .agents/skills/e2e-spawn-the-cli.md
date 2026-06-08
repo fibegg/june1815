@@ -38,7 +38,7 @@ present; skip cleanly otherwise.
 - The skip predicate is itself unit-tested (`tests/unit/e2e-preflight`)
   so the "skip cleanly" promise can't bit-rot silently.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `vitest.e2e.config.ts`
 - `tests/e2e/helpers/preflight.ts` (claude binary + auth source check)
@@ -52,5 +52,5 @@ present; skip cleanly otherwise.
 Default: e2e runs alongside unit tests and gracefully skips when
 claude isn't available. To make CI hard-fail on missing prerequisites
 (e.g. a release lane that requires a secret), set
-`JUNE15_E2E_FORCE=1` (placeholder env to read inside `checkPreflight`
+`JUNE1815_E2E_FORCE=1` (placeholder env to read inside `checkPreflight`
 when you wire that lane).

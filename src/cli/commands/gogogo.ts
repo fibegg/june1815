@@ -25,7 +25,7 @@ import { registerHealthRoute } from '../../server/routes/health.js';
 import { registerMessageRoutes } from '../../server/routes/messages.js';
 import { registerUiRoutes } from '../../server/routes/ui.js';
 import { clackConfirmPrompt, intro, note, outro } from '../prompts.js';
-import { June15Error } from '../../errors.js';
+import { June1815Error } from '../../errors.js';
 
 interface GogogoOptions extends CommonOptionValues {
   host?: string;
@@ -40,7 +40,7 @@ type DeepPartial<T> = {
 };
 
 function defaultDataDir(home: string): string {
-  return join(home, '.local', 'share', 'june15');
+  return join(home, '.local', 'share', 'june1815');
 }
 
 function effectiveMode(config: Config, isTty: boolean): Mode {
@@ -100,7 +100,7 @@ export async function composeGogogo(opts: {
     await installOrThrow(installInput);
     resolved = locateClaude(locatorInput);
     if (!resolved.found) {
-      throw new June15Error(
+      throw new June1815Error(
         'claude_not_found',
         'install reported success but claude still not on PATH',
       );
@@ -209,7 +209,7 @@ export function buildServerApp(composition: GogogoComposition, version: string):
 
 export const registerGogogo: CommandRegistrar = (program, io) => {
   const cmd = new Command('gogogo')
-    .description('start the june15 HTTP app-server')
+    .description('start the june1815 HTTP app-server')
     .option('--host <addr>', 'override server.host')
     .option('--port <n>', 'override server.port', (v) => Number(v))
     .option('--auto-install', 'allow unattended `claude` install when missing')
@@ -230,7 +230,7 @@ export const registerGogogo: CommandRegistrar = (program, io) => {
         home: homedir(),
       });
 
-      if (composition.mode === 'interactive') intro('june15');
+      if (composition.mode === 'interactive') intro('june1815');
       const app = buildServerApp(composition, '0.0.0');
       const server = serve({
         fetch: app.fetch,
@@ -239,7 +239,7 @@ export const registerGogogo: CommandRegistrar = (program, io) => {
       });
       const url = `http://${composition.config.server.host}:${composition.config.server.port}`;
       if (composition.mode === 'interactive') {
-        note(`URL    ${url}\nbearer  ${composition.bearerToken}`, 'june15 ready');
+        note(`URL    ${url}\nbearer  ${composition.bearerToken}`, 'june1815 ready');
         outro('press Ctrl-C to stop');
       } else {
         io.stdout(`${JSON.stringify({ url, token: composition.bearerToken })}\n`);

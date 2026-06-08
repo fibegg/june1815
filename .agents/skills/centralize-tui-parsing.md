@@ -59,7 +59,7 @@ Three layers, each with one concern:
 - **Version pinning is a free add-on.** Map UI versions → marker sets
   later; the engine doesn't change.
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `src/pty/tui/markers.ts` — every line pattern, named
 - `src/pty/tui/extractors.ts` — one config per event type

@@ -170,11 +170,11 @@ describe('AuthService.setToken / clear', () => {
     expect(() => { svc.clear(); }).not.toThrow();
   });
 
-  it('after setToken, status reports june15_token_file', async () => {
+  it('after setToken, status reports june1815_token_file', async () => {
     const fs = inMemoryFs();
     const svc = new AuthService({ dataDir: '/d', homeDir: '/h', env: {}, fs });
     svc.setToken('my-token');
     const s = await svc.status();
-    expect(s.source).toBe('june15_token_file');
+    expect(s.source).toBe('june1815_token_file');
   });
 });

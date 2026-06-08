@@ -6,7 +6,7 @@ import {
   type InstallerLog,
   type SpawnFacade,
 } from '../../../src/claude/installer.js';
-import { isJune15Error } from '../../../src/errors.js';
+import { isJune1815Error } from '../../../src/errors.js';
 
 function recordingLog(): InstallerLog & { entries: string[] } {
   const entries: string[] = [];
@@ -128,8 +128,8 @@ describe('installOrThrow', () => {
       });
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) expect(err.code).toBe('claude_install_declined');
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) expect(err.code).toBe('claude_install_declined');
     }
   });
 
@@ -142,8 +142,8 @@ describe('installOrThrow', () => {
       });
       expect.fail('expected throw');
     } catch (err) {
-      expect(isJune15Error(err)).toBe(true);
-      if (isJune15Error(err)) {
+      expect(isJune1815Error(err)).toBe(true);
+      if (isJune1815Error(err)) {
         expect(err.code).toBe('claude_install_failed');
         expect(err.message).toContain('network unreachable');
       }

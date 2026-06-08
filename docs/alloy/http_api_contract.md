@@ -1,7 +1,7 @@
 # HTTP API Contract
 
 Companion for [`http_api_contract.als`](./http_api_contract.als). Models the
-externally-observable behavior of a single conversation through june15's HTTP
+externally-observable behavior of a single conversation through june1815's HTTP
 surface: which states a conversation can be in, which SSE event types may be
 emitted in which state, and which terminal events end a stream.
 

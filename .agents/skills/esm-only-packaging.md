@@ -36,7 +36,7 @@ via different entry conditions).
 ## Bin entries
 
 ```json
-{ "bin": { "june15": "./dist/cli/bin.js" } }
+{ "bin": { "june1815": "./dist/cli/bin.js" } }
 ```
 
 The bin file must:
@@ -64,7 +64,7 @@ banner: () => ({
 })
 ```
 
-## Where it shows up in june15
+## Where it shows up in june1815
 
 - `package.json` — full configuration.
 - `tsup.config.ts` — banner shim.
