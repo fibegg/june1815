@@ -18,7 +18,11 @@
 !LICENSE
 !README.md
 
+!scripts/
+!scripts/fix-node-pty.mjs
+
 !src/**
+!ui/**
 
 # Re-blacklist within allowed dirs
 **/node_modules
@@ -29,7 +33,6 @@
 tests/**
 docs/**
 examples/**
-scripts/**
 .github/**
 .git/**
 .idea/**
