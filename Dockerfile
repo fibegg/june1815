@@ -4,6 +4,8 @@
 FROM --platform=$BUILDPLATFORM node:22-slim AS deps
 WORKDIR /app
 COPY --link package.json package-lock.json* ./
+COPY --link scripts/fix-node-pty.mjs ./scripts/fix-node-pty.mjs
+COPY --link ui/package.json ./ui/package.json
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev --no-audit --no-fund
 
@@ -11,6 +13,8 @@ RUN --mount=type=cache,target=/root/.npm \
 FROM --platform=$BUILDPLATFORM node:22-slim AS build
 WORKDIR /app
 COPY --link package.json package-lock.json* ./
+COPY --link scripts/fix-node-pty.mjs ./scripts/fix-node-pty.mjs
+COPY --link ui/package.json ./ui/package.json
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --no-audit --no-fund
 COPY --link . .

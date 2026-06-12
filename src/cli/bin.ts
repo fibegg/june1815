@@ -5,6 +5,7 @@ import { registerDoctor } from './commands/doctor.js';
 import { registerConfig } from './commands/config.js';
 import { isShimInvocation } from './shim/detect.js';
 import { runShim } from './shim/runner.js';
+import { isJune1815Command, passthroughToClaude } from './passthrough.js';
 // Read version directly from package.json so it tracks releases without
 // build-time string substitution.
 import pkg from '../../package.json' with { type: 'json' };
@@ -23,9 +24,19 @@ if (isShimInvocation(argv)) {
       process.exit(1);
     },
   );
-} else {
+} else if (isJune1815Command(argv)) {
   void runCli(process.argv, {
     version: (pkg as { version: string }).version,
     registrars: [registerGogogo, registerDoctor, registerConfig],
   });
+} else {
+  // Not the shim and not a june1815 command: forward to the real claude so
+  // june1815 is a complete drop-in (`claude auth status`, `claude mcp`, etc.).
+  void passthroughToClaude(argv, process.env).then(
+    (code) => { process.exit(code); },
+    (err: unknown) => {
+      process.stderr.write(`june1815: ${(err as Error).message}\n`);
+      process.exit(1);
+    },
+  );
 }
