@@ -61,10 +61,10 @@ RUN useradd -m -u 10001 -d /home/june1815 june1815 \
 USER june1815
 WORKDIR /home/june1815/app
 
-COPY --link --from=build --chown=june1815:june1815 /app/dist ./dist
-COPY --link --from=build --chown=june1815:june1815 /app/node_modules ./node_modules
-COPY --link --from=build --chown=june1815:june1815 /app/package.json ./
-COPY --link --from=build --chown=june1815:june1815 /app/june1815.example.yml ./
+COPY --link --from=build --chown=10001:10001 /app/dist ./dist
+COPY --link --from=build --chown=10001:10001 /app/node_modules ./node_modules
+COPY --link --from=build --chown=10001:10001 /app/package.json ./
+COPY --link --from=build --chown=10001:10001 /app/june1815.example.yml ./
 
 EXPOSE 7150
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=10s \
