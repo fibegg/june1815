@@ -3,6 +3,13 @@
 # ---- Stage 1: deps (production only) -----------------------------------
 FROM --platform=$BUILDPLATFORM node:22-slim AS deps
 WORKDIR /app
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        python3 \
+        build-essential \
+ && rm -rf /var/lib/apt/lists/*
+
 COPY --link package.json package-lock.json* ./
 COPY --link scripts/fix-node-pty.mjs ./scripts/fix-node-pty.mjs
 COPY --link ui/package.json ./ui/package.json
@@ -12,6 +19,13 @@ RUN --mount=type=cache,target=/root/.npm \
 # ---- Stage 2: build (includes dev deps + source) -----------------------
 FROM --platform=$BUILDPLATFORM node:22-slim AS build
 WORKDIR /app
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        python3 \
+        build-essential \
+ && rm -rf /var/lib/apt/lists/*
+
 COPY --link package.json package-lock.json* ./
 COPY --link scripts/fix-node-pty.mjs ./scripts/fix-node-pty.mjs
 COPY --link ui/package.json ./ui/package.json
