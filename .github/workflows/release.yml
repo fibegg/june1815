@@ -62,8 +62,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm pack
+          cp "june1815-${{ steps.read-version.outputs.version }}.tgz" june1815.tgz
           gh release create "v${{ steps.read-version.outputs.version }}" \
             "june1815-${{ steps.read-version.outputs.version }}.tgz" \
+            "june1815.tgz" \
             --title "v${{ steps.read-version.outputs.version }}" \
             --generate-notes
 
