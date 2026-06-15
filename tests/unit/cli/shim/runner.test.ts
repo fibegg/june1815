@@ -223,6 +223,48 @@ describe('runShim end-to-end with stub PTY', () => {
     expect(combined).toContain('say hello');
   });
 
+  it('types slash-command text into claude instead of handling it in the shim', async () => {
+    const out = ndjsonSink();
+    const dataDir = newDataDir();
+    const fakeClaude = join(dataDir, 'claude-stub');
+    writeFileSync(fakeClaude, '#!/bin/sh\nexit 0\n');
+
+    let submitSeen = false;
+    const pty = fakePty({
+      onWrite: (data, emit) => {
+        if (submitSeen || !data.includes('\r')) return;
+        submitSeen = true;
+        emit(scriptedTurnResponse('/effort high', 'OK'));
+      },
+    });
+    setImmediate(() => { pty.emit(READY_BYTES); });
+
+    const userMsg = JSON.stringify({
+      type: 'user',
+      message: {
+        role: 'user',
+        content: [{ type: 'text', text: '/effort high\n/model opus\nrespond ok' }],
+      },
+    });
+
+    const code = await runShim({
+      argv: ['--output-format', 'stream-json', '--input-format', 'stream-json'],
+      env: {
+        JUNE1815_CLAUDE_PATH: fakeClaude,
+        JUNE1815_DATA_DIR: dataDir,
+      },
+      io: { stdout: out.sink, stderr: () => undefined },
+      stdin: fromString(`${userMsg}\n`),
+      spawner: pty.spawner,
+    });
+
+    expect(code).toBe(0);
+    const combined = pty.writes.map((w) => w.data).join('');
+    expect(combined).toContain('/effort high');
+    expect(combined).toContain('/model opus');
+    expect(combined).toContain('respond ok');
+  });
+
   it('a user-supplied tool-defs file overrides the built-in mapping', async () => {
     const dataDir = newDataDir();
     const fakeClaude = join(dataDir, 'claude-stub');

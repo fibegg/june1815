@@ -3,11 +3,11 @@ import { splitArgs } from '../../../../src/cli/shim/arg-filter.js';
 
 describe('splitArgs', () => {
   it('strips the stream-json IPC bool flags', () => {
-    const r = splitArgs(['--verbose', '-p', '--include-partial-messages', '--replay-user-messages']);
+    const r = splitArgs(['-p', '--print', '--include-partial-messages', '--replay-user-messages']);
     expect(r.passthrough).toEqual([]);
     expect(r.stripped).toEqual([
-      '--verbose',
       '-p',
+      '--print',
       '--include-partial-messages',
       '--replay-user-messages',
     ]);
@@ -18,14 +18,12 @@ describe('splitArgs', () => {
       '--output-format', 'stream-json',
       '--input-format', 'stream-json',
       '--permission-prompt-tool', 'stdio',
-      '--settings', '{}',
     ]);
     expect(r.passthrough).toEqual([]);
     expect(r.stripped).toEqual([
       '--output-format', 'stream-json',
       '--input-format', 'stream-json',
       '--permission-prompt-tool', 'stdio',
-      '--settings', '{}',
     ]);
   });
 
@@ -99,6 +97,12 @@ describe('splitArgs', () => {
     expect(r.passthrough).toEqual(['--allow-dangerously-skip-permissions']);
   });
 
+  it('forwards real TUI flags such as --verbose', () => {
+    const r = splitArgs(['--verbose']);
+    expect(r.passthrough).toEqual(['--verbose']);
+    expect(r.stripped).toEqual([]);
+  });
+
   it('full SDK-style invocation: keeps useful args, drops IPC noise', () => {
     const r = splitArgs([
       '--output-format', 'stream-json',
@@ -108,6 +112,7 @@ describe('splitArgs', () => {
       '--model', 'claude-opus-4-7',
       '--permission-prompt-tool', 'stdio',
       '--allowedTools', 'mcp__local',
+      '--allowed-tools', 'Bash(git:*)',
       '--setting-sources', 'user,project,local',
       '--permission-mode', 'plan',
       '--allow-dangerously-skip-permissions',
@@ -117,22 +122,23 @@ describe('splitArgs', () => {
       '--settings', '{}',
     ]);
     expect(r.passthrough).toEqual([
+      '--verbose',
       '--effort', 'max',
       '--model', 'claude-opus-4-7',
       '--allowedTools', 'mcp__local',
+      '--allowed-tools', 'Bash(git:*)',
       '--setting-sources', 'user,project,local',
       '--permission-mode', 'plan',
       '--allow-dangerously-skip-permissions',
       '--plugin-dir', '/some/dir',
+      '--settings', '{}',
     ]);
     expect(r.stripped).toEqual([
       '--output-format', 'stream-json',
-      '--verbose',
       '--input-format', 'stream-json',
       '--permission-prompt-tool', 'stdio',
       '--include-partial-messages',
       '--replay-user-messages',
-      '--settings', '{}',
     ]);
   });
 });

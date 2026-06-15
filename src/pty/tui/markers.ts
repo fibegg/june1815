@@ -20,6 +20,9 @@ export type MarkerName =
   | 'toolCall'
   | 'reasoningStart'
   | 'turnSummary'
+  | 'effortStatusLine'
+  | 'tokenStatusLine'
+  | 'assistantChromeLine'
   | 'subordinate'
   | 'divider'
   | 'tipLine'
@@ -34,7 +37,9 @@ export type MarkerName =
   | 'systemTipLine'
   | 'apiErrorLine'
   | 'toolResultLine'
-  | 'onboardingPrompt';
+  | 'onboardingSplash'
+  | 'onboardingTheme'
+  | 'onboardingEffort';
 
 export interface MarkerDef {
   readonly name: MarkerName;
@@ -75,13 +80,15 @@ export const MARKERS: Readonly<Record<MarkerName, MarkerDef>> = Object.freeze({
   assistantStart: {
     name: 'assistantStart',
     purpose:
-      'Start of an assistant response or tool-call: `⏺ <something>` (U+23FA BLACK CIRCLE FOR RECORD).',
-    pattern: /^\s*⏺\s+/u,
+      'Start of an assistant response or tool-call: `⏺ <something>` (old TUI) or `● <something>` (Claude 2.1.177+).',
+    pattern: /^\s*[⏺●]\s*(?!(?:low|medium|high|max)\s*·\s*\/effort\b)\S/u,
   },
   toolCall: {
     name: 'toolCall',
-    purpose: 'Tool-call rendering: `⏺ Name(args)`. Distinguishable from plain text by the parens.',
-    pattern: /^\s*⏺\s+([A-Za-z][A-Za-z0-9_]*)\(([^)]*)\)/u,
+    purpose:
+      'Tool-call rendering: `⏺ Name(args)` / `● Name(args)` and newer MCP display `● server - tool (MCP)(args)`.',
+    pattern:
+      /^\s*[⏺●]\s*(?:(?<legacyName>[A-Za-z][A-Za-z0-9_]*)\((?<legacyArgs>[^)]*)\)|(?<server>[A-Za-z][\w-]*)\s+-\s+(?<mcpName>[A-Za-z][\w-]*)\s+\(MCP\)(?:\((?<mcpArgs>.*)\))?)/u,
   },
   reasoningStart: {
     name: 'reasoningStart',
@@ -94,6 +101,24 @@ export const MARKERS: Readonly<Record<MarkerName, MarkerDef>> = Object.freeze({
     purpose:
       "Past-tense turn elapsed-time summary: `✻ Brewed for 2s`, `✻ Cogitated for 0s`, `✻ Sautéed for 1s`. Looks like reasoning but isn't.",
     pattern: /^\s*✻\s+\p{L}+ed\s+for\s+\d+s/u,
+  },
+  effortStatusLine: {
+    name: 'effortStatusLine',
+    purpose:
+      'Right-aligned chrome status showing current effort: `○ low · /effort`. This is not assistant text or reasoning.',
+    pattern: /^\s*[○●◈]\s+(?:low|medium|high|max)\s*·\s*\/effort\b/iu,
+  },
+  tokenStatusLine: {
+    name: 'tokenStatusLine',
+    purpose:
+      'Right-aligned context/token chrome: `26218 tokens`, sometimes duplicated on one rendered line.',
+    pattern: /^\s*(?:\d+\s*tokens\s*)+$/iu,
+  },
+  assistantChromeLine: {
+    name: 'assistantChromeLine',
+    purpose:
+      'Standalone assistant/status bullet rendered by newer Claude TUI while a tool/search block is opening.',
+    pattern: /^\s*[⏺●]\s*$/u,
   },
   subordinate: {
     name: 'subordinate',
@@ -132,7 +157,7 @@ export const MARKERS: Readonly<Record<MarkerName, MarkerDef>> = Object.freeze({
     name: 'spinnerLine',
     purpose:
       "Rotating spinner glyph followed by a verb: `✢ Deciphering…`, `· Simmering…`, `⠋ Loading…`. Decoration only, never content.",
-    pattern: /^\s*[✢✳✶✻✽⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏·]\s+\S/u,
+    pattern: /^\s*[✢✳✶✻✽⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏·*]\s+\S/u,
   },
   oauthUrl: {
     name: 'oauthUrl',
@@ -174,11 +199,23 @@ export const MARKERS: Readonly<Record<MarkerName, MarkerDef>> = Object.freeze({
       'Tool/file-read result under a `⎿`: `⎿ Read /path/to/file (83 bytes)`. Distinct from `apiErrorLine` and `systemTipLine`.',
     pattern: /^\s*⎿\s+(?!Tip:|API\s*Error|Error)([A-Za-z][\w-]*)\s+(.+)$/u,
   },
-  onboardingPrompt: {
-    name: 'onboardingPrompt',
+  onboardingSplash: {
+    name: 'onboardingSplash',
     purpose:
-      "First-run onboarding gate that blocks the chat-ready footer and which the parser cannot drive: the theme picker (`Choose the text style…`), the model-effort picker (`Effort lets you control the tradeoff…`), or the generic `Let's get started.` splash. Calibrated against Claude Code 2.1.x first-run flow.",
-    pattern: /choose the text style|let'?s get started|effort lets you control/iu,
+      "First-run onboarding splash: `Let's get started.`. Drive by accepting the highlighted default.",
+    pattern: /let'?s get started/iu,
+  },
+  onboardingTheme: {
+    name: 'onboardingTheme',
+    purpose:
+      'First-run onboarding theme picker: `Choose the text style...`. Drive by accepting the highlighted default.',
+    pattern: /choose the text style/iu,
+  },
+  onboardingEffort: {
+    name: 'onboardingEffort',
+    purpose:
+      'First-run onboarding effort picker: `Effort lets you control...`. Drive by accepting the highlighted default.',
+    pattern: /effort lets you control/iu,
   },
 });
 

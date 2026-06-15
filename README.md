@@ -53,8 +53,11 @@ full picture.
 ## Install
 
 ```sh
-# global CLI
+# global CLI (from npm registry)
 npm i -g june1815
+
+# or install the latest release directly from GitHub (bypasses npm workspaces Git issues)
+npm install -g https://github.com/fibegg/june1815/releases/latest/download/june1815.tgz
 
 # or one-shot run
 npx june1815 doctor

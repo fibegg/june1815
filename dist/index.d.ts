@@ -7,10 +7,10 @@ declare const LoggerConfigSchema: z.ZodDefault<z.ZodObject<{
     level: z.ZodDefault<z.ZodEnum<["fatal", "error", "warn", "info", "debug", "trace"]>>;
     pretty: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    level: "error" | "fatal" | "warn" | "info" | "debug" | "trace";
+    level: "fatal" | "error" | "warn" | "info" | "debug" | "trace";
     pretty?: boolean | undefined;
 }, {
-    level?: "error" | "fatal" | "warn" | "info" | "debug" | "trace" | undefined;
+    level?: "fatal" | "error" | "warn" | "info" | "debug" | "trace" | undefined;
     pretty?: boolean | undefined;
 }>>;
 declare const ModeSchema: z.ZodEnum<["interactive", "headless"]>;
@@ -67,10 +67,10 @@ declare const ConfigSchema: z.ZodObject<{
         level: z.ZodDefault<z.ZodEnum<["fatal", "error", "warn", "info", "debug", "trace"]>>;
         pretty: z.ZodOptional<z.ZodBoolean>;
     }, "strip", z.ZodTypeAny, {
-        level: "error" | "fatal" | "warn" | "info" | "debug" | "trace";
+        level: "fatal" | "error" | "warn" | "info" | "debug" | "trace";
         pretty?: boolean | undefined;
     }, {
-        level?: "error" | "fatal" | "warn" | "info" | "debug" | "trace" | undefined;
+        level?: "fatal" | "error" | "warn" | "info" | "debug" | "trace" | undefined;
         pretty?: boolean | undefined;
     }>>;
     limits: z.ZodDefault<z.ZodObject<{
@@ -117,7 +117,7 @@ declare const ConfigSchema: z.ZodObject<{
         idleQuietMs: number;
     };
     logger: {
-        level: "error" | "fatal" | "warn" | "info" | "debug" | "trace";
+        level: "fatal" | "error" | "warn" | "info" | "debug" | "trace";
         pretty?: boolean | undefined;
     };
     limits: {
@@ -150,7 +150,7 @@ declare const ConfigSchema: z.ZodObject<{
         idleQuietMs?: number | undefined;
     } | undefined;
     logger?: {
-        level?: "error" | "fatal" | "warn" | "info" | "debug" | "trace" | undefined;
+        level?: "fatal" | "error" | "warn" | "info" | "debug" | "trace" | undefined;
         pretty?: boolean | undefined;
     } | undefined;
     limits?: {
@@ -648,6 +648,12 @@ type TuiEvent = {
 } | {
     readonly type: 'trust_prompt';
 } | {
+    readonly type: 'onboarding_splash';
+} | {
+    readonly type: 'onboarding_theme';
+} | {
+    readonly type: 'onboarding_effort';
+} | {
     readonly type: 'error';
     readonly code: string;
     readonly message: string;
@@ -830,15 +836,9 @@ declare class Conversation {
     private readonly timers;
     private _state;
     private readonly subscribers;
-    /**
-     * Latched blocking diagnostic emitted during `starting` — currently the
-     * first-run onboarding screen the parser can't drive. It's emitted before
-     * any HTTP client connects, so we remember it to (a) fail `waitForReady`
-     * fast instead of timing out, and (b) replay it to any SSE subscriber
-     * that attaches after detection (otherwise the diagnostic is lost and the
-     * client hangs with no explanation).
-     */
+    /** Latched unrecoverable startup diagnostic, replayed to late subscribers. */
     private blockedReason;
+    private readonly onboardingDriveCounts;
     private dataTimer;
     private burstTimer;
     private lastWrite;
@@ -881,6 +881,8 @@ declare class Conversation {
     private scheduleSnapshot;
     private snapshotInternal;
     private handleParserEvent;
+    private driveOnboarding;
+    private failStartup;
     private drain;
     private setState;
     private emit;

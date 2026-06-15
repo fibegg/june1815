@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { June1815Error } from '../errors.js';
+import { June1815Error, type June1815ErrorCode } from '../errors.js';
 import type { ClaudePty, PtyExit } from '../pty/claude-pty.js';
 import type { InputDriver } from '../pty/input-driver.js';
 import type { TerminalAdapter } from '../pty/terminal.js';
@@ -42,6 +42,13 @@ const realTimers: ConversationTimers = {
   clearTimeout: (h) => { clearTimeout(h); },
 };
 
+type OnboardingEventType = Extract<
+  TuiEvent,
+  { readonly type: 'onboarding_splash' | 'onboarding_theme' | 'onboarding_effort' }
+>['type'];
+
+const ONBOARDING_MAX_DRIVES_PER_SCREEN = 3;
+
 /**
  * The unit that wires together PTY + terminal + parser + driver + queue.
  * One per `conversation_id`. Owns the lifecycle and emits a typed event
@@ -62,15 +69,13 @@ export class Conversation {
 
   private _state: ConversationState = 'starting';
   private readonly subscribers = new Set<(e: ConversationEvent) => void>();
-  /**
-   * Latched blocking diagnostic emitted during `starting` — currently the
-   * first-run onboarding screen the parser can't drive. It's emitted before
-   * any HTTP client connects, so we remember it to (a) fail `waitForReady`
-   * fast instead of timing out, and (b) replay it to any SSE subscriber
-   * that attaches after detection (otherwise the diagnostic is lost and the
-   * client hangs with no explanation).
-   */
+  /** Latched unrecoverable startup diagnostic, replayed to late subscribers. */
   private blockedReason: { readonly code: string; readonly message: string } | null = null;
+  private readonly onboardingDriveCounts: Record<OnboardingEventType, number> = {
+    onboarding_splash: 0,
+    onboarding_theme: 0,
+    onboarding_effort: 0,
+  };
 
   private dataTimer: NodeJS.Timeout | number | null = null;
   private burstTimer: NodeJS.Timeout | number | null = null;
@@ -244,6 +249,13 @@ export class Conversation {
           events.map((e) => e.type).join(',') || 'none'
         } inTurn=${ps?.inTurn} hadAct=${ps?.turnHadActivity} lastFooter=${ps?.lastFooter}`,
       );
+      if (process.env.JUNE1815_DEBUG_TUI_LINES === '1') {
+        for (let i = 0; i < snap.lines.length; i += 1) {
+          const line = snap.lines[i] ?? '';
+          if (line.trim().length === 0) continue;
+          console.error(`[tui-line ${i}] ${line}`);
+        }
+      }
     }
     for (const e of events) this.handleParserEvent(e);
 
@@ -268,22 +280,8 @@ export class Conversation {
       this.driver.raw('\r');
       return;
     }
-    if (
-      e.type === 'error' &&
-      e.code === 'claude_onboarding_required' &&
-      this._state === 'starting'
-    ) {
-      // claude is parked on a first-run onboarding screen (theme/effort
-      // picker) the parser can't drive. Don't hang silently: latch the
-      // reason, fail any waitForReady callers fast, and forward the
-      // diagnostic to current subscribers. Late subscribers get it
-      // replayed on subscribe.
-      this.blockedReason = { code: e.code, message: e.message };
-      const err = new June1815Error('claude_onboarding_required', e.message);
-      for (const reject of this.readyRejecters) reject(err);
-      this.readyResolvers = [];
-      this.readyRejecters = [];
-      this.emit(e);
+    if (isOnboardingEvent(e) && this._state === 'starting') {
+      this.driveOnboarding(e.type);
       return;
     }
     if (e.type === 'ready' && this._state === 'starting') {
@@ -308,6 +306,32 @@ export class Conversation {
       return;
     }
     this.emit(e);
+  }
+
+  private driveOnboarding(type: OnboardingEventType): void {
+    this.onboardingDriveCounts[type] += 1;
+    if (this.onboardingDriveCounts[type] > ONBOARDING_MAX_DRIVES_PER_SCREEN) {
+      const message =
+        `claude first-run onboarding did not progress after ${
+          ONBOARDING_MAX_DRIVES_PER_SCREEN
+        } Enter attempts on ${type.replace('onboarding_', '')}`;
+      this.failStartup('claude_onboarding_required', message);
+      return;
+    }
+    this.driver.raw('\r');
+    if (this.burstTimer !== null) this.timers.clearTimeout(this.burstTimer);
+    this.burstTimer = this.timers.setTimeout(() => {
+      void this.snapshotInternal();
+    }, this.maxBurstMs);
+  }
+
+  private failStartup(code: June1815ErrorCode, message: string): void {
+    this.blockedReason = { code, message };
+    const err = new June1815Error(code, message);
+    for (const reject of this.readyRejecters) reject(err);
+    this.readyResolvers = [];
+    this.readyRejecters = [];
+    this.emit({ type: 'error', code, message });
   }
 
   private drain(): void {
@@ -348,4 +372,8 @@ export class Conversation {
       this.burstTimer = null;
     }
   }
+}
+
+function isOnboardingEvent(e: TuiEvent): e is Extract<TuiEvent, { readonly type: OnboardingEventType }> {
+  return e.type === 'onboarding_splash' || e.type === 'onboarding_theme' || e.type === 'onboarding_effort';
 }

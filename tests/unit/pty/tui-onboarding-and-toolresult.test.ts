@@ -55,16 +55,13 @@ describe('TUI tool-result: command output is not a phantom tool_result', () => {
 });
 
 // Regression: a first-run onboarding screen (theme / effort picker) has no
-// ready/busy footer, so the conversation hung silently in `starting`.
-// The parser now surfaces a `claude_onboarding_required` diagnostic.
-describe('TUI onboarding: surfaces a diagnostic instead of hanging silently', () => {
-  const onboardingErr = (evs: readonly TuiEvent[]) =>
-    evs.find(
-      (e): e is Extract<TuiEvent, { type: 'error' }> =>
-        e.type === 'error' && e.code === 'claude_onboarding_required',
-    );
+// ready/busy footer, so the conversation hung in `starting`. The parser now
+// emits internal drive events; Conversation accepts the highlighted default.
+describe('TUI onboarding: emits drive events instead of a public error', () => {
+  const event = <T extends TuiEvent['type']>(evs: readonly TuiEvent[], type: T) =>
+    evs.find((e): e is Extract<TuiEvent, { type: T }> => e.type === type);
 
-  it('emits claude_onboarding_required on the theme picker', () => {
+  it('emits onboarding_theme on the theme picker', () => {
     const p = new TuiParser();
     const evs = p.parse(
       snapFromLines([
@@ -75,12 +72,13 @@ describe('TUI onboarding: surfaces a diagnostic instead of hanging silently', ()
         '  2. Light mode',
       ]),
     );
-    expect(onboardingErr(evs)).toBeDefined();
+    expect(event(evs, 'onboarding_theme')).toBeDefined();
+    expect(evs.find((e) => e.type === 'error')).toBeUndefined();
     // No ready footer is present on the picker, so `ready` must not fire.
     expect(evs.find((e) => e.type === 'ready')).toBeUndefined();
   });
 
-  it('emits claude_onboarding_required on the Opus effort picker', () => {
+  it('emits onboarding_effort on the Opus effort picker', () => {
     const p = new TuiParser();
     const evs = p.parse(
       snapFromLines([
@@ -90,7 +88,15 @@ describe('TUI onboarding: surfaces a diagnostic instead of hanging silently', ()
         '  2. Use medium effort',
       ]),
     );
-    expect(onboardingErr(evs)).toBeDefined();
+    expect(event(evs, 'onboarding_effort')).toBeDefined();
+    expect(evs.find((e) => e.type === 'error')).toBeUndefined();
+  });
+
+  it('emits onboarding_splash on the generic start screen', () => {
+    const p = new TuiParser();
+    const evs = p.parse(snapFromLines(["Let's get started."]));
+    expect(event(evs, 'onboarding_splash')).toBeDefined();
+    expect(evs.find((e) => e.type === 'error')).toBeUndefined();
   });
 
   it('does NOT fire on the normal home screen (and ready still works)', () => {
@@ -98,14 +104,16 @@ describe('TUI onboarding: surfaces a diagnostic instead of hanging silently', ()
     const evs = p.parse(
       snapFromLines(['Welcome back Vale!', 'Tips for getting started', '? for shortcuts']),
     );
-    expect(onboardingErr(evs)).toBeUndefined();
+    expect(event(evs, 'onboarding_splash')).toBeUndefined();
+    expect(event(evs, 'onboarding_theme')).toBeUndefined();
+    expect(event(evs, 'onboarding_effort')).toBeUndefined();
     expect(evs.find((e) => e.type === 'ready')).toBeDefined();
   });
 
-  it('latches: fires once per appearance, not on every snapshot', () => {
+  it('re-emits while the screen is still visible so the driver can retry', () => {
     const p = new TuiParser();
     const lines = ['Choose the text style that looks best with your terminal', '❯ 1. Dark mode'];
-    expect(onboardingErr(p.parse(snapFromLines(lines)))).toBeDefined();
-    expect(onboardingErr(p.parse(snapFromLines(lines)))).toBeUndefined();
+    expect(event(p.parse(snapFromLines(lines)), 'onboarding_theme')).toBeDefined();
+    expect(event(p.parse(snapFromLines(lines)), 'onboarding_theme')).toBeDefined();
   });
 });

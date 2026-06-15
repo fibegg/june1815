@@ -183,23 +183,58 @@ describe('Conversation lifecycle', () => {
     await expect(p).rejects.toThrow();
   });
 
-  it('fails waitForReady fast (not on timeout) when claude shows a first-run onboarding screen', async () => {
-    const { emitData, conv } = setupConversation();
+  for (const [name, bytes] of [
+    ['splash', "Let's get started.\r\n"],
+    ['theme', 'Choose the text style that looks best with your terminal\r\n❯ 1. Dark mode\r\n'],
+    [
+      'effort',
+      'Effort lets you control the tradeoff between thoroughness and token efficiency.\r\n❯ 1. Use high effort\r\n',
+    ],
+  ] as const) {
+    it(`drives the ${name} onboarding screen and keeps waiting for ready`, async () => {
+      const { emitData, conv, events, ptyWrites } = setupConversation();
+      const p = conv.waitForReady(1000);
+      emitData(bytes);
+      await conv.snapshotNow();
+
+      expect(ptyWrites.filter((w) => w === 'drv:\r')).toHaveLength(1);
+      expect(events.find((e) => e.type === 'error')).toBeUndefined();
+      expect(conv.state).toBe('starting');
+
+      emitData('? for shortcuts\r\n');
+      await conv.snapshotNow();
+
+      await expect(p).resolves.toBeUndefined();
+      expect(conv.state).toBe('ready');
+    });
+  }
+
+  it('fails waitForReady if the same onboarding screen stays stuck after bounded retries', async () => {
+    const { emitData, conv, events, ptyWrites } = setupConversation();
     const p = conv.waitForReady(30_000);
     emitData('Choose the text style that looks best with your terminal\r\n❯ 1. Dark mode\r\n');
     await conv.snapshotNow();
-    // Rejects immediately via the onboarding interception, not after 30s.
-    await expect(p).rejects.toThrow(/onboarding/i);
-    // Still `starting` (we surface the reason; we don't pretend to recover).
-    expect(conv.state).toBe('starting');
+    await conv.snapshotNow();
+    await conv.snapshotNow();
+    await conv.snapshotNow();
+
+    await expect(p).rejects.toThrow(/onboarding did not progress/i);
+    expect(ptyWrites.filter((w) => w === 'drv:\r')).toHaveLength(3);
+    const err = events.find(
+      (e): e is Extract<ConversationEvent, { type: 'error' }> =>
+        e.type === 'error' && e.code === 'claude_onboarding_required',
+    );
+    expect(err?.message).toMatch(/did not progress/);
   });
 
-  it('replays the onboarding diagnostic to a subscriber that attaches after detection', async () => {
+  it('replays a bounded onboarding failure to a subscriber that attaches later', async () => {
     const { emitData, conv } = setupConversation();
     emitData('Choose the text style that looks best with your terminal\r\n');
     await conv.snapshotNow();
-    // A late subscriber (e.g. an SSE /messages stream opened after startup)
-    // must still receive the diagnostic instead of hanging.
+    await conv.snapshotNow();
+    await conv.snapshotNow();
+    await conv.snapshotNow();
+
     const late: ConversationEvent[] = [];
     conv.onEvent((e) => late.push(e));
     const err = late.find(

@@ -7,7 +7,6 @@ import {
   type BlockExtractor,
 } from './extractors.js';
 import { matches } from './markers.js';
-import { stripLeadingMarker } from './transforms.js';
 import { initialParserState, type ParserState, type TuiEvent } from './types.js';
 
 /**
@@ -178,7 +177,7 @@ export class TuiEngine {
  *  The starter line carries the first chunk of payload after the
  *  marker, so we keep it but peel the marker. */
 function stripStarterMarker(line: string, marker: string): string {
-  if (marker === 'assistantStart') return stripLeadingMarker(line, '⏺');
+  if (marker === 'assistantStart') return line.replace(/^\s*[⏺●]\s*/u, '');
   if (marker === 'reasoningStart') {
     // For `✻ Thinking…` we drop the entire line (the verb itself isn't
     // content); the reasoning extractor's transforms re-handle this.

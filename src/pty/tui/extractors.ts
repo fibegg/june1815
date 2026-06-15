@@ -84,14 +84,18 @@ function looksLikeToolName(name: string): boolean {
 export const ASSISTANT_TEXT_EXTRACTOR: BlockExtractor = {
   name: 'assistant-text',
   purpose:
-    'Extract the assistant response under the most recent user echo. Strips tool-call shapes, spinner lines, footer hints, prior-turn echoes, and tip blocks.',
+    'Extract the latest assistant response segment under the most recent user echo. Strips tool-call shapes, spinner lines, footer hints, prior-turn echoes, and tip blocks.',
   start: 'assistantStart',
   excludeStart: 'toolCall',
+  findLast: true,
   stops: [
     'userEcho',
     'assistantStart',
     'reasoningStart',
     'turnSummary',
+    'effortStatusLine',
+    'tokenStatusLine',
+    'assistantChromeLine',
     'subordinate',
     'divider',
     'tipLine',
@@ -131,6 +135,9 @@ export const REASONING_EXTRACTOR: BlockExtractor = {
     'assistantStart',
     'reasoningStart',
     'turnSummary',
+    'effortStatusLine',
+    'tokenStatusLine',
+    'assistantChromeLine',
     'subordinate',
     'divider',
     'tipLine',
@@ -331,24 +338,16 @@ export const TRUST_PROMPT_EXTRACTOR: LineExtractor = {
 export const ONBOARDING_EXTRACTOR: LineExtractor = {
   name: 'onboarding',
   purpose:
-    'Surface a `claude_onboarding_required` error when claude is sitting on a first-run onboarding screen the parser cannot drive (theme/effort picker). Turns an otherwise silent `starting` hang — the footer never matches, so `ready` never fires — into an explicit, debuggable signal. Latches; resets when the screen is gone. Does NOT set turnHadActivity (an onboarding screen is not turn activity).',
-  apply({ lines, state }) {
-    const onboardingVisible = lines.some((l) => matches('onboardingPrompt', l));
-    if (onboardingVisible && !state.onboardingEmitted) {
-      return {
-        events: [
-          {
-            type: 'error',
-            code: 'claude_onboarding_required',
-            message:
-              'claude is showing a first-run onboarding screen (theme/effort picker) that june1815 cannot drive. Run `claude` once in an interactive terminal to complete onboarding, then retry.',
-          },
-        ],
-        stateUpdate: { onboardingEmitted: true },
-      };
+    'Emit internal drive events when claude is sitting on a first-run onboarding screen. The Conversation accepts the highlighted default and keeps waiting for the ready footer.',
+  apply({ lines }) {
+    if (lines.some((l) => matches('onboardingEffort', l))) {
+      return { events: [{ type: 'onboarding_effort' }], stateUpdate: {} };
     }
-    if (!onboardingVisible && state.onboardingEmitted) {
-      return { events: [], stateUpdate: { onboardingEmitted: false } };
+    if (lines.some((l) => matches('onboardingTheme', l))) {
+      return { events: [{ type: 'onboarding_theme' }], stateUpdate: {} };
+    }
+    if (lines.some((l) => matches('onboardingSplash', l))) {
+      return { events: [{ type: 'onboarding_splash' }], stateUpdate: {} };
     }
     return { events: [], stateUpdate: {} };
   },
@@ -368,8 +367,9 @@ export const TOOL_USE_EXTRACTOR: LineExtractor = {
       const sig = `${i}::${line}`;
       if (next.has(sig)) continue;
       next.add(sig);
-      const name = m[1] ?? '';
-      const summary = m[2];
+      const groups = m.groups ?? {};
+      const name = groups.mcpName ?? groups.legacyName ?? m[1] ?? '';
+      const summary = groups.mcpArgs ?? groups.legacyArgs ?? m[2];
       events.push(
         summary && summary.length > 0
           ? { type: 'tool_use', name, summary }

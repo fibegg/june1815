@@ -56,6 +56,40 @@ describe('TuiParser text deltas', () => {
     expect(td?.text).toBe('Hello');
   });
 
+  it('emits text_delta for Claude 2.1.177 black-circle assistant text', () => {
+    const p = new TuiParser();
+    p.markTurnStarted();
+    const evs = p.parse(snapFromLines(['❯ Reply with exactly: HI', '● HI', '✻ Worked for 2s']));
+    const td = evs.find((e): e is Extract<TuiEvent, { type: 'text_delta' }> => e.type === 'text_delta');
+    expect(td?.text).toBe('HI');
+  });
+
+  it('uses the latest Claude 2.1.177 assistant segment and skips chrome lines', () => {
+    const p = new TuiParser();
+    p.markTurnStarted();
+    p.parse(snapFromLines([
+      '❯ How many Fibe playgrounds do I have?',
+      "● I'll use the Fibe tools to count your playgrounds.",
+      '●',
+      '                                                                                                                                                                                           26218 tokens',
+      '● fibe - fibe_resource_list (MCP)(resource: "playground", only: ["id","name"])',
+      '* Jitterbugging… (12s · ↑ 750 tokens)',
+      '                                                                                                                                                                                           ◈ max · /effort',
+    ]));
+    const evs = p.parse(snapFromLines([
+      '❯ How many Fibe playgrounds do I have?',
+      "● I'll use the Fibe tools to count your playgrounds.",
+      '●',
+      '                                                                                                                                                                                           26218 tokens',
+      '● fibe - fibe_resource_list (MCP)(resource: "playground", only: ["id","name"])',
+      '* Jitterbugging… (12s · ↑ 750 tokens)',
+      '●You have 38 Fibe playgrounds.',
+      '✻ Worked for 15s',
+    ]));
+    const td = evs.find((e): e is Extract<TuiEvent, { type: 'text_delta' }> => e.type === 'text_delta');
+    expect(td?.text).toBe('You have 38 Fibe playgrounds.');
+  });
+
   it('emits an incremental delta as text grows across snapshots', () => {
     const p = new TuiParser();
     p.markTurnStarted();
@@ -95,6 +129,17 @@ describe('TuiParser reasoning', () => {
     const r = evs.find((e): e is Extract<TuiEvent, { type: 'reasoning_delta' }> => e.type === 'reasoning_delta');
     expect(r?.text).toContain('weighing options');
   });
+
+  it('does not emit effort chrome as reasoning for spinner-only Claude 2.1.177 snapshots', () => {
+    const p = new TuiParser();
+    p.markTurnStarted();
+    const evs = p.parse(snapFromLines([
+      '✻ Evaporating… (0s)',
+      '                                                                                                                                                                                         ○ low · /effort',
+      '                                                                                                                                                                                         26218 tokens',
+    ]));
+    expect(evs.find((e) => e.type === 'reasoning_delta')).toBeUndefined();
+  });
 });
 
 describe('TuiParser tool calls', () => {
@@ -104,6 +149,24 @@ describe('TuiParser tool calls', () => {
     const evs = p.parse(snapFromLines(['⏺ Read(/etc/hosts)']));
     const t = evs.find((e): e is Extract<TuiEvent, { type: 'tool_use' }> => e.type === 'tool_use');
     expect(t).toEqual({ type: 'tool_use', name: 'Read', summary: '/etc/hosts' });
+  });
+
+  it('emits a tool_use for Claude 2.1.177 MCP tool display lines', () => {
+    const p = new TuiParser();
+    p.markTurnStarted();
+    const evs = p.parse(snapFromLines(['● fibe - fibe_resource_list (MCP)(resource: "playground")']));
+    const t = evs.find((e): e is Extract<TuiEvent, { type: 'tool_use' }> => e.type === 'tool_use');
+    expect(t).toEqual({ type: 'tool_use', name: 'fibe_resource_list', summary: 'resource: "playground"' });
+    expect(evs.find((e) => e.type === 'text_delta')).toBeUndefined();
+  });
+
+  it('emits a tool_use for MCP display lines without rendered args', () => {
+    const p = new TuiParser();
+    p.markTurnStarted();
+    const evs = p.parse(snapFromLines(['● fibe - fibe_resource_list (MCP)']));
+    const t = evs.find((e): e is Extract<TuiEvent, { type: 'tool_use' }> => e.type === 'tool_use');
+    expect(t).toEqual({ type: 'tool_use', name: 'fibe_resource_list' });
+    expect(evs.find((e) => e.type === 'text_delta')).toBeUndefined();
   });
 
   it('does not re-emit the same tool line on the next snapshot', () => {
@@ -282,12 +345,16 @@ describe('DEFAULT_PATTERNS', () => {
     expect(DEFAULT_PATTERNS.readyMarker.test('⏵⏵ bypass permissions on (shift+tab to cycle)')).toBe(true);
     expect(DEFAULT_PATTERNS.busyFooter.test('esc to interrupt ● high')).toBe(true);
     expect(DEFAULT_PATTERNS.assistantBlockStart.test('⏺ hi')).toBe(true);
+    expect(DEFAULT_PATTERNS.assistantBlockStart.test('● hi')).toBe(true);
     expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Thinking…')).toBe(true);
     expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Cogitating...')).toBe(true);
     // past-tense turn summaries are NOT reasoning
     expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Cogitated for 0s')).toBe(false);
     expect(DEFAULT_PATTERNS.reasoningBlockStart.test('✻ Brewed for 2s')).toBe(false);
     expect(DEFAULT_PATTERNS.toolCallLine.test('⏺ Bash(ls)')).toBe(true);
+    expect(DEFAULT_PATTERNS.toolCallLine.test('● Bash(ls)')).toBe(true);
+    expect(DEFAULT_PATTERNS.toolCallLine.test('● fibe - fibe_resource_list (MCP)(resource: "playground")')).toBe(true);
+    expect(DEFAULT_PATTERNS.toolCallLine.test('● fibe - fibe_resource_list (MCP)')).toBe(true);
     expect(DEFAULT_PATTERNS.usageLine.test('Usage: 10 in / 20 out')).toBe(true);
     expect(DEFAULT_PATTERNS.trustPrompt.test('Quick safety check')).toBe(true);
     expect(DEFAULT_PATTERNS.trustPrompt.test('❯ 1. Yes, I trust this folder')).toBe(true);

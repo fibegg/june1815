@@ -712,6 +712,7 @@ var realTimers = {
     clearTimeout(h);
   }
 };
+var ONBOARDING_MAX_DRIVES_PER_SCREEN = 3;
 var Conversation = class {
   id;
   cwd;
@@ -725,15 +726,13 @@ var Conversation = class {
   timers;
   _state = "starting";
   subscribers = /* @__PURE__ */ new Set();
-  /**
-   * Latched blocking diagnostic emitted during `starting` — currently the
-   * first-run onboarding screen the parser can't drive. It's emitted before
-   * any HTTP client connects, so we remember it to (a) fail `waitForReady`
-   * fast instead of timing out, and (b) replay it to any SSE subscriber
-   * that attaches after detection (otherwise the diagnostic is lost and the
-   * client hangs with no explanation).
-   */
+  /** Latched unrecoverable startup diagnostic, replayed to late subscribers. */
   blockedReason = null;
+  onboardingDriveCounts = {
+    onboarding_splash: 0,
+    onboarding_theme: 0,
+    onboarding_effort: 0
+  };
   dataTimer = null;
   burstTimer = null;
   lastWrite = Promise.resolve();
@@ -880,6 +879,13 @@ var Conversation = class {
       console.error(
         `[tui-debug] state=${this._state} cursorY=${snap.cursorY} events=${events.map((e) => e.type).join(",") || "none"} inTurn=${ps?.inTurn} hadAct=${ps?.turnHadActivity} lastFooter=${ps?.lastFooter}`
       );
+      if (process.env.JUNE1815_DEBUG_TUI_LINES === "1") {
+        for (let i = 0; i < snap.lines.length; i += 1) {
+          const line = snap.lines[i] ?? "";
+          if (line.trim().length === 0) continue;
+          console.error(`[tui-line ${i}] ${line}`);
+        }
+      }
     }
     for (const e of events) this.handleParserEvent(e);
     if (this._state === "busy") {
@@ -893,13 +899,8 @@ var Conversation = class {
       this.driver.raw("\r");
       return;
     }
-    if (e.type === "error" && e.code === "claude_onboarding_required" && this._state === "starting") {
-      this.blockedReason = { code: e.code, message: e.message };
-      const err = new June1815Error("claude_onboarding_required", e.message);
-      for (const reject of this.readyRejecters) reject(err);
-      this.readyResolvers = [];
-      this.readyRejecters = [];
-      this.emit(e);
+    if (isOnboardingEvent(e) && this._state === "starting") {
+      this.driveOnboarding(e.type);
       return;
     }
     if (e.type === "ready" && this._state === "starting") {
@@ -924,6 +925,27 @@ var Conversation = class {
       return;
     }
     this.emit(e);
+  }
+  driveOnboarding(type) {
+    this.onboardingDriveCounts[type] += 1;
+    if (this.onboardingDriveCounts[type] > ONBOARDING_MAX_DRIVES_PER_SCREEN) {
+      const message = `claude first-run onboarding did not progress after ${ONBOARDING_MAX_DRIVES_PER_SCREEN} Enter attempts on ${type.replace("onboarding_", "")}`;
+      this.failStartup("claude_onboarding_required", message);
+      return;
+    }
+    this.driver.raw("\r");
+    if (this.burstTimer !== null) this.timers.clearTimeout(this.burstTimer);
+    this.burstTimer = this.timers.setTimeout(() => {
+      void this.snapshotInternal();
+    }, this.maxBurstMs);
+  }
+  failStartup(code, message) {
+    this.blockedReason = { code, message };
+    const err = new June1815Error(code, message);
+    for (const reject of this.readyRejecters) reject(err);
+    this.readyResolvers = [];
+    this.readyRejecters = [];
+    this.emit({ type: "error", code, message });
   }
   drain() {
     if (this._state !== "ready") return;
@@ -960,6 +982,9 @@ var Conversation = class {
     }
   }
 };
+function isOnboardingEvent(e) {
+  return e.type === "onboarding_splash" || e.type === "onboarding_theme" || e.type === "onboarding_effort";
+}
 var ConversationManager = class {
   constructor(opts) {
     this.opts = opts;
@@ -1342,13 +1367,13 @@ var MARKERS = Object.freeze({
   },
   assistantStart: {
     name: "assistantStart",
-    purpose: "Start of an assistant response or tool-call: `\u23FA <something>` (U+23FA BLACK CIRCLE FOR RECORD).",
-    pattern: /^\s*⏺\s+/u
+    purpose: "Start of an assistant response or tool-call: `\u23FA <something>` (old TUI) or `\u25CF <something>` (Claude 2.1.177+).",
+    pattern: /^\s*[⏺●]\s*(?!(?:low|medium|high|max)\s*·\s*\/effort\b)\S/u
   },
   toolCall: {
     name: "toolCall",
-    purpose: "Tool-call rendering: `\u23FA Name(args)`. Distinguishable from plain text by the parens.",
-    pattern: /^\s*⏺\s+([A-Za-z][A-Za-z0-9_]*)\(([^)]*)\)/u
+    purpose: "Tool-call rendering: `\u23FA Name(args)` / `\u25CF Name(args)` and newer MCP display `\u25CF server - tool (MCP)(args)`.",
+    pattern: /^\s*[⏺●]\s*(?:(?<legacyName>[A-Za-z][A-Za-z0-9_]*)\((?<legacyArgs>[^)]*)\)|(?<server>[A-Za-z][\w-]*)\s+-\s+(?<mcpName>[A-Za-z][\w-]*)\s+\(MCP\)(?:\((?<mcpArgs>.*)\))?)/u
   },
   reasoningStart: {
     name: "reasoningStart",
@@ -1359,6 +1384,21 @@ var MARKERS = Object.freeze({
     name: "turnSummary",
     purpose: "Past-tense turn elapsed-time summary: `\u273B Brewed for 2s`, `\u273B Cogitated for 0s`, `\u273B Saut\xE9ed for 1s`. Looks like reasoning but isn't.",
     pattern: new RegExp("^\\s*\u273B\\s+\\p{L}+ed\\s+for\\s+\\d+s", "u")
+  },
+  effortStatusLine: {
+    name: "effortStatusLine",
+    purpose: "Right-aligned chrome status showing current effort: `\u25CB low \xB7 /effort`. This is not assistant text or reasoning.",
+    pattern: /^\s*[○●◈]\s+(?:low|medium|high|max)\s*·\s*\/effort\b/iu
+  },
+  tokenStatusLine: {
+    name: "tokenStatusLine",
+    purpose: "Right-aligned context/token chrome: `26218 tokens`, sometimes duplicated on one rendered line.",
+    pattern: /^\s*(?:\d+\s*tokens\s*)+$/iu
+  },
+  assistantChromeLine: {
+    name: "assistantChromeLine",
+    purpose: "Standalone assistant/status bullet rendered by newer Claude TUI while a tool/search block is opening.",
+    pattern: /^\s*[⏺●]\s*$/u
   },
   subordinate: {
     name: "subordinate",
@@ -1393,7 +1433,7 @@ var MARKERS = Object.freeze({
   spinnerLine: {
     name: "spinnerLine",
     purpose: "Rotating spinner glyph followed by a verb: `\u2722 Deciphering\u2026`, `\xB7 Simmering\u2026`, `\u280B Loading\u2026`. Decoration only, never content.",
-    pattern: /^\s*[✢✳✶✻✽⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏·]\s+\S/u
+    pattern: /^\s*[✢✳✶✻✽⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏·*]\s+\S/u
   },
   oauthUrl: {
     name: "oauthUrl",
@@ -1430,10 +1470,20 @@ var MARKERS = Object.freeze({
     purpose: "Tool/file-read result under a `\u23BF`: `\u23BF Read /path/to/file (83 bytes)`. Distinct from `apiErrorLine` and `systemTipLine`.",
     pattern: /^\s*⎿\s+(?!Tip:|API\s*Error|Error)([A-Za-z][\w-]*)\s+(.+)$/u
   },
-  onboardingPrompt: {
-    name: "onboardingPrompt",
-    purpose: "First-run onboarding gate that blocks the chat-ready footer and which the parser cannot drive: the theme picker (`Choose the text style\u2026`), the model-effort picker (`Effort lets you control the tradeoff\u2026`), or the generic `Let's get started.` splash. Calibrated against Claude Code 2.1.x first-run flow.",
-    pattern: /choose the text style|let'?s get started|effort lets you control/iu
+  onboardingSplash: {
+    name: "onboardingSplash",
+    purpose: "First-run onboarding splash: `Let's get started.`. Drive by accepting the highlighted default.",
+    pattern: /let'?s get started/iu
+  },
+  onboardingTheme: {
+    name: "onboardingTheme",
+    purpose: "First-run onboarding theme picker: `Choose the text style...`. Drive by accepting the highlighted default.",
+    pattern: /choose the text style/iu
+  },
+  onboardingEffort: {
+    name: "onboardingEffort",
+    purpose: "First-run onboarding effort picker: `Effort lets you control...`. Drive by accepting the highlighted default.",
+    pattern: /effort lets you control/iu
   }
 });
 function matches(name, line) {
@@ -1479,10 +1529,6 @@ var collapseBlankRuns = (lines) => {
   }
   return out;
 };
-function stripLeadingMarker(line, marker) {
-  const re = new RegExp(`^\\s*${marker}\\s*`, "u");
-  return line.replace(re, "");
-}
 function computeDelta(prev, current) {
   if (current === prev) return "";
   if (current.startsWith(prev)) return current.slice(prev.length);
@@ -1502,14 +1548,18 @@ function looksLikeToolName(name) {
 }
 var ASSISTANT_TEXT_EXTRACTOR = {
   name: "assistant-text",
-  purpose: "Extract the assistant response under the most recent user echo. Strips tool-call shapes, spinner lines, footer hints, prior-turn echoes, and tip blocks.",
+  purpose: "Extract the latest assistant response segment under the most recent user echo. Strips tool-call shapes, spinner lines, footer hints, prior-turn echoes, and tip blocks.",
   start: "assistantStart",
   excludeStart: "toolCall",
+  findLast: true,
   stops: [
     "userEcho",
     "assistantStart",
     "reasoningStart",
     "turnSummary",
+    "effortStatusLine",
+    "tokenStatusLine",
+    "assistantChromeLine",
     "subordinate",
     "divider",
     "tipLine",
@@ -1544,6 +1594,9 @@ var REASONING_EXTRACTOR = {
     "assistantStart",
     "reasoningStart",
     "turnSummary",
+    "effortStatusLine",
+    "tokenStatusLine",
+    "assistantChromeLine",
     "subordinate",
     "divider",
     "tipLine",
@@ -1685,23 +1738,16 @@ var TRUST_PROMPT_EXTRACTOR = {
 };
 var ONBOARDING_EXTRACTOR = {
   name: "onboarding",
-  purpose: "Surface a `claude_onboarding_required` error when claude is sitting on a first-run onboarding screen the parser cannot drive (theme/effort picker). Turns an otherwise silent `starting` hang \u2014 the footer never matches, so `ready` never fires \u2014 into an explicit, debuggable signal. Latches; resets when the screen is gone. Does NOT set turnHadActivity (an onboarding screen is not turn activity).",
-  apply({ lines, state }) {
-    const onboardingVisible = lines.some((l) => matches("onboardingPrompt", l));
-    if (onboardingVisible && !state.onboardingEmitted) {
-      return {
-        events: [
-          {
-            type: "error",
-            code: "claude_onboarding_required",
-            message: "claude is showing a first-run onboarding screen (theme/effort picker) that june1815 cannot drive. Run `claude` once in an interactive terminal to complete onboarding, then retry."
-          }
-        ],
-        stateUpdate: { onboardingEmitted: true }
-      };
+  purpose: "Emit internal drive events when claude is sitting on a first-run onboarding screen. The Conversation accepts the highlighted default and keeps waiting for the ready footer.",
+  apply({ lines }) {
+    if (lines.some((l) => matches("onboardingEffort", l))) {
+      return { events: [{ type: "onboarding_effort" }], stateUpdate: {} };
     }
-    if (!onboardingVisible && state.onboardingEmitted) {
-      return { events: [], stateUpdate: { onboardingEmitted: false } };
+    if (lines.some((l) => matches("onboardingTheme", l))) {
+      return { events: [{ type: "onboarding_theme" }], stateUpdate: {} };
+    }
+    if (lines.some((l) => matches("onboardingSplash", l))) {
+      return { events: [{ type: "onboarding_splash" }], stateUpdate: {} };
     }
     return { events: [], stateUpdate: {} };
   }
@@ -1719,8 +1765,9 @@ var TOOL_USE_EXTRACTOR = {
       const sig = `${i}::${line}`;
       if (next.has(sig)) continue;
       next.add(sig);
-      const name = m[1] ?? "";
-      const summary = m[2];
+      const groups = m.groups ?? {};
+      const name = groups.mcpName ?? groups.legacyName ?? m[1] ?? "";
+      const summary = groups.mcpArgs ?? groups.legacyArgs ?? m[2];
       events.push(
         summary && summary.length > 0 ? { type: "tool_use", name, summary } : { type: "tool_use", name }
       );
@@ -1814,7 +1861,6 @@ function initialParserState() {
     emittedAuthUrl: /* @__PURE__ */ new Set(),
     readyEmitted: false,
     trustPromptEmitted: false,
-    onboardingEmitted: false,
     inTurn: false,
     turnHadActivity: false,
     currentTurnAnchorLine: "",
@@ -1928,7 +1974,7 @@ var TuiEngine = class {
   }
 };
 function stripStarterMarker(line, marker) {
-  if (marker === "assistantStart") return stripLeadingMarker(line, "\u23FA");
+  if (marker === "assistantStart") return line.replace(/^\s*[⏺●]\s*/u, "");
   if (marker === "reasoningStart") {
     return "";
   }

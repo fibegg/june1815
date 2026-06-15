@@ -20,9 +20,6 @@
  * recognised by name is treated as a boolean flag (no value consumed).
  *
  * A few intentional choices:
- *   - `--verbose` is intentionally NOT a value-taking flag in claude
- *     (it's a boolean), but the stream-json mode pairs it with the IPC
- *     flags, so we still strip it for cleanliness.
  *   - `--tool-defs` is repeatable (`--tool-defs a.json --tool-defs b.json`)
  *     and the shim collects all of them.
  */
@@ -35,7 +32,9 @@ const VALUE_FLAGS = new Set([
   '--effort',
   '--add-dir',
   '--allowedTools',
+  '--allowed-tools',
   '--disallowedTools',
+  '--disallowed-tools',
   '--setting-sources',
   '--permission-mode',
   '--plugin-dir',
@@ -53,14 +52,12 @@ const STRIPPED_BOOLEAN = new Set([
   '--print',
   '--include-partial-messages',
   '--replay-user-messages',
-  '--verbose',
 ]);
 
 const STRIPPED_VALUE = new Set([
   '--output-format',
   '--input-format',
   '--permission-prompt-tool',
-  '--settings',
 ]);
 
 /**

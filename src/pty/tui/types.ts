@@ -15,6 +15,9 @@ export type TuiEvent =
   | { readonly type: 'auth_required'; readonly url: string }
   | { readonly type: 'permission_prompt'; readonly question: string }
   | { readonly type: 'trust_prompt' }
+  | { readonly type: 'onboarding_splash' }
+  | { readonly type: 'onboarding_theme' }
+  | { readonly type: 'onboarding_effort' }
   | { readonly type: 'error'; readonly code: string; readonly message: string };
 
 /**
@@ -41,11 +44,6 @@ export interface ParserState {
   readyEmitted: boolean;
   /** Whether the trust dialog was visible in the most recent snapshot. */
   trustPromptEmitted: boolean;
-  /** Whether a first-run onboarding screen (theme/effort picker) was
-   *  visible in the most recent snapshot. Latches so the
-   *  `claude_onboarding_required` diagnostic fires once per appearance;
-   *  resets when the screen is gone. */
-  onboardingEmitted: boolean;
   /** Whether the current turn has had any visible activity yet. */
   inTurn: boolean;
   turnHadActivity: boolean;
@@ -89,7 +87,6 @@ export function initialParserState(): ParserState {
     emittedAuthUrl: new Set(),
     readyEmitted: false,
     trustPromptEmitted: false,
-    onboardingEmitted: false,
     inTurn: false,
     turnHadActivity: false,
     currentTurnAnchorLine: '',

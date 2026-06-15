@@ -1,6 +1,6 @@
 {
   "name": "june1815",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Wrap the Claude CLI's interactive TUI via PTY and expose it as an HTTP app-server (REST + SSE).",
   "keywords": [
     "claude",
@@ -25,7 +25,9 @@
     "url": "https://github.com/fibegg/june1815/issues"
   },
   "type": "module",
-  "workspaces": ["ui"],
+  "workspaces": [
+    "ui"
+  ],
   "engines": {
     "node": ">=22.0.0"
   },

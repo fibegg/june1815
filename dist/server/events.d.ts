@@ -103,13 +103,13 @@ declare const ErrorEventSchema: z.ZodObject<{
     code: z.ZodString;
     message: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    type: "error";
     code: string;
     message: string;
+    type: "error";
 }, {
-    type: "error";
     code: string;
     message: string;
+    type: "error";
 }>;
 type ErrorEvent = z.infer<typeof ErrorEventSchema>;
 declare const AuthRequiredSchema: z.ZodObject<{
@@ -119,11 +119,11 @@ declare const AuthRequiredSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     type: "auth_required";
     url: string;
-    method: "oauth" | "token";
+    method: "token" | "oauth";
 }, {
     type: "auth_required";
     url: string;
-    method?: "oauth" | "token" | undefined;
+    method?: "token" | "oauth" | undefined;
 }>;
 type AuthRequiredEvent = z.infer<typeof AuthRequiredSchema>;
 declare const PermissionPromptSchema: z.ZodObject<{
@@ -231,13 +231,13 @@ declare const SseEventSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
     code: z.ZodString;
     message: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    type: "error";
     code: string;
     message: string;
+    type: "error";
 }, {
-    type: "error";
     code: string;
     message: string;
+    type: "error";
 }>, z.ZodObject<{
     type: z.ZodLiteral<"auth_required">;
     url: z.ZodString;
@@ -245,11 +245,11 @@ declare const SseEventSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     type: "auth_required";
     url: string;
-    method: "oauth" | "token";
+    method: "token" | "oauth";
 }, {
     type: "auth_required";
     url: string;
-    method?: "oauth" | "token" | undefined;
+    method?: "token" | "oauth" | undefined;
 }>, z.ZodObject<{
     type: z.ZodLiteral<"permission_prompt">;
     question: z.ZodString;
